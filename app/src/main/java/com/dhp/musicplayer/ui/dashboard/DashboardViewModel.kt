@@ -1,4 +1,4 @@
-package com.example.musicplayerv2.ui.dashboard
+package com.dhp.musicplayer.ui.dashboard
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

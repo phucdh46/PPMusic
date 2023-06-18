@@ -1,4 +1,4 @@
-package com.example.musicplayerv2.ui.home
+package com.dhp.musicplayer.ui.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.musicplayerv2.databinding.FragmentHomeBinding
+import com.dhp.musicplayer.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 

@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.musicplayerv2'
+    namespace 'com.dhp.musicplayer'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.musicplayerv2"
+        applicationId "com.dhp.musicplayer"
         minSdk 24
         targetSdk 33
         versionCode 1
@@ -52,4 +52,14 @@ dependencies {
 
     //play-services
     implementation 'com.google.android.gms:play-services-auth:20.5.0'
+
+    //Hilt
+    implementation 'com.google.dagger:hilt-android:2.43.2'
+
+    //facebook-login
+    implementation 'com.facebook.android:facebook-login:latest.release'
+    implementation 'com.facebook.android:facebook-android-sdk:[8,9)'
+
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.15.0'
 }

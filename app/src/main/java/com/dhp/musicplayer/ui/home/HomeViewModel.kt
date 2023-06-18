@@ -1,4 +1,4 @@
-package com.example.musicplayerv2.ui.home
+package com.dhp.musicplayer.ui.home
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
