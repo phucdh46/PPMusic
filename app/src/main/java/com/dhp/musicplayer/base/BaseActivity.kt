@@ -14,11 +14,13 @@ abstract class BaseActivity<B: ViewBinding>: AppCompatActivity() {
         _binding = getViewBinding()
         setContentView(_binding?.root)
         initUI()
+        bindUI()
     }
 
     abstract fun getViewBinding():B
 
     open fun initUI() {}
+    open fun bindUI() {}
 
     override fun onDestroy() {
         super.onDestroy()

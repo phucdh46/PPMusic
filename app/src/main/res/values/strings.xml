@@ -17,4 +17,17 @@
     <string name="facebook_app_id">819902966463985</string>
     <string name="fb_login_protocol_scheme">fb819902966463985</string>
     <string name="facebook_client_token">a8dc6b1335d5657dbcc1829f440d70b1</string>
+
+    //main
+    <string name="versionName" translatable="false">1.0.0</string>
+    <string name="content_play">Phát/tạm dừng</string>
+    <string name="queue">Hàng đợi</string>
+    <string name="favorites">Bài hát yêu thích</string>
+    <string name="error_fs_not_allowed_sum">Error! Turn off battery optimization for MPGO</string>
+    <string name="error_fs_not_allowed">Something went wrong! :( Consider turning off battery optimization in the system settings: Apps &gt; All apps &gt; Music Player GO &gt; Battery &gt; Unrestricted, as it could cause the media player service to stop.</string>
+    <string name="slash">/</string>
+    <string name="perm_rationale">Music Player cần quyền truy cập tệp để phát nhạc.</string>
+    <string name="ok">OK</string>
+    <string name="no">Không</string>
+
 </resources>
