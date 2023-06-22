@@ -23,11 +23,15 @@
     <string name="content_play">Phát/tạm dừng</string>
     <string name="queue">Hàng đợi</string>
     <string name="favorites">Bài hát yêu thích</string>
-    <string name="error_fs_not_allowed_sum">Error! Turn off battery optimization for MPGO</string>
-    <string name="error_fs_not_allowed">Something went wrong! :( Consider turning off battery optimization in the system settings: Apps &gt; All apps &gt; Music Player GO &gt; Battery &gt; Unrestricted, as it could cause the media player service to stop.</string>
     <string name="slash">/</string>
     <string name="perm_rationale">Music Player cần quyền truy cập tệp để phát nhạc.</string>
     <string name="ok">OK</string>
     <string name="no">Không</string>
+    <string name="error_fs_not_allowed_sum">Error! Turn off battery optimization for App</string>
+    <string name="error_fs_not_allowed">Something went wrong! :( Consider turning off battery optimization in the system settings: Apps &gt; All apps &gt; Music Player &gt; Battery &gt; Unrestricted, as it could cause the media player service to stop.</string>
+
+
+    <string name="duration_date_added">%1s, %2s</string>
+    <string name="artist_and_album">%1s&#160;/&#160;%2s</string>
 
 </resources>
