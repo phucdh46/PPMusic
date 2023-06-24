@@ -11,6 +11,7 @@ import android.media.audiofx.AudioEffect
 import android.os.Binder
 import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
+import android.util.Log
 import com.dhp.musicplayer.Constants
 import com.dhp.musicplayer.utils.Versioning
 
@@ -116,6 +117,7 @@ class PlayerService: Service() {
     }
 
     override fun onBind(p0: Intent?): IBinder {
+        Log.d("DDD","onBind")
         synchronized(initializeNotificationManager()) {
             mMediaPlayerHolder.setMusicService(this@PlayerService)
             configureMediaSession()

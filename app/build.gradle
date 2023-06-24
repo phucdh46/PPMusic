@@ -65,4 +65,7 @@ dependencies {
 
     implementation 'androidx.media:media:1.6.0'
 
+    //https://github.com/coil-kt/coil/releases
+    implementation 'io.coil-kt:coil:2.2.2'
+
 }
