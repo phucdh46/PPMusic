@@ -1,12 +1,18 @@
 package com.dhp.musicplayer.extensions
 
 import android.content.ContentUris
+import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.core.graphics.drawable.toBitmap
+import coil.Coil
+import coil.request.ImageRequest
 import com.dhp.musicplayer.model.Music
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.regex.Pattern
 
 
 fun Long.toContentUri(): Uri = ContentUris.withAppendedId(
@@ -67,3 +73,24 @@ fun Music?.toName(): String? {
 //    }
     return this?.title
 }
+
+//https://codereview.stackexchange.com/a/97819
+fun String?.toFilenameWithoutExtension() = try {
+    Pattern.compile("(?<=.)\\.[^.]+$").matcher(this!!).replaceAll("")
+} catch (e: Exception) {
+    e.printStackTrace()
+    this
+}
+
+fun Long.waitForCover(context: Context, onDone: (Bitmap?, Boolean) -> Unit) {
+    Coil.imageLoader(context).enqueue(
+        ImageRequest.Builder(context)
+            //.data(if (GoPreferences.getPrefsInstance().isCovers) toAlbumArtURI() else null)
+            .target(
+                onSuccess = { onDone(it.toBitmap(), false) },
+                onError = { onDone(null, true) }
+            )
+            .build()
+    )
+}
+
