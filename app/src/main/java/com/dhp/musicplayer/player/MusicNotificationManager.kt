@@ -1,6 +1,7 @@
 package com.dhp.musicplayer.player
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Notification
 import android.app.NotificationManager
@@ -9,6 +10,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.support.v4.media.MediaMetadataCompat
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
@@ -23,6 +25,10 @@ class MusicNotificationManager(private val playerService: PlayerService) {
 
     private val mNotificationManagerCompat get() = NotificationManagerCompat.from(playerService)
     private lateinit var mNotificationBuilder: NotificationCompat.Builder
+    private val mNotificationActions
+        @SuppressLint("RestrictedApi")
+        get() = mNotificationBuilder.mActions
+    private val mMediaPlayerHolder get() = MediaPlayerHolder.getInstance()
 
     fun createNotification(onCreated: (Notification) -> Unit) {
 
@@ -73,6 +79,48 @@ class MusicNotificationManager(private val playerService: PlayerService) {
     private fun getNotificationAction(action: String): NotificationCompat.Action {
         val icon = Theming.getNotificationActionIcon(action, isNotification = true)
         return NotificationCompat.Action.Builder(icon, action, getPendingIntent(action)).build()
+    }
+
+    fun updatePlayPauseAction() {
+        if (::mNotificationBuilder.isInitialized) {
+            mNotificationActions[2] =
+                getNotificationAction(Constants.PLAY_PAUSE_ACTION)
+        }
+    }
+
+    fun updateNotificationContent(onDone: (() -> Unit)? = null) {
+        mMediaPlayerHolder.getMediaMetadataCompat()?.run {
+            mNotificationBuilder
+                .setContentText(getText(MediaMetadataCompat.METADATA_KEY_ARTIST))
+                .setContentTitle(getText(MediaMetadataCompat.METADATA_KEY_TITLE))
+                .setSubText(getText(MediaMetadataCompat.METADATA_KEY_ALBUM))
+                .setLargeIcon(getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART))
+        }
+        onDone?.invoke()
+    }
+
+    fun updateNotification() {
+        if (::mNotificationBuilder.isInitialized) {
+            //mNotificationBuilder.setOngoing(mMediaPlayerHolder.isPlaying)
+            updatePlayPauseAction()
+            with(mNotificationManagerCompat) {
+                if (ActivityCompat.checkSelfPermission(
+                        playerService,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return
+                }
+                notify(Constants.NOTIFICATION_ID, mNotificationBuilder.build())
+            }
+        }
     }
 
     private fun getPendingIntent(playerAction: String): PendingIntent {

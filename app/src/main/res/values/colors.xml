@@ -9,7 +9,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="main_bg">#fcfcfc</color>
-    <color name="widgets_color">#212121</color>
+    <color name="widgets_color">#fafafa</color>
     <color name="toolbar_bg">@color/main_bg</color>
 
     <color name="def_system_bars_color">#20111111</color>

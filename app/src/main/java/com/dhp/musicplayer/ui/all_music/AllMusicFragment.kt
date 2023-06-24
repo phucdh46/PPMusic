@@ -52,7 +52,7 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
                 deviceMusic.observe(viewLifecycleOwner) { returnedMusic ->
                     if (!returnedMusic.isNullOrEmpty()) {
                         mAllMusic = returnedMusic
-
+                        Log.d("DHP","all fra: $returnedMusic")
                         finishSetup()
                     }
                 }
