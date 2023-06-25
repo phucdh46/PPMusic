@@ -3,6 +3,9 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+apply plugin: 'kotlin-kapt'
+
+
 android {
     namespace 'com.dhp.musicplayer'
     compileSdk 33
@@ -68,4 +71,11 @@ dependencies {
     //https://github.com/coil-kt/coil/releases
     implementation 'io.coil-kt:coil:2.2.2'
 
+    implementation 'androidx.window:window:1.0.0'
+
+    implementation 'androidx.preference:preference-ktx:1.2.0'
+
+    //https://mvnrepository.com/artifact/com.squareup.moshi/moshi-kotlin
+    implementation 'com.squareup.moshi:moshi:1.14.0'
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.14.0'
 }

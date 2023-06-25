@@ -2,17 +2,22 @@ package com.dhp.musicplayer.utils
 
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.content.res.Resources
+import android.util.Log
 import com.dhp.musicplayer.Constants
 import com.dhp.musicplayer.R
+import com.dhp.musicplayer.player.MediaPlayerHolder
 
 object Theming {
     fun getNotificationActionIcon(action: String, isNotification: Boolean): Int {
-       // val mediaPlayerHolder = MediaPlayerHolder.getInstance()
+        val mediaPlayerHolder = MediaPlayerHolder.getInstance()
         return when (action) {
-            Constants.PLAY_PAUSE_ACTION -> if (false) {//(mediaPlayerHolder.isPlaying) {
+            Constants.PLAY_PAUSE_ACTION -> if (mediaPlayerHolder.isPlaying) {
+                Log.d("DHP", "action pause: state: ${mediaPlayerHolder.state}")
                 R.drawable.ic_pause
             } else {
+                Log.d("DHP", "action play: state: ${mediaPlayerHolder.state}")
                 R.drawable.ic_play
             }
             Constants.REPEAT_ACTION -> if (isNotification) {
@@ -42,5 +47,16 @@ object Theming {
         return ActivityInfo.SCREEN_ORIENTATION_FULL_USER
     }
 
+    @JvmStatic
+    fun isDeviceLand(resources: Resources) =
+        resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
+    @JvmStatic
+    fun getAlbumCoverAlpha(context: Context): Int {
+        return when {
+            //isThemeBlack(context.resources) -> 25
+            //isThemeNight(context.resources) -> 15
+            else -> 20
+        }
+    }
 }

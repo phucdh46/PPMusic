@@ -8,21 +8,29 @@ import android.media.audiofx.AudioEffect
 import android.os.Build
 import android.os.PowerManager
 import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
+import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.toBitmap
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
 import com.dhp.musicplayer.Constants
 import com.dhp.musicplayer.R
+import com.dhp.musicplayer.extensions.findIndex
 import com.dhp.musicplayer.extensions.toContentUri
 import com.dhp.musicplayer.extensions.toFilenameWithoutExtension
 import com.dhp.musicplayer.extensions.waitForCover
 import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.utils.MediaPlayerUtils
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
-class MediaPlayerHolder: MediaPlayer.OnPreparedListener {
+class MediaPlayerHolder: MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
     private var sNotificationOngoing = false
     private var mMusicNotificationManager: MusicNotificationManager? = null
     private lateinit var mPlayerService: PlayerService
@@ -34,6 +42,24 @@ class MediaPlayerHolder: MediaPlayer.OnPreparedListener {
     var currentSong: Music? = null
     private var mPlayingSongs: List<Music>? = null
     var launchedBy = Constants.ARTIST_VIEW
+
+    var state = Constants.PAUSED
+    var isPlay = false
+
+    var isSongFromPrefs = false
+
+    val playerPosition get() = when {
+//        isSongFromPrefs && !isCurrentSongFM -> GoPreferences.getPrefsInstance().latestPlayedSong?.startFrom!!
+//        isCurrentSongFM -> 0
+        else -> mediaPlayer.currentPosition
+    }
+
+
+    // Media player state/booleans
+    val isMediaPlayer get() = ::mediaPlayer.isInitialized
+    val isPlaying get() = isMediaPlayer && state != Constants.PAUSED
+
+    private val mMediaSessionActions = PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_PAUSE or PlaybackStateCompat.ACTION_PLAY_PAUSE or PlaybackStateCompat.ACTION_SKIP_TO_NEXT or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or PlaybackStateCompat.ACTION_STOP or PlaybackStateCompat.ACTION_SEEK_TO
 
     private val mOnAudioFocusChangeListener =
         AudioManager.OnAudioFocusChangeListener { focusChange ->
@@ -64,7 +90,9 @@ class MediaPlayerHolder: MediaPlayer.OnPreparedListener {
 //                }
 //            }
         }
-
+    lateinit var mediaPlayerInterface: MediaPlayerInterface
+    private var mExecutor: ScheduledExecutorService? = null
+    private var mSeekBarPositionUpdateTask: Runnable? = null
 
     fun setMusicService(playerService: PlayerService) {
         Log.d("DDD","setMusicService")
@@ -79,22 +107,185 @@ class MediaPlayerHolder: MediaPlayer.OnPreparedListener {
 
     fun resumeOrPause() {
         try {
-//            if (isPlaying) {
-//                pauseMediaPlayer()
-//            } else {
+            if (isPlaying) {
+                pauseMediaPlayer()
+            } else {
 //                if (isSongFromPrefs) updateMediaSessionMetaData()
                 resumeMediaPlayer()
-//            }
+            }
         } catch (e: IllegalStateException) {
             e.printStackTrace()
         }
     }
 
+    fun pauseMediaPlayer() {
+        // Do not pause foreground service, we will need to resume likely
+        MediaPlayerUtils.safePause(mediaPlayer)
+        sNotificationOngoing = false
+        state = Constants.PAUSED
+        updatePlaybackStatus(updateUI = true)
+        mMusicNotificationManager?.run {
+            updatePlayPauseAction()
+            updateNotification()
+        }
+//        if (::mediaPlayerInterface.isInitialized && !isCurrentSongFM) {
+//            mediaPlayerInterface.onBackupSong()
+//        }
+    }
+
+    private fun updatePlaybackStatus(updateUI: Boolean) {
+        mPlayerService.getMediaSession()?.setPlaybackState(
+            PlaybackStateCompat.Builder()
+                .setActions(mMediaSessionActions)
+                .setState(
+                    if (isPlaying) Constants.PLAYING else Constants.PAUSED,
+                    mediaPlayer.currentPosition.toLong(),
+                    1.0F
+                ).build()
+        )
+        if (updateUI && ::mediaPlayerInterface.isInitialized) {
+            mediaPlayerInterface.onStateChanged()
+        }
+    }
+
+    fun onRestartSeekBarCallback() {
+        if (mExecutor == null) startUpdatingCallbackWithPosition()
+    }
+
+    fun onPauseSeekBarCallback() {
+        stopUpdatingCallbackWithPosition()
+    }
+
+    fun seekTo(position: Int, updatePlaybackStatus: Boolean, restoreProgressCallBack: Boolean) {
+        if (isMediaPlayer) {
+            mediaPlayer.setOnSeekCompleteListener { mp ->
+                mp.setOnSeekCompleteListener(null)
+                if (restoreProgressCallBack) startUpdatingCallbackWithPosition()
+                if (updatePlaybackStatus) updatePlaybackStatus(updateUI = !restoreProgressCallBack)
+            }
+            mediaPlayer.seekTo(position)
+        }
+    }
+
+    // Reports media playback position to mPlaybackProgressCallback.
+    private fun stopUpdatingCallbackWithPosition() {
+        mExecutor?.shutdownNow()
+        mExecutor = null
+        mSeekBarPositionUpdateTask = null
+    }
+
+    fun stopPlaybackService(stopPlayback: Boolean, fromUser: Boolean, fromFocus: Boolean) {
+        try {
+            if (mPlayerService.isRunning && isMediaPlayer && stopPlayback) {
+//                if (sNotificationOngoing) {
+                com.dhp.musicplayer.utils.Log.d("stopForeground")
+                    ServiceCompat.stopForeground(mPlayerService, ServiceCompat.STOP_FOREGROUND_REMOVE)
+                    sNotificationOngoing = false
+//                } else {
+                    mMusicNotificationManager?.cancelNotification()
+//                }
+                if (!fromFocus) mPlayerService.stopSelf()
+            }
+            if (::mediaPlayerInterface.isInitialized && fromUser) {
+                mediaPlayerInterface.onClose()
+            }
+        } catch (e: java.lang.IllegalArgumentException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun startUpdatingCallbackWithPosition() {
+
+        if (mSeekBarPositionUpdateTask == null) {
+            mSeekBarPositionUpdateTask = Runnable { updateProgressCallbackTask() }
+        }
+
+        mExecutor = Executors.newSingleThreadScheduledExecutor()
+        mExecutor?.scheduleAtFixedRate(
+            mSeekBarPositionUpdateTask!!,
+            0,
+            1000,
+            TimeUnit.MILLISECONDS
+        )
+    }
+
+    private fun updateProgressCallbackTask() {
+        if (isPlaying && ::mediaPlayerInterface.isInitialized) {
+            mediaPlayerInterface.onPositionChanged(mediaPlayer.currentPosition)
+        }
+    }
+
+
     fun resumeMediaPlayer() {
+        if (!isPlaying) {
 
+//            if (sFocusEnabled) tryToGetAudioFocus()
 
-        startForeground()
+//            val hasCompletedPlayback = GoPreferences.getPrefsInstance().hasCompletedPlayback
+//            if (!continueOnEnd && isSongFromPrefs && hasCompletedPlayback || !continueOnEnd && hasCompletedPlayback || GoPreferences.getPrefsInstance().onListEnded != GoConstants.CONTINUE && hasCompletedPlayback) {
+//                GoPreferences.getPrefsInstance().hasCompletedPlayback = false
+//                skip(isNext = true)
+//            } else {
+                startOrChangePlaybackSpeed()
+//            }
 
+              state = if (isSongFromPrefs) {
+                isSongFromPrefs = false
+                Constants.PLAYING
+            } else {
+                Constants.RESUMED
+            }
+
+            isPlay = true
+
+            updatePlaybackStatus(updateUI = true)
+            startForeground()
+        }
+    }
+
+    fun skip(isNext: Boolean) {
+//        if (isCurrentSongFM) currentSongFM = null
+        when {
+//            isQueue != null && !canRestoreQueue -> manageQueue(isNext = isNext)
+//            canRestoreQueue -> manageRestoredQueue()
+            else -> {
+                currentSong = getSkipSong(isNext = isNext)
+                initMediaPlayer(currentSong, forceReset = false)
+            }
+        }
+    }
+
+    private fun getSkipSong(isNext: Boolean): Music? {
+
+        var listToSeek = mPlayingSongs
+        //if (isQueue != null) listToSeek = queueSongs
+
+        try {
+            if (isNext) {
+                return listToSeek?.get(listToSeek.findIndex(currentSong).plus(1))
+            }
+            return listToSeek?.get(listToSeek.findIndex(currentSong).minus(1))
+        } catch (e: IndexOutOfBoundsException) {
+            e.printStackTrace()
+//            return listToSeek?.last()
+//            when {
+//                isQueue != null -> {
+//                    val returnedSong = isQueue
+//                    if (isNext) {
+//                        setQueueEnabled(enabled = false, canSkip = false)
+//                    } else {
+//                        isQueueStarted = false
+//                    }
+//                    return returnedSong
+//                }
+//                else -> {
+                    if (listToSeek?.findIndex(currentSong) != 0) {
+                        return listToSeek?.first()
+                    }
+                    return listToSeek.last()
+//                }
+//            }
+        }
     }
 
     private fun startForeground() {
@@ -106,9 +297,9 @@ class MediaPlayerHolder: MediaPlayer.OnPreparedListener {
                     }
                     true
                 } catch (fsNotAllowed: ForegroundServiceStartNotAllowedException) {
-//                    synchronized(pauseMediaPlayer()) {
-//                        mMusicNotificationManager?.createNotificationForError()
-//                    }
+                    synchronized(pauseMediaPlayer()) {
+                        mMusicNotificationManager?.createNotificationForError()
+                    }
                     fsNotAllowed.printStackTrace()
                     false
                 }
@@ -133,9 +324,9 @@ class MediaPlayerHolder: MediaPlayer.OnPreparedListener {
         try {
 
 //            if (isMediaPlayer && !forceReset) {
-//                mediaPlayer.reset()
+                mediaPlayer.reset()
 //            } else {
-                mediaPlayer = MediaPlayer()
+//                mediaPlayer = MediaPlayer()
 //            }
 
             with(mediaPlayer) {
@@ -156,9 +347,6 @@ class MediaPlayerHolder: MediaPlayer.OnPreparedListener {
             }
 
             mediaPlayer.prepare()
-            mediaPlayer.start()
-
-            updateMediaSessionMetaData()
 
 
         } catch (e: Exception) {
@@ -192,7 +380,7 @@ class MediaPlayerHolder: MediaPlayer.OnPreparedListener {
                     putBitmap(MediaMetadataCompat.METADATA_KEY_ART, bmp)
                     mMediaMetadataCompat = build()
                     mPlayerService.getMediaSession()?.setMetadata(mMediaMetadataCompat)
-                    //if (isPlay) {
+                    if (isPlay) {
                         startForeground()
                         mMusicNotificationManager?.run {
                             updatePlayPauseAction()
@@ -200,7 +388,7 @@ class MediaPlayerHolder: MediaPlayer.OnPreparedListener {
                                 updateNotification()
                             }
                         }
-                    //}
+                    }
                 }
             }
         }
@@ -236,8 +424,38 @@ class MediaPlayerHolder: MediaPlayer.OnPreparedListener {
     }
 
     override fun onPrepared(p0: MediaPlayer?) {
+        if (mExecutor == null) startUpdatingCallbackWithPosition()
+
         if (!::mAudioFocusRequestCompat.isInitialized) {
             initializeAudioFocusRequestCompat()
+        }
+
+        if (isPlay) {
+//            if (sFocusEnabled && !sHasFocus) {
+//                tryToGetAudioFocus()
+//            }
+            play()
+        }
+
+        updateMediaSessionMetaData()
+
+    }
+
+    private fun play() {
+        startOrChangePlaybackSpeed()
+        state = Constants.PLAYING
+        updatePlaybackStatus(updateUI = true)
+    }
+
+    private fun startOrChangePlaybackSpeed() {
+        with(mediaPlayer) {
+//            if (!sFocusEnabled || sFocusEnabled && sHasFocus) {
+//                if (sPlaybackSpeedPersisted && Versioning.isMarshmallow()) {
+//                    playbackParams = playbackParams.setSpeed(currentPlaybackSpeed)
+//                } else {
+                    MediaPlayerUtils.safePlay(this)
+                //}
+           // }
         }
     }
 
@@ -252,5 +470,26 @@ class MediaPlayerHolder: MediaPlayer.OnPreparedListener {
                 .setWillPauseWhenDucked(true)
                 .setOnAudioFocusChangeListener(mOnAudioFocusChangeListener)
                 .build()
+    }
+
+    override fun onCompletion(p0: MediaPlayer?) {
+        if (::mediaPlayerInterface.isInitialized) mediaPlayerInterface.onStateChanged()
+    }
+
+    fun release() {
+        if (isMediaPlayer) {
+//            openOrCloseAudioEffectAction(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)
+//            releaseBuiltInEqualizer()
+            mediaPlayer.release()
+//            giveUpAudioFocus()
+            stopUpdatingCallbackWithPosition()
+        }
+        if (mMusicNotificationManager != null) {
+            mMusicNotificationManager?.cancelNotification()
+            mMusicNotificationManager = null
+        }
+        state = Constants.PAUSED
+//        unregisterActionsReceiver()
+        destroyInstance()
     }
 }
