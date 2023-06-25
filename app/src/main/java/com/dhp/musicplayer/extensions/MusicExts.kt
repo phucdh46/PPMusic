@@ -3,6 +3,8 @@ package com.dhp.musicplayer.extensions
 import android.content.ContentUris
 import android.content.Context
 import android.graphics.Bitmap
+import android.media.MediaExtractor
+import android.media.MediaFormat
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.graphics.drawable.toBitmap
@@ -92,5 +94,26 @@ fun Long.waitForCover(context: Context, onDone: (Bitmap?, Boolean) -> Unit) {
             )
             .build()
     )
+}
+
+fun List<Music>.findIndex(song: Music?) = indexOfFirst {
+    it.id == song?.id && it.albumId == song?.albumId
+}
+
+fun Uri.toBitrate(context: Context): Pair<Int, Int>? {
+    val mediaExtractor = MediaExtractor()
+    return try {
+        mediaExtractor.setDataSource(context, this, null)
+        val mediaFormat = mediaExtractor.getTrackFormat(0)
+        val sampleRate = mediaFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE)
+        // Get bitrate in bps, divide by 1000 to get Kbps
+        val bitrate = mediaFormat.getInteger(MediaFormat.KEY_BIT_RATE) / 1000
+        Pair(first = sampleRate, second = bitrate)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    } finally {
+        mediaExtractor.release()
+    }
 }
 

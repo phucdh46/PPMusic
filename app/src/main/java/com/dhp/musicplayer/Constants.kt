@@ -1,5 +1,7 @@
 package com.dhp.musicplayer
 
+import android.support.v4.media.session.PlaybackStateCompat
+
 class Constants {
     companion object {
 
@@ -21,6 +23,11 @@ class Constants {
         const val ARTIST_VIEW = "0"
         const val ALBUM_VIEW = "1"
         const val FOLDER_VIEW = "2"
+
+        // Player playing statuses
+        const val PLAYING = PlaybackStateCompat.STATE_PLAYING
+        const val PAUSED = PlaybackStateCompat.STATE_PAUSED
+        const val RESUMED = PlaybackStateCompat.STATE_NONE
 
     }
 }

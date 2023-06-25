@@ -74,6 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:contentDescription="@string/content_play"
+                android:background="?android:attr/actionBarItemBackground"
                 android:padding="8dp"
                 app:srcCompat="@drawable/ic_play" />
 
