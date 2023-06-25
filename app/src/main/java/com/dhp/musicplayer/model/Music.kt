@@ -1,5 +1,7 @@
 package com.dhp.musicplayer.model
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class Music(
     val artist: String?,
     val year: Int,

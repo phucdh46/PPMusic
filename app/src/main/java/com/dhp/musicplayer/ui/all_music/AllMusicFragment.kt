@@ -14,6 +14,7 @@ import com.dhp.musicplayer.base.BaseFragment
 import com.dhp.musicplayer.databinding.FragmentAllMusicBinding
 import com.dhp.musicplayer.model.Music
 import com.dhp.musicplayer.player.MediaControlInterface
+import com.dhp.musicplayer.player.UIControlInterface
 import com.dhp.musicplayer.ui.all_music.adapter.AllMusicAdapter
 
 class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
@@ -21,6 +22,7 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
     private lateinit var mMusicViewModel: MusicViewModel
     private var mAllMusic: List<Music>? = null
     private lateinit var mMediaControlInterface: MediaControlInterface
+    private lateinit var mUIControlInterface: UIControlInterface
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,8 +33,7 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
-    override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?)
-    = FragmentAllMusicBinding.inflate(layoutInflater, container, false)
+    override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = FragmentAllMusicBinding.inflate(layoutInflater, container, false)
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -40,6 +41,7 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
         // the callback interface. If not, it throws an exception
         try {
             mMediaControlInterface = activity as MediaControlInterface
+            mUIControlInterface = activity as UIControlInterface
         } catch (e: ClassCastException) {
             e.printStackTrace()
         }
@@ -60,7 +62,14 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
     }
 
     private fun finishSetup() {
-        binding.allMusicRv.adapter = AllMusicAdapter(mAllMusic, mMediaControlInterface)
+        binding.run {
+            allMusicRv.adapter = AllMusicAdapter(mAllMusic, mMediaControlInterface)
+            searchToolbar.let { stb ->
+                stb.setNavigationOnClickListener {
+                    mUIControlInterface.onCloseActivity()
+                }
+            }
+        }
     }
 
     companion object {

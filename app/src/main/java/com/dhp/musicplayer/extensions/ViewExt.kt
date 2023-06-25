@@ -1,11 +1,17 @@
 package com.dhp.musicplayer.extensions
 
+import android.app.Activity
+import android.app.Dialog
 import android.util.Log
 import android.view.View
+import android.widget.FrameLayout
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import androidx.window.layout.WindowMetricsCalculator
+import com.dhp.musicplayer.SingleClickHelper
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 fun View.applyEdgeToEdge() {
     setOnApplyWindowInsetsListener { view, insets ->
@@ -36,5 +42,22 @@ fun ViewPager2.reduceDragSensitivity() {
     } catch (e: Exception) {
         Log.e("MainActivity", "Unable to reduce ViewPager sensitivity")
         Log.e("MainActivity", e.stackTraceToString())
+    }
+}
+
+fun View.safeClickListener(safeClickListener: (view: View) -> Unit) {
+    setOnClickListener {
+        if (!SingleClickHelper.isBlockingClick()) safeClickListener(it)
+    }
+}
+
+fun Dialog?.applyFullHeightDialog(activity: Activity) {
+    // to ensure full dialog's height
+
+    val windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity)
+    val height = windowMetrics.bounds.height()
+
+    this?.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)?.let { bs ->
+        BottomSheetBehavior.from(bs).peekHeight = height
     }
 }

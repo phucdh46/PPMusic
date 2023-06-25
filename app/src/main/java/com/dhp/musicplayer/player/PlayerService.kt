@@ -13,6 +13,7 @@ import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import com.dhp.musicplayer.Constants
+import com.dhp.musicplayer.Preferences
 import com.dhp.musicplayer.utils.Versioning
 
 class PlayerService: Service() {
@@ -95,9 +96,9 @@ class PlayerService: Service() {
 //                            launchedBy
 //                        )
 //                        Constants.REWIND_ACTION -> fastSeek(isForward = false)
-//                        Constants.PREV_ACTION -> instantReset()
+                        Constants.PREV_ACTION -> skip(isNext = false)//instantReset()
                         Constants.PLAY_PAUSE_ACTION -> resumeOrPause()
-//                        Constants.NEXT_ACTION -> skip(isNext = true)
+                        Constants.NEXT_ACTION -> skip(isNext = true)
 //                        Constants.FAST_FORWARD_ACTION -> fastSeek(isForward = true)
 //                        Constants.REPEAT_ACTION -> {
 //                            repeat(updatePlaybackStatus = true)
@@ -143,6 +144,30 @@ class PlayerService: Service() {
     }
 
     fun getMediaSession(): MediaSessionCompat? = mMediaSessionCompat
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        val prefs = Preferences.getPrefsInstance()
+        with(mMediaPlayerHolder) {
+            prefs.latestPlayedSong = currentSong?.copy(startFrom = playerPosition, launchedBy = launchedBy)
+
+        }
+
+        mMediaSessionCompat?.run {
+            if (isActive) {
+                isActive = false
+                setCallback(null)
+                setMediaButtonReceiver(null)
+                release()
+            }
+        }
+
+        mMediaSessionCompat = null
+        mMediaPlayerHolder.release()
+//        releaseWakeLock()
+        isRunning = false
+    }
 
 
     inner class LocalBinder : Binder() {

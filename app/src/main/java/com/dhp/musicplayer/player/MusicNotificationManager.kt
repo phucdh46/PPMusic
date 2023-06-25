@@ -18,6 +18,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.dhp.musicplayer.Constants
 import com.dhp.musicplayer.MainActivity
 import com.dhp.musicplayer.R
+import com.dhp.musicplayer.utils.Log
 import com.dhp.musicplayer.utils.Theming
 import com.dhp.musicplayer.utils.Versioning
 
@@ -31,6 +32,7 @@ class MusicNotificationManager(private val playerService: PlayerService) {
     private val mMediaPlayerHolder get() = MediaPlayerHolder.getInstance()
 
     fun createNotification(onCreated: (Notification) -> Unit) {
+        Log.d("createNotification")
 
         mNotificationBuilder =
             NotificationCompat.Builder(playerService, Constants.NOTIFICATION_CHANNEL_ID)
@@ -58,7 +60,7 @@ class MusicNotificationManager(private val playerService: PlayerService) {
             .setShowWhen(false)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setLargeIcon(null)
-            //.setOngoing(mMediaPlayerHolder.isPlaying)
+            .setOngoing(mMediaPlayerHolder.isPlaying)
             .setSmallIcon(R.drawable.ic_music_note)
             .addAction(getNotificationAction(Constants.PREV_ACTION))
             .addAction(getNotificationAction(Constants.PREV_ACTION))
@@ -71,9 +73,9 @@ class MusicNotificationManager(private val playerService: PlayerService) {
                 .setShowActionsInCompactView(1, 2, 3)
             )
 
-//        updateNotificationContent {
-//            onCreated(mNotificationBuilder.build())
-//        }
+        updateNotificationContent {
+            onCreated(mNotificationBuilder.build())
+        }
     }
 
     private fun getNotificationAction(action: String): NotificationCompat.Action {
@@ -82,6 +84,7 @@ class MusicNotificationManager(private val playerService: PlayerService) {
     }
 
     fun updatePlayPauseAction() {
+        Log.d("updatePlayPauseAction")
         if (::mNotificationBuilder.isInitialized) {
             mNotificationActions[2] =
                 getNotificationAction(Constants.PLAY_PAUSE_ACTION)
@@ -169,6 +172,13 @@ class MusicNotificationManager(private val playerService: PlayerService) {
             notify(1, notificationBuilder.build())
         }
     }
+
+    fun cancelNotification() {
+        with(mNotificationManagerCompat) {
+            cancel(Constants.NOTIFICATION_ID)
+        }
+    }
+
     @TargetApi(26)
     private fun createNotificationChannel(id: String) {
         val name = playerService.getString(R.string.app_name)
