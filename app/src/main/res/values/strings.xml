@@ -66,5 +66,28 @@
     <string name="yes">Có</string>
     <string name="cancel">Hủy</string>
 
+    <!-- Sleep timer-->
+    <string name="sleeptimer">Sleep timer</string>
+
+    <!-- Popup/Menu titles -->
+    <string name="sorting_pref">Sorting</string>
+    <string name="sorting_pref_default">Default</string>
+
+    <!-- Sorting menu -->
+    <string name="sorting_pref_ascending">A-Z</string>
+    <string name="sorting_pref_descending">Z-A</string>
+    <string name="sorting_pref_album_inv">Theo album Z-A</string>
+    <string name="sorting_pref_album">Theo album A-Z</string>
+    <string name="sorting_pref_artist_inv">Theo nghệ sĩ Z-A</string>
+    <string name="sorting_pref_artist">Theo nghệ sĩ A-Z</string>
+    <string name="sorting_pref_date_added_inv">Ngày cũ nhất trước</string>
+    <string name="sorting_pref_date_added">Ngày mới nhất trước</string>
+
+
+    <string name="delete">Xoá</string>
+    <string name="accent_pref_title">Màu nhấn</string>
+    <string name="sleeptimer_stop">Stop</string>
+    <string name="sleeptimer_cancel_desc">Stop sleep timer</string>
+    <string name="sleeptimer_enabled">Stop playback %1s after</string>
 
 </resources>
