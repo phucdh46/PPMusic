@@ -6,6 +6,7 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.audiofx.AudioEffect
 import android.os.Build
+import android.os.CountDownTimer
 import android.os.PowerManager
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -93,6 +94,10 @@ class MediaPlayerHolder: MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletio
     lateinit var mediaPlayerInterface: MediaPlayerInterface
     private var mExecutor: ScheduledExecutorService? = null
     private var mSeekBarPositionUpdateTask: Runnable? = null
+
+    // Sleep Timer
+    private var mSleepTimer: CountDownTimer? = null
+    val isSleepTimer get() = mSleepTimer != null
 
     fun setMusicService(playerService: PlayerService) {
         Log.d("DDD","setMusicService")
@@ -401,6 +406,35 @@ class MediaPlayerHolder: MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletio
         mPlayingSongs = albumSongs
         launchedBy = songLaunchedBy
     }
+
+    fun pauseBySleepTimer(minutes: Long): Boolean {
+        return if (isPlaying) {
+            mSleepTimer = object : CountDownTimer(TimeUnit.MINUTES.toMillis(minutes), 1000) {
+                override fun onTick(p0: Long) {
+                    if (::mediaPlayerInterface.isInitialized) {
+                        mediaPlayerInterface.onUpdateSleepTimerCountdown(p0)
+                    }
+                }
+                override fun onFinish() {
+                    if (::mediaPlayerInterface.isInitialized) {
+                        mediaPlayerInterface.onStopSleepTimer()
+                    }
+                    pauseMediaPlayer()
+                    cancelSleepTimer()
+                }
+            }.start()
+            true
+        } else {
+            mSleepTimer = null
+            false
+        }
+    }
+
+    fun cancelSleepTimer() {
+        mSleepTimer?.cancel()
+        mSleepTimer = null
+    }
+
 
     companion object {
         @Volatile private var INSTANCE: MediaPlayerHolder? = null

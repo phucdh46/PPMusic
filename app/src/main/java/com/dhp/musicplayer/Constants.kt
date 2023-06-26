@@ -29,5 +29,18 @@ class Constants {
         const val PAUSED = PlaybackStateCompat.STATE_PAUSED
         const val RESUMED = PlaybackStateCompat.STATE_NONE
 
+        // sorting
+        const val DEFAULT_SORTING = 0
+        const val ASCENDING_SORTING = 1
+        const val DESCENDING_SORTING = 2
+        const val TRACK_SORTING = 3
+        const val TRACK_SORTING_INVERTED = 4
+        const val DATE_ADDED_SORTING = 5
+        const val DATE_ADDED_SORTING_INV = 6
+        const val ARTIST_SORTING = 7
+        const val ARTIST_SORTING_INV = 8
+        const val ALBUM_SORTING = 9
+        const val ALBUM_SORTING_INV = 10
+
     }
 }
