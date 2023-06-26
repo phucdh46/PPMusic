@@ -22,7 +22,7 @@ import com.dhp.musicplayer.ui.all_music.adapter.AllMusicAdapter
 import com.dhp.musicplayer.utils.Lists
 import com.dhp.musicplayer.utils.Theming
 
-class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
+class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>(), SearchView.OnQueryTextListener  {
 
     private lateinit var mMusicViewModel: MusicViewModel
     private var mAllMusic: List<Music>? = null
@@ -32,6 +32,8 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
     // sorting
     private lateinit var mSortMenuItem: MenuItem
     private var mSorting = Preferences.getPrefsInstance().allMusicSorting
+
+    private lateinit var adapter : AllMusicAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +53,7 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
         try {
             mMediaControlInterface = activity as MediaControlInterface
             mUIControlInterface = activity as UIControlInterface
+            adapter = AllMusicAdapter(mMediaControlInterface)
         } catch (e: ClassCastException) {
             e.printStackTrace()
         }
@@ -62,12 +65,11 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
             ViewModelProvider(requireActivity())[MusicViewModel::class.java].apply {
                 deviceMusic.observe(viewLifecycleOwner) { returnedMusic ->
                     if (!returnedMusic.isNullOrEmpty()) {
-                        mAllMusic = returnedMusic
-
-//                            Lists.getSortedMusicListForAllMusic(
-//                            mSorting,
-//                            mMusicViewModel.deviceMusicFiltered
-//                        )
+                        mAllMusic = //returnedMusic
+                            Lists.getSortedMusicListForAllMusic(
+                            mSorting,
+                            mMusicViewModel.deviceMusicFiltered
+                        )
                         Log.d("DHP","all fra: $returnedMusic")
                         finishSetup()
                     }
@@ -77,7 +79,8 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
 
     private fun finishSetup() {
         binding.run {
-            allMusicRv.adapter = AllMusicAdapter(mAllMusic, mMediaControlInterface)
+            allMusicRv.adapter = adapter
+            mAllMusic?.let { adapter.submitData(it) }
             searchToolbar.let { stb ->
                 stb.inflateMenu(R.menu.menu_music_search)
                 stb.overflowIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_sort)
@@ -89,7 +92,7 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
                     mSortMenuItem = Lists.getSelectedSortingForMusic(mSorting, this)
 
                     with (findItem(R.id.action_search).actionView as SearchView) {
-                        //setOnQueryTextListener(this@AllMusicFragment)
+                        setOnQueryTextListener(this@AllMusicFragment)
                         setOnQueryTextFocusChangeListener { _, hasFocus ->
                             stb.menu.setGroupVisible(R.id.sorting, !hasFocus)
                             stb.menu.findItem(R.id.sleeptimer).isVisible = !hasFocus
@@ -136,12 +139,8 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
     }
 
     private fun setMusicDataSource(musicList: List<Music>?) {
-        musicList?.run {
-            mAllMusic = this
-            binding.allMusicRv.adapter?.notifyDataSetChanged()
-        }
+        musicList?.let { adapter.submitData(it) }
     }
-
 
     companion object {
         /**
@@ -152,6 +151,16 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>()  {
          */
         @JvmStatic
         fun newInstance() = AllMusicFragment()
+    }
+
+    override fun onQueryTextSubmit(query: String?) = false
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        setMusicDataSource(
+            Lists.processQueryForMusic(newText,
+                Lists.getSortedMusicListForAllMusic(mSorting, mMusicViewModel.deviceMusicFiltered)
+            ) ?: mAllMusic)
+        return false
     }
 
 }

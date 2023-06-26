@@ -84,4 +84,32 @@ object Lists {
 //        }
     }
 
+    @JvmStatic
+    fun processQueryForMusic(query: String?, musicList: List<Music>?): List<Music>? {
+        // In real app you'd have it instantiated just once
+        val filteredSongs = mutableListOf<Music>()
+//        val isShowDisplayName = GoPreferences.getPrefsInstance().songsVisualization== GoConstants.FN
+        return try {
+            // Case insensitive search
+            musicList?.iterator()?.let { iterate ->
+                while (iterate.hasNext()) {
+                    val filteredSong = iterate.next()
+                    val toFilter =
+//                        if (isShowDisplayName) {
+//                        filteredSong.displayName
+//                    } else {
+                        filteredSong.title
+//                    }
+                    if (toFilter?.lowercase()!!.contains(query?.lowercase()!!)) {
+                        filteredSongs.add(filteredSong)
+                    }
+                }
+            }
+            return filteredSongs
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
 }
