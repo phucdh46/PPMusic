@@ -10,6 +10,7 @@ import com.dhp.musicplayer.model.Music
 import com.dhp.musicplayer.utils.Versioning
 import kotlinx.coroutines.*
 import java.io.File
+import kotlin.random.Random
 
 class MusicViewModel(application: Application): AndroidViewModel(application) {
     private val mViewModelJob = SupervisorJob()
@@ -53,12 +54,36 @@ class MusicViewModel(application: Application): AndroidViewModel(application) {
     private fun getMusic(application: Application): MutableList<Music> {
         synchronized(startQuery(application)) {
             if (mDeviceMusicList.isNotEmpty()) {
-//                buildLibrary(application.resources)
+                buildLibrary(application.resources)
             }
         }
         return mDeviceMusicList
     }
 
+    private fun buildLibrary(resources: Resources) {
+        // Removing duplicates by comparing everything except path which is different
+        // if the same song is hold in different paths
+        deviceMusicFiltered =
+            mDeviceMusicList.distinctBy { it.artist to it.year to it.track to it.title to it.duration to it.album }
+                .toMutableList()
+
+        updatePreferences()
+    }
+
+    private fun updatePreferences() {
+        val prefs = Preferences.getPrefsInstance()
+
+        if (prefs.latestPlayedSong == null) {
+            prefs.latestPlayedSong = getRandomMusic()
+        }
+    }
+
+    fun getRandomMusic(): Music? {
+        deviceMusicFiltered?.shuffled()?.run {
+            return get(Random.nextInt(size))
+        }
+        return deviceMusicFiltered?.random()
+    }
 
     private fun startQuery(application: Application) {
         queryForMusic(application)?.let { fm ->
