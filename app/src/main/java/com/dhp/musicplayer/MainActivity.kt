@@ -21,10 +21,8 @@ import androidx.viewpager2.widget.ViewPager2
 import com.dhp.musicplayer.base.BaseActivity
 import com.dhp.musicplayer.databinding.ActivityMainBinding
 import com.dhp.musicplayer.databinding.PlayerControlsPanelBinding
-import com.dhp.musicplayer.extensions.applyEdgeToEdge
-import com.dhp.musicplayer.extensions.reduceDragSensitivity
-import com.dhp.musicplayer.extensions.safeClickListener
-import com.dhp.musicplayer.extensions.toFilenameWithoutExtension
+import com.dhp.musicplayer.dialogs.RecyclerSheet
+import com.dhp.musicplayer.extensions.*
 import com.dhp.musicplayer.model.Music
 import com.dhp.musicplayer.player.*
 import com.dhp.musicplayer.ui.all_music.AllMusicFragment
@@ -48,6 +46,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
 
     // Preferences
     private val mPreferences get() = Preferences.getPrefsInstance()
+
+    // Sleep timer dialog
+    private var mSleepTimerDialog: RecyclerSheet? = null
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(componentName: ComponentName, service: IBinder) {
@@ -140,12 +141,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
         }
 
         override fun onUpdateSleepTimerCountdown(value: Long) {
-//            mSleepTimerDialog?.run {
-//                if (sheetType == RecyclerSheet.SLEEPTIMER_ELAPSED_TYPE) {
-//                    val newValue = value.toFormattedDuration(isAlbum = false, isSeekBar = true)
-//                    updateCountdown(newValue)
-//                }
-//            }
+            mSleepTimerDialog?.run {
+                if (sheetType == RecyclerSheet.SLEEPTIMER_ELAPSED_TYPE) {
+                    val newValue = value.toFormattedDuration(isAlbum = false, isSeekBar = true)
+                    updateCountdown(newValue)
+                }
+            }
         }
 
         override fun onStopSleepTimer() {
@@ -526,7 +527,28 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
     }
 
     override fun onOpenSleepTimerDialog() {
-        TODO("Not yet implemented")
+        if (mSleepTimerDialog == null) {
+            mSleepTimerDialog = RecyclerSheet.newInstance(if (mMediaPlayerHolder.isSleepTimer) {
+                RecyclerSheet.SLEEPTIMER_ELAPSED_TYPE
+            } else {
+                RecyclerSheet.SLEEPTIMER_TYPE
+            }).apply {
+                show(supportFragmentManager, RecyclerSheet.TAG_MODAL_RV)
+                onSleepTimerEnabled = { enabled, value ->
+//                    updateSleepTimerIcon(isEnabled = enabled)
+                    if (enabled) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            getString(R.string.sleeptimer_enabled, value),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+                onSleepTimerDialogCancelled = {
+                    mSleepTimerDialog = null
+                }
+            }
+        }
     }
 
     override fun onEnableEqualizer() {

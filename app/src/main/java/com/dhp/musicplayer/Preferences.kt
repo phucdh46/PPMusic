@@ -14,6 +14,14 @@ class Preferences(context: Context) {
         get() = getObjectForClass("to_restore_song_pref", Music::class.java)
         set(value) = putObjectForClass("to_restore_song_pref", value, Music::class.java)
 
+    var allMusicSorting
+        get() = mPrefs.getInt("sorting_all_music_tab_pref", Constants.DEFAULT_SORTING)
+        set(value) = mPrefs.edit { putInt("sorting_all_music_tab_pref", value) }
+
+    var accent
+        get() = mPrefs.getInt("color_primary_pref", 3)
+        set(value) = mPrefs.edit { putInt("color_primary_pref", value) }
+
     private fun <T : Any> getObjectForClass(key: String, clazz: Class<T>): T? {
         val json = mPrefs.getString(key, null)
         return if (json == null) {
