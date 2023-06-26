@@ -8,7 +8,14 @@ import com.dhp.musicplayer.databinding.MusicItemBinding
 import com.dhp.musicplayer.model.Music
 import com.dhp.musicplayer.player.MediaControlInterface
 
-class AllMusicAdapter(val mAllMusic: List<Music>?, val mMediaControlInterface: MediaControlInterface) : RecyclerView.Adapter<SongsHolder>() {
+class AllMusicAdapter(private val mMediaControlInterface: MediaControlInterface) :
+    RecyclerView.Adapter<SongsHolder>() {
+    private var mAllMusic = arrayListOf<Music>()
+    fun submitData(newList: List<Music>) {
+        mAllMusic.clear()
+        mAllMusic.addAll(newList)
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongsHolder {
         val binding = MusicItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -16,11 +23,11 @@ class AllMusicAdapter(val mAllMusic: List<Music>?, val mMediaControlInterface: M
     }
 
     override fun getItemCount(): Int {
-        return mAllMusic?.size!!
+        return mAllMusic.size
     }
 
     override fun onBindViewHolder(holder: SongsHolder, position: Int) {
-        holder.bindItems(mAllMusic?.get(position), mAllMusic, mMediaControlInterface)
+        holder.bindItems(mAllMusic[position], mAllMusic, mMediaControlInterface)
     }
 
 }
