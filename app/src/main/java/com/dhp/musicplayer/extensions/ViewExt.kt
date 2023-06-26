@@ -2,7 +2,10 @@ package com.dhp.musicplayer.extensions
 
 import android.app.Activity
 import android.app.Dialog
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.WindowInsetsCompat
@@ -60,4 +63,16 @@ fun Dialog?.applyFullHeightDialog(activity: Activity) {
     this?.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)?.let { bs ->
         BottomSheetBehavior.from(bs).peekHeight = height
     }
+}
+
+// Extension to set menu items text color
+fun MenuItem.setTitleColor(color: Int) {
+    SpannableString(title).apply {
+        setSpan(ForegroundColorSpan(color), 0, length, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE)
+        title = this
+    }
+}
+
+fun View.handleViewVisibility(show: Boolean) {
+    visibility = if (show) View.VISIBLE else View.GONE
 }
