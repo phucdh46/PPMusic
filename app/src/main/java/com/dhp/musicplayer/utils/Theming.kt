@@ -1,6 +1,8 @@
 package com.dhp.musicplayer.utils
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.content.res.Resources
@@ -8,8 +10,10 @@ import android.util.Log
 import android.util.TypedValue
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import com.dhp.musicplayer.Constants
+import com.dhp.musicplayer.MainActivity
 import com.dhp.musicplayer.Preferences
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.player.MediaPlayerHolder
@@ -90,4 +94,115 @@ object Theming {
     @JvmStatic
     private fun resolveThemeAttr(context: Context, @AttrRes attrRes: Int) =
         TypedValue().apply { context.theme.resolveAttribute(attrRes, this, true) }
+
+    @JvmStatic
+    fun getTabIcon(tab: String) = when (tab) {
+        Constants.ARTISTS_TAB -> R.drawable.ic_artist
+        Constants.ALBUM_TAB -> R.drawable.ic_library_music
+        Constants.SONGS_TAB -> R.drawable.ic_music_note
+        Constants.FOLDERS_TAB -> R.drawable.ic_folder_music
+        else -> R.drawable.ic_settings
+    }
+
+    @JvmStatic
+    fun getTabAccessibilityText(tab: String) = when (tab) {
+        Constants.ARTISTS_TAB -> R.string.artists
+        Constants.ALBUM_TAB -> R.string.albums
+        Constants.SONGS_TAB -> R.string.songs
+        Constants.FOLDERS_TAB -> R.string.folders
+        else -> R.string.settings
+    }
+
+    @JvmStatic
+    fun isThemeNight(resources: Resources): Boolean {
+        val uiMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return uiMode == Configuration.UI_MODE_NIGHT_YES
+    }
+
+    @JvmStatic
+    fun getAccentName(resources: Resources, position: Int): String {
+        val accentNames = resources.getStringArray(R.array.accent_names)
+        return accentNames[position]
+    }
+
+    @JvmStatic
+    fun resolveWidgetsColorNormal(context: Context) = resolveColorAttr(context,
+        android.R.attr.colorButtonNormal)
+
+    @JvmStatic
+    fun getDefaultNightMode(context: Context) = when (Preferences.getPrefsInstance().theme) {
+        context.getString(R.string.theme_pref_light) -> AppCompatDelegate.MODE_NIGHT_NO
+        context.getString(R.string.theme_pref_dark) -> AppCompatDelegate.MODE_NIGHT_YES
+        else -> if (Versioning.isQ()) {
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        } else {
+            AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+        }
+    }
+
+    @JvmStatic
+    fun applyChanges(activity: Activity, currentViewPagerItem: Int) {
+        with(activity) {
+            finishAfterTransition()
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra(Constants.RESTORE_FRAGMENT, currentViewPagerItem)
+            startActivity(intent)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        }
+    }
+
+    @JvmStatic
+    fun resolveTheme(context: Context): Int {
+        val position = Preferences.getPrefsInstance().accent
+        if (isThemeBlack(context.resources)) return stylesBlack[position]
+        return styles[position]
+    }
+
+    private val stylesBlack = arrayOf(
+        R.style.BaseTheme_Black_Red,
+        R.style.BaseTheme_Black_Pink,
+        R.style.BaseTheme_Black_Purple,
+        R.style.BaseTheme_Black_DeepPurple,
+        R.style.BaseTheme_Black_Indigo,
+        R.style.BaseTheme_Black_Blue,
+        R.style.BaseTheme_Black_LightBlue,
+        R.style.BaseTheme_Black_Cyan,
+        R.style.BaseTheme_Black_Teal,
+        R.style.BaseTheme_Black_Green,
+        R.style.BaseTheme_Black_LightGreen,
+        R.style.BaseTheme_Black_Lime,
+        R.style.BaseTheme_Black_Yellow,
+        R.style.BaseTheme_Black_Amber,
+        R.style.BaseTheme_Black_Orange,
+        R.style.BaseTheme_Black_DeepOrange,
+        R.style.BaseTheme_Black_Brown,
+        R.style.BaseTheme_Black_Grey,
+        R.style.BaseTheme_Black_BlueGrey
+    )
+
+    private val styles = arrayOf(
+        R.style.BaseTheme_Red,
+        R.style.BaseTheme_Pink,
+        R.style.BaseTheme_Purple,
+        R.style.BaseTheme_DeepPurple,
+        R.style.BaseTheme_Indigo,
+        R.style.BaseTheme_Blue,
+        R.style.BaseTheme_LightBlue,
+        R.style.BaseTheme_Cyan,
+        R.style.BaseTheme_Teal,
+        R.style.BaseTheme_Green,
+        R.style.BaseTheme_LightGreen,
+        R.style.BaseTheme_Lime,
+        R.style.BaseTheme_Yellow,
+        R.style.BaseTheme_Amber,
+        R.style.BaseTheme_Orange,
+        R.style.BaseTheme_DeepOrange,
+        R.style.BaseTheme_Brown,
+        R.style.BaseTheme_Grey,
+        R.style.BaseTheme_BlueGrey
+    )
+
+    @JvmStatic
+    fun isThemeBlack(resources: Resources) =
+        isThemeNight(resources) && Preferences.getPrefsInstance().isBlackTheme
 }

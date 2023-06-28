@@ -2,14 +2,17 @@ package com.dhp.musicplayer.extensions
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.res.ColorStateList
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import androidx.window.layout.WindowMetricsCalculator
@@ -75,4 +78,8 @@ fun MenuItem.setTitleColor(color: Int) {
 
 fun View.handleViewVisibility(show: Boolean) {
     visibility = if (show) View.VISIBLE else View.GONE
+}
+
+fun ImageView.updateIconTint(tint: Int) {
+    ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(tint))
 }

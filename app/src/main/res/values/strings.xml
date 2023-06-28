@@ -90,4 +90,52 @@
     <string name="sleeptimer_cancel_desc">Stop sleep timer</string>
     <string name="sleeptimer_enabled">Stop playback %1s after</string>
 
+    <string name="settings">Cài đặt</string>
+
+    <string name="folders">Thư mục</string>
+    <string name="songs">Bài hát</string>
+    <string name="albums">Album</string>
+    <string name="artists">Nghệ sĩ</string>
+
+    <!-- Preferences keys used in settings-->
+    <string name="theme_pref">theme_pref</string>
+    <string name="accent_pref">color_primary_pref</string>
+    <string name="theme_pref_auto">theme_pref_auto</string>
+    <string name="theme_pref_title">Theme</string>
+    <string name="theme_pref_light_title">Light</string>
+    <string name="theme_pref_dark_title">Dark</string>
+    <string name="theme_pref_auto_title">System</string>
+    <string name="theme_pref_black_title">Pure black</string>
+    <string name="theme_pref_light">theme_pref_light</string>
+    <string name="theme_pref_dark">theme_pref_dark</string>
+    <string name="theme_pref_black">theme_pref_black</string>
+    <string name="active_tabs_pref">active_tabs_pref</string>
+    <string name="active_fragments_pref_title">Active tabs</string>
+
+    <!-- Preferences - Categories -->
+    <string name="category_ui">UI</string>
+    <string name="category_audio">Audio</string>
+    <string name="category_general">General</string>
+
+
+    <!-- Preferences - Accents names -->
+    <string name="red">Red</string>
+    <string name="pink">Pink</string>
+    <string name="purple">Purple</string>
+    <string name="deep_purple">Deep purple</string>
+    <string name="indigo">Indigo</string>
+    <string name="blue">Blue</string>
+    <string name="light_blue">Light blue</string>
+    <string name="cyan">Cyan</string>
+    <string name="teal">Teal</string>
+    <string name="green">Green</string>
+    <string name="light_green">Light green</string>
+    <string name="lime">Lime</string>
+    <string name="yellow">Yellow</string>
+    <string name="amber">Amber</string>
+    <string name="orange">Orange</string>
+    <string name="deep_orange">Deep orange</string>
+    <string name="brown">Brown</string>
+    <string name="grey">Grey</string>
+    <string name="blue_grey">Blue grey</string>
 </resources>
