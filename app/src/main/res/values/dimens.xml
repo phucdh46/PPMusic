@@ -2,7 +2,12 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="accent_dim">40dp</dimen>
+    <dimen name="accent_radius">20dp</dimen>
+    <dimen name="accent_stroke">2dp</dimen>
+    <dimen name="accent_radius_alt">6dp</dimen>
 
     <dimen name="cover_ratio" format="float" type="dimen">1.25</dimen>
+    <dimen name="search_bar_elevation">2dp</dimen>
 
 </resources>

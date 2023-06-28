@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dhp.musicplayer.ItemTouchCallback
 import com.dhp.musicplayer.Preferences
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.base.BaseBottomSheetDialogFragment
@@ -17,6 +19,8 @@ import com.dhp.musicplayer.extensions.handleViewVisibility
 import com.dhp.musicplayer.player.MediaControlInterface
 import com.dhp.musicplayer.player.MediaPlayerHolder
 import com.dhp.musicplayer.player.UIControlInterface
+import com.dhp.musicplayer.ui.setting.adapter.AccentsAdapter
+import com.dhp.musicplayer.ui.setting.adapter.ActiveTabsAdapter
 import com.dhp.musicplayer.utils.Theming
 
 class RecyclerSheet: BaseBottomSheetDialogFragment<ModalRvBinding>() {
@@ -104,6 +108,58 @@ class RecyclerSheet: BaseBottomSheetDialogFragment<ModalRvBinding>() {
                             onSleepTimerEnabled?.invoke(false, "")
                             dismiss()
                         }
+                    }
+                }
+
+                ACCENT_TYPE -> {
+
+                    sleepTimerElapsed.handleViewVisibility(show = false)
+
+                    val accentsAdapter = AccentsAdapter(resources.getIntArray(R.array.colors))
+                    val layoutManager =  LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
+
+                    modalRv.layoutManager = layoutManager
+                    modalRv.adapter = accentsAdapter
+                    modalRv.setHasFixedSize(true)
+
+                    modalRv.post {
+                        layoutManager.scrollToPositionWithOffset(mPreferences.accent, 0)
+                    }
+
+                    // set listeners for buttons
+                    btnNegative.setOnClickListener {
+                        dismiss()
+                    }
+                    btnPositive.setOnClickListener {
+                        mPreferences.accent = accentsAdapter.selectedAccent
+                        mUIControlInterface.onAppearanceChanged(isThemeChanged = false)
+                    }
+                }
+
+                TABS_TYPE -> {
+
+                    dialogTitle = getString(R.string.active_fragments_pref_title)
+
+                    sleepTimerElapsed.handleViewVisibility(show = false)
+
+                    val activeTabsAdapter = ActiveTabsAdapter()
+                    modalRv.adapter = activeTabsAdapter
+                    modalRv.setHasFixedSize(true)
+
+                    val touchHelper = ItemTouchHelper(ItemTouchCallback(activeTabsAdapter.availableItems, isActiveTabs = true))
+                    touchHelper.attachToRecyclerView(modalRv)
+
+                    btnNegative.setOnClickListener {
+                        dismiss()
+                    }
+                    btnPositive.setOnClickListener {
+                        val updatedItems = activeTabsAdapter.getUpdatedItems()
+                        updatedItems.takeIf { it != mPreferences.activeTabs}?.let { updatedList ->
+                            mPreferences.activeTabs = updatedList
+                            mUIControlInterface.onAppearanceChanged(isThemeChanged = false)
+                            return@setOnClickListener
+                        }
+                        dismiss()
                     }
                 }
             }
