@@ -81,4 +81,38 @@
         <item>690</item>
         <item>720</item>
     </integer-array>
+
+    <string-array name="accent_names">
+        <item>@string/red</item>
+        <item>@string/pink</item>
+        <item>@string/purple</item>
+        <item>@string/deep_purple</item>
+        <item>@string/indigo</item>
+        <item>@string/blue</item>
+        <item>@string/light_blue</item>
+        <item>@string/cyan</item>
+        <item>@string/teal</item>
+        <item>@string/green</item>
+        <item>@string/light_green</item>
+        <item>@string/lime</item>
+        <item>@string/yellow</item>
+        <item>@string/amber</item>
+        <item>@string/orange</item>
+        <item>@string/deep_orange</item>
+        <item>@string/brown</item>
+        <item>@string/grey</item>
+        <item>@string/blue_grey</item>
+    </string-array>
+
+    <string-array name="themeListArray">
+        <item>@string/theme_pref_light_title</item>
+        <item>@string/theme_pref_dark_title</item>
+        <item>@string/theme_pref_auto_title</item>
+    </string-array>
+
+    <string-array name="themeEntryArray">
+        <item>@string/theme_pref_light</item>
+        <item>@string/theme_pref_dark</item>
+        <item>@string/theme_pref_auto</item>
+    </string-array>
 </resources>

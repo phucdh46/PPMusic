@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -11,8 +12,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -26,11 +29,15 @@ import com.dhp.musicplayer.extensions.*
 import com.dhp.musicplayer.model.Music
 import com.dhp.musicplayer.player.*
 import com.dhp.musicplayer.ui.all_music.AllMusicFragment
+import com.dhp.musicplayer.ui.list_music.MusicContainersFragment
 import com.dhp.musicplayer.ui.now_playing.NowPlaying
+import com.dhp.musicplayer.ui.setting.SettingsFragment
 import com.dhp.musicplayer.utils.Dialogs
 import com.dhp.musicplayer.utils.MusicUtils
 import com.dhp.musicplayer.utils.Permissions
 import com.dhp.musicplayer.utils.Theming
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import java.util.concurrent.ScheduledExecutorService
 
 class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface, UIControlInterface {
@@ -41,7 +48,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
     private lateinit var mBindingIntent: Intent
     private val mMediaPlayerHolder get() = MediaPlayerHolder.getInstance()
 
+    // Fragments
+    private var mArtistsFragment: MusicContainersFragment? = null
     private var mAllMusicFragment: AllMusicFragment? = null
+    private var mAlbumsFragment: MusicContainersFragment? = null
+    private var mSettingsFragment: SettingsFragment? = null
+    private var mTabToRestore = -1
+
     private lateinit var mPlayerControlsPanelBinding: PlayerControlsPanelBinding
 
     // Preferences
@@ -246,14 +259,27 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
 
         requestedOrientation = Theming.getOrientation()
 
-        var newTheme = R.style.BaseTheme_Transparent
-        //setTheme(newTheme)
+        var newTheme = Theming.resolveTheme(this)
+
+        setTheme(newTheme)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             WindowCompat.setDecorFitsSystemWindows(window, true)
             binding.root.applyEdgeToEdge()
         }
         mPlayerControlsPanelBinding = PlayerControlsPanelBinding.bind(binding.root)
 
+        savedInstanceState?.run {
+            mTabToRestore = getInt(Constants.RESTORE_FRAGMENT, -1)
+        }
+
+        if (intent.hasExtra(Constants.RESTORE_FRAGMENT) && mTabToRestore == -1) {
+            mTabToRestore = intent.getIntExtra(Constants.RESTORE_FRAGMENT, -1)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(Constants.RESTORE_FRAGMENT, binding.viewPager2.currentItem)
     }
 
     override fun bindUI() {
@@ -359,12 +385,21 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
     }
 
     private fun initFragmentAt(position: Int): Fragment {
-
-        mAllMusicFragment = AllMusicFragment.newInstance()
+        when (mPreferences.activeTabs.toList()[position]) {
+            Constants.ARTISTS_TAB -> mArtistsFragment = MusicContainersFragment.newInstance(Constants.ARTIST_VIEW)
+            Constants.ALBUM_TAB -> mAlbumsFragment = MusicContainersFragment.newInstance(Constants.ALBUM_VIEW)
+            Constants.SONGS_TAB -> mAllMusicFragment = AllMusicFragment.newInstance()
+            else -> mSettingsFragment = SettingsFragment.newInstance()
+        }
         return handleOnNavigationItemSelected(position)
     }
 
-    private fun handleOnNavigationItemSelected(index: Int) =  mAllMusicFragment ?: initFragmentAt(index)
+    private fun handleOnNavigationItemSelected(index: Int) = when (mPreferences.activeTabs.toList()[index]) {
+        Constants.ARTISTS_TAB -> mArtistsFragment ?: initFragmentAt(index)
+        Constants.ALBUM_TAB -> mAlbumsFragment ?: initFragmentAt(index)
+        Constants.SONGS_TAB -> mAllMusicFragment ?: initFragmentAt(index)
+        else -> mSettingsFragment ?: initFragmentAt(index)
+    }
 
 
     override fun onStart() {
@@ -458,13 +493,39 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
 
     private fun initTabLayout() {
 
+        val accent = Theming.resolveThemeColor(resources)
+        val alphaAccentColor = ColorUtils.setAlphaComponent(accent, 200)
 
+        with(mPlayerControlsPanelBinding.tabLayout) {
 
+            tabIconTint = ColorStateList.valueOf(alphaAccentColor)
 
+            TabLayoutMediator(this, binding.viewPager2) { tab, position ->
+                val selectedTab = mPreferences.activeTabs.toList()[position]
+                tab.setIcon(Theming.getTabIcon(selectedTab))
+                tab.setContentDescription(Theming.getTabAccessibilityText(selectedTab))
+            }.attach()
+
+            addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab) {
+                    tab.icon?.setTint(accent)
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab) {
+                    //closeDetails()
+                    tab.icon?.setTint(alphaAccentColor)
+                }
+
+                override fun onTabReselected(tab: TabLayout.Tab) {
+                    //closeDetails()
+                }
+            })
+        }
 
 
         binding.viewPager2.setCurrentItem(
             when {
+                mTabToRestore != -1 -> mTabToRestore
                 else -> 0
             },
             false
@@ -474,12 +535,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
     }
 
     private inner class ScreenSlidePagerAdapter(fa: FragmentActivity): FragmentStateAdapter(fa) {
-        override fun getItemCount() = 1
+        override fun getItemCount() = mPreferences.activeTabs.toList().size
         override fun createFragment(position: Int): Fragment = handleOnNavigationItemSelected(position)
     }
 
     override fun onAppearanceChanged(isThemeChanged: Boolean) {
-        TODO("Not yet implemented")
+        if (isThemeChanged) {
+            AppCompatDelegate.setDefaultNightMode(
+                Theming.getDefaultNightMode(this)
+            )
+            return
+        }
+        Theming.applyChanges(this, binding.viewPager2.currentItem)
     }
 
     override fun onOpenNewDetailsFragment() {

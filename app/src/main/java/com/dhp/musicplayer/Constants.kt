@@ -42,5 +42,16 @@ class Constants {
         const val ALBUM_SORTING = 9
         const val ALBUM_SORTING_INV = 10
 
+        // active fragments
+        const val ARTISTS_TAB = "ARTISTS_TAB"
+        const val ALBUM_TAB = "ALBUM_TAB"
+        const val SONGS_TAB = "SONGS_TAB"
+        const val FOLDERS_TAB = "FOLDERS_TAB"
+        const val SETTINGS_TAB = "SETTINGS_TAB"
+
+        val DEFAULT_ACTIVE_FRAGMENTS = listOf(ARTISTS_TAB, ALBUM_TAB, SONGS_TAB, SETTINGS_TAB)
+
+        const val RESTORE_FRAGMENT = "RESTORE_FRAGMENT"
+
     }
 }
