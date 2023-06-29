@@ -3,6 +3,7 @@ package com.dhp.musicplayer.extensions
 import android.app.Activity
 import android.app.Dialog
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Log
@@ -10,12 +11,16 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import androidx.window.layout.WindowMetricsCalculator
+import coil.load
 import com.dhp.musicplayer.SingleClickHelper
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
@@ -82,4 +87,23 @@ fun View.handleViewVisibility(show: Boolean) {
 
 fun ImageView.updateIconTint(tint: Int) {
     ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(tint))
+}
+
+// Extension to set menu items icon color
+fun MenuItem.setIconTint(color: Int) {
+    icon?.let { dw ->
+        val wrapped = DrawableCompat.wrap(dw)
+        DrawableCompat.setTint(wrapped, color)
+        icon = wrapped
+    }
+}
+
+fun ImageView.loadWithError(bitmap: Bitmap?, error: Boolean, albumArt: Int) {
+    if (error) {
+        scaleType = ImageView.ScaleType.CENTER_INSIDE
+        load(ContextCompat.getDrawable(context, albumArt)?.toBitmap())
+        return
+    }
+    scaleType = ImageView.ScaleType.CENTER_CROP
+    load(bitmap)
 }

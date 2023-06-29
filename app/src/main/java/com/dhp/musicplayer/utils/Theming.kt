@@ -16,7 +16,9 @@ import com.dhp.musicplayer.Constants
 import com.dhp.musicplayer.MainActivity
 import com.dhp.musicplayer.Preferences
 import com.dhp.musicplayer.R
+import com.dhp.musicplayer.extensions.setIconTint
 import com.dhp.musicplayer.player.MediaPlayerHolder
+import com.google.android.material.appbar.MaterialToolbar
 
 object Theming {
     fun getNotificationActionIcon(action: String, isNotification: Boolean): Int {
@@ -205,4 +207,12 @@ object Theming {
     @JvmStatic
     fun isThemeBlack(resources: Resources) =
         isThemeNight(resources) && Preferences.getPrefsInstance().isBlackTheme
+
+    fun tintSleepTimerMenuItem(tb: MaterialToolbar, isEnabled: Boolean) {
+        tb.menu.findItem(R.id.sleeptimer).setIconTint(if (isEnabled) {
+            resolveThemeColor(tb.resources)
+        } else {
+            ContextCompat.getColor(tb.context, R.color.widgets_color)
+        })
+    }
 }
