@@ -2,6 +2,7 @@ package com.dhp.musicplayer.extensions
 
 import android.content.ContentUris
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.media.MediaExtractor
 import android.media.MediaFormat
@@ -10,6 +11,7 @@ import android.provider.MediaStore
 import androidx.core.graphics.drawable.toBitmap
 import coil.Coil
 import coil.request.ImageRequest
+import com.dhp.musicplayer.R
 import com.dhp.musicplayer.model.Music
 import java.text.SimpleDateFormat
 import java.util.*
@@ -115,5 +117,10 @@ fun Uri.toBitrate(context: Context): Pair<Int, Int>? {
     } finally {
         mediaExtractor.release()
     }
+}
+
+fun Int.toFormattedYear(resources: Resources): String {
+    if (this != 0) return toString()
+    return resources.getString(R.string.unknown_year)
 }
 

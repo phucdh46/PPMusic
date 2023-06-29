@@ -8,6 +8,7 @@ import com.dhp.musicplayer.Constants
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.extensions.toFormattedDuration
 import com.dhp.musicplayer.model.Music
+import java.util.*
 
 object Lists {
     @JvmStatic
@@ -111,5 +112,57 @@ object Lists {
             null
         }
     }
+
+    fun getSortedList(id: Int, list: MutableList<String>?) = when (id) {
+        Constants.ASCENDING_SORTING -> list?.apply {
+            Collections.sort(this, String.CASE_INSENSITIVE_ORDER)
+        }
+        Constants.DESCENDING_SORTING -> list?.apply {
+            Collections.sort(this, String.CASE_INSENSITIVE_ORDER)
+        }?.asReversed()
+        else -> list
+    }
+
+    fun getSortedListWithNull(id: Int, list: MutableList<String?>?): MutableList<String>? {
+        val withoutNulls = list?.map {
+            transformNullToEmpty(it)
+        }?.toMutableList()
+        return getSortedList(id, withoutNulls)
+    }
+
+    private fun transformNullToEmpty(toTrans: String?): String {
+        if (toTrans == null) return ""
+        return toTrans
+    }
+
+    fun getSelectedSorting(sorting: Int, menu: Menu): MenuItem {
+        return when (sorting) {
+            Constants.ASCENDING_SORTING -> menu.findItem(R.id.ascending_sorting)
+            Constants.DESCENDING_SORTING -> menu.findItem(R.id.descending_sorting)
+            else -> menu.findItem(R.id.default_sorting)
+        }
+    }
+
+    fun processQueryForStringsLists(query: String?, list: List<String>?): List<String>? {
+        // In real app you'd have it instantiated just once
+        val filteredStrings = mutableListOf<String>()
+
+        return try {
+            // Case insensitive search
+            list?.iterator()?.let { iterate ->
+                while (iterate.hasNext()) {
+                    val filteredString = iterate.next()
+                    if (filteredString.lowercase().contains(query?.lowercase()!!)) {
+                        filteredStrings.add(filteredString)
+                    }
+                }
+            }
+            return filteredStrings
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
 
 }

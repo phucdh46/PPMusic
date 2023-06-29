@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.dhp.musicplayer.model.Album
 import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.utils.MusicUtils
 import com.dhp.musicplayer.utils.Versioning
 import kotlinx.coroutines.*
 import java.io.File
@@ -51,6 +52,7 @@ class MusicViewModel(application: Application): AndroidViewModel(application) {
             }
         }
     }
+
     private fun getMusic(application: Application): MutableList<Music> {
         synchronized(startQuery(application)) {
             if (mDeviceMusicList.isNotEmpty()) {
@@ -66,6 +68,26 @@ class MusicViewModel(application: Application): AndroidViewModel(application) {
         deviceMusicFiltered =
             mDeviceMusicList.distinctBy { it.artist to it.year to it.track to it.title to it.duration to it.album }
                 .toMutableList()
+
+        deviceMusicFiltered?.let { dsf ->
+            //dsf.filterNot { Preferences.getPrefsInstance().filters?.contains(it.artist)!!}
+            // group music by artist
+            deviceSongsByArtist = dsf.groupBy { it.artist }
+            deviceMusicByAlbum = dsf.groupBy { it.album }
+            deviceMusicByFolder = dsf.groupBy { it.relativePath!! }
+        }
+
+        // group artists songs by albums
+        deviceSongsByArtist?.keys?.iterator()?.let { iterate ->
+            while (iterate.hasNext()) {
+                iterate.next()?.let { artistKey ->
+                    val album = deviceSongsByArtist?.getValue(artistKey)
+                    deviceAlbumsByArtist?.set(
+                        artistKey, MusicUtils.buildSortedArtistAlbums(resources, album)
+                    )
+                }
+            }
+        }
 
         updatePreferences()
     }

@@ -53,6 +53,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
     private var mAllMusicFragment: AllMusicFragment? = null
     private var mAlbumsFragment: MusicContainersFragment? = null
     private var mSettingsFragment: SettingsFragment? = null
+    private var mFoldersFragment: MusicContainersFragment? = null
     private var mTabToRestore = -1
 
     private lateinit var mPlayerControlsPanelBinding: PlayerControlsPanelBinding
@@ -389,6 +390,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
             Constants.ARTISTS_TAB -> mArtistsFragment = MusicContainersFragment.newInstance(Constants.ARTIST_VIEW)
             Constants.ALBUM_TAB -> mAlbumsFragment = MusicContainersFragment.newInstance(Constants.ALBUM_VIEW)
             Constants.SONGS_TAB -> mAllMusicFragment = AllMusicFragment.newInstance()
+            Constants.FOLDERS_TAB -> mFoldersFragment = MusicContainersFragment.newInstance(Constants.FOLDER_VIEW)
             else -> mSettingsFragment = SettingsFragment.newInstance()
         }
         return handleOnNavigationItemSelected(position)
@@ -398,6 +400,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
         Constants.ARTISTS_TAB -> mArtistsFragment ?: initFragmentAt(index)
         Constants.ALBUM_TAB -> mAlbumsFragment ?: initFragmentAt(index)
         Constants.SONGS_TAB -> mAllMusicFragment ?: initFragmentAt(index)
+        Constants.FOLDERS_TAB -> mFoldersFragment ?: initFragmentAt(index)
         else -> mSettingsFragment ?: initFragmentAt(index)
     }
 
@@ -531,6 +534,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
             false
         )
 
+        mPlayerControlsPanelBinding.tabLayout.getTabAt(binding.viewPager2.currentItem)?.run {
+            select()
+            icon?.setTint(Theming.resolveThemeColor(resources))
+        }
 
     }
 
@@ -602,7 +609,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
             }).apply {
                 show(supportFragmentManager, RecyclerSheet.TAG_MODAL_RV)
                 onSleepTimerEnabled = { enabled, value ->
-//                    updateSleepTimerIcon(isEnabled = enabled)
+                    updateSleepTimerIcon(isEnabled = enabled)
                     if (enabled) {
                         Toast.makeText(
                             this@MainActivity,
@@ -616,6 +623,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
                 }
             }
         }
+    }
+
+    private fun updateSleepTimerIcon(isEnabled: Boolean) {
+        mArtistsFragment?.tintSleepTimerIcon(enabled = isEnabled)
+        mAlbumsFragment?.tintSleepTimerIcon(enabled = isEnabled)
+        mAllMusicFragment?.tintSleepTimerIcon(enabled = isEnabled)
+        mFoldersFragment?.tintSleepTimerIcon(enabled = isEnabled)
     }
 
     override fun onEnableEqualizer() {

@@ -138,4 +138,8 @@
     <string name="brown">Brown</string>
     <string name="grey">Grey</string>
     <string name="blue_grey">Blue grey</string>
+
+    <string name="artist_info">%1d album, %2d bài hát</string>
+    <string name="folder_info">%1d bài hát</string>
+
 </resources>
