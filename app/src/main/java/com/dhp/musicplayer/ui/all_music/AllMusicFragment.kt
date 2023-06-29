@@ -142,6 +142,12 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>(), SearchView.OnQu
         musicList?.let { adapter.submitData(it) }
     }
 
+    fun tintSleepTimerIcon(enabled: Boolean) {
+        binding.searchToolbar.run {
+            Theming.tintSleepTimerMenuItem(this, enabled)
+        }
+    }
+
     companion object {
         /**
          * Use this factory method to create a new instance of

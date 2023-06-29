@@ -44,6 +44,18 @@ class Preferences(context: Context) {
         get() = mPrefs.getBoolean("theme_pref_black", false)
         set(value) = mPrefs.edit { putBoolean("theme_pref_black", value) }
 
+    var artistsSorting
+        get() = mPrefs.getInt("sorting_artists_pref", Constants.ASCENDING_SORTING)
+        set(value) = mPrefs.edit { putInt("sorting_artists_pref", value) }
+
+    var foldersSorting
+        get() = mPrefs.getInt("sorting_folder_details_pref", Constants.DEFAULT_SORTING)
+        set(value) = mPrefs.edit { putInt("sorting_folder_details_pref", value) }
+
+    var albumsSorting
+        get() = mPrefs.getInt("sorting_album_details_pref", Constants.DEFAULT_SORTING)
+        set(value) = mPrefs.edit { putInt("sorting_album_details_pref", value) }
+
     private fun <T : Any> getObjectForClass(key: String, clazz: Class<T>): T? {
         val json = mPrefs.getString(key, null)
         return if (json == null) {

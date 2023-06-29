@@ -1,6 +1,9 @@
 package com.dhp.musicplayer.utils
 
+import android.content.res.Resources
+import com.dhp.musicplayer.extensions.toFormattedYear
 import com.dhp.musicplayer.model.Album
+import com.dhp.musicplayer.model.Music
 
 object MusicUtils {
 
@@ -36,4 +39,39 @@ object MusicUtils {
             Pair(first = albums?.first()!!, second = 0)
         }
     }
+
+    fun buildSortedArtistAlbums(resources: Resources, artistSongs: List<Music>?): List<Album> {
+
+        val sortedAlbums = mutableListOf<Album>()
+
+        artistSongs?.let {
+
+            try {
+
+                val groupedSongs = it.groupBy { song -> song.album }
+
+                val iterator = groupedSongs.keys.iterator()
+                while (iterator.hasNext()) {
+                    val album = iterator.next()
+                    val albumSongs = groupedSongs.getValue(album).toMutableList()
+                    albumSongs.sortBy { song -> song.track }
+                    sortedAlbums.add(
+                        Album(
+                            album,
+                            albumSongs.first().year.toFormattedYear(resources),
+                            albumSongs,
+                            albumSongs.sumOf { song -> song.duration }
+                        )
+                    )
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            sortedAlbums.sortBy { album -> album.year }
+        }
+
+        return sortedAlbums
+    }
+
 }
