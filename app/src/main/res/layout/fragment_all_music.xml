@@ -24,12 +24,93 @@
 
         <!-- MUSIC LIST -->
         <androidx.recyclerview.widget.RecyclerView
+            android:visibility="gone"
             android:id="@+id/all_music_rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:overScrollMode="never"
             android:scrollbars="none"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/layoutDeveloperMode"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- EditText for HOST -->
+            <EditText
+                android:id="@+id/editTextHost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter HOST"
+                android:inputType="text"/>
+
+            <!-- EditText for HEADER_NAME -->
+            <EditText
+                android:id="@+id/editTextHeaderName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter HEADER_NAME"
+                android:inputType="text"/>
+
+            <!-- EditText for HEADER_KEY -->
+            <EditText
+                android:id="@+id/editTextHeaderKey"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter HEADER_KEY"
+                android:inputType="text"/>
+
+            <!-- EditText for HOST_PLAYER -->
+            <EditText
+                android:id="@+id/editTextHostPlayer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter HOST_PLAYER"
+                android:inputType="text"/>
+
+            <!-- EditText for HEADER_MASK -->
+            <EditText
+                android:id="@+id/editTextHeaderMask"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter HEADER_MASK"
+                android:inputType="text"/>
+
+            <!-- EditText for visitorData -->
+            <EditText
+                android:id="@+id/editTextVisitorData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter visitorData"
+                android:inputType="text"/>
+
+            <!-- EditText for userAgentAndroid -->
+            <EditText
+                android:id="@+id/editTextUserAgentAndroid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter userAgentAndroid"
+                android:inputType="text"/>
+
+            <!-- EditText for embedUrl -->
+            <EditText
+                android:id="@+id/editTextEmbedUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter embedUrl"
+                android:inputType="text"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnSubmit"
+                android:text="Submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

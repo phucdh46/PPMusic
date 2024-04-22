@@ -59,7 +59,8 @@ object Innertube {
         }
     }
 
-    internal const val player = Constants.HOST_PLAYER
+//    internal const val player = Constants.HOST_PLAYER
+    internal  val player = Constants.HOST_PLAYER
     internal fun HttpRequestBuilder.mask(value: String = "*") =
         header(Constants.HEADER_MASK, value)
 

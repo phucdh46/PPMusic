@@ -271,7 +271,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), UIControlInterface,
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-//            doBindService()
+            doBindService()
         }
     }
 
@@ -419,16 +419,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), UIControlInterface,
 
     private fun initFragmentAt(position: Int): Fragment {
         when (mPreferences.activeTabs.toList()[position]) {
-//            Constants.SONGS_TAB -> mAllMusicFragment = AllMusicFragment.newInstance()
             Constants.LOCAL_SONG_TAB -> mLocalMusicFragment = LocalMusicFragment.newInstance()
+            Constants.ONLINE_SONG_TAB -> mAllMusicFragment = AllMusicFragment.newInstance()
             else -> mSettingsFragment = SettingsFragment.newInstance()
         }
         return handleOnNavigationItemSelected(position)
     }
 
     private fun handleOnNavigationItemSelected(index: Int) = when (mPreferences.activeTabs.toList()[index]) {
-//        Constants.SONGS_TAB -> mAllMusicFragment ?: initFragmentAt(index)
         Constants.LOCAL_SONG_TAB -> mLocalMusicFragment ?: initFragmentAt(index)
+        Constants.ONLINE_SONG_TAB -> mAllMusicFragment ?: initFragmentAt(index)
         else -> mSettingsFragment ?: initFragmentAt(index)
     }
 
@@ -439,6 +439,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), UIControlInterface,
             Permissions.manageAskForReadStoragePermission(this, requestReadStoragePermissionLauncher)
             return
         }
+        doBindService()
+    }
+
+    private fun doBindService() {
         bindService(intent<ExoPlayerService>(), serviceConnection, Context.BIND_AUTO_CREATE)
         progressViewUpdateHelper.start(playerConnection)
     }
