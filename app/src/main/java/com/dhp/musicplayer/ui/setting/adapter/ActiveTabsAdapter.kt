@@ -110,6 +110,7 @@ class ActiveTabsAdapter: RecyclerView.Adapter<ActiveTabsAdapter.CheckableItemsHo
         Constants.ALBUM_TAB -> R.string.albums
         Constants.SONGS_TAB -> R.string.songs
         Constants.FOLDERS_TAB -> R.string.folders
-        else -> R.string.settings
+        Constants.SETTINGS_TAB -> R.string.settings
+        else -> R.string.songs
     }
 }

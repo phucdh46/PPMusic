@@ -39,6 +39,7 @@ class LocalMusicFragment : BaseFragment<FragmentLocalMusicBinding>() {
                 if (music == null) return
                 val binder = (activity as? MainActivity)?.binder?: return
                 (activity as? MainActivity)?.playerConnection?.addMusicsToQueue(mAllMusic)
+                binder.exoPlayerService.isOfflineSong = true
                 binder.player.playQueue(music.asMediaItem)
             }
         }))

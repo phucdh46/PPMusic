@@ -94,6 +94,7 @@
     <string name="theme_pref_black">theme_pref_black</string>
     <string name="active_tabs_pref">active_tabs_pref</string>
     <string name="active_fragments_pref_title">Active tabs</string>
+    <string name="developer_mode">developer_mode</string>
 
     <!-- Preferences - Categories -->
     <string name="category_ui">UI</string>

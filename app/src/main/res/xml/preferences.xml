@@ -37,6 +37,10 @@
             app:key="@string/theme_pref_black"
             app:title="@string/theme_pref_black_title" />
 
+        <SwitchPreferenceCompat
+            app:defaultValue="false"
+            app:key="@string/developer_mode"
+            app:title="Developer mode" />
 
     </PreferenceCategory>
 

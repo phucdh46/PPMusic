@@ -56,6 +56,10 @@ class Preferences(context: Context) {
         get() = mPrefs.getInt("sorting_album_details_pref", Constants.DEFAULT_SORTING)
         set(value) = mPrefs.edit { putInt("sorting_album_details_pref", value) }
 
+    var developerMode
+        get() = mPrefs.getBoolean("developer_mode", false)
+        set(value) = mPrefs.edit { putBoolean("developer_mode", value) }
+
     private fun <T : Any> getObjectForClass(key: String, clazz: Class<T>): T? {
         val json = mPrefs.getString(key, null)
         return if (json == null) {
