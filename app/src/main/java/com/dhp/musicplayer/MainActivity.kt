@@ -14,11 +14,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ServiceCompat
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.dhp.musicplayer.base.BaseActivity
@@ -30,27 +30,27 @@ import com.dhp.musicplayer.model.Music
 import com.dhp.musicplayer.player.*
 import com.dhp.musicplayer.ui.all_music.AllMusicFragment
 import com.dhp.musicplayer.ui.list_music.MusicContainersFragment
+import com.dhp.musicplayer.ui.local_music.LocalMusicFragment
 import com.dhp.musicplayer.ui.now_playing.NowPlaying
 import com.dhp.musicplayer.ui.setting.SettingsFragment
-import com.dhp.musicplayer.utils.Dialogs
-import com.dhp.musicplayer.utils.MusicUtils
-import com.dhp.musicplayer.utils.Permissions
-import com.dhp.musicplayer.utils.Theming
+import com.dhp.musicplayer.utils.*
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import java.util.concurrent.ScheduledExecutorService
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
-class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface, UIControlInterface {
+@AndroidEntryPoint
+class MainActivity : BaseActivity<ActivityMainBinding>(), UIControlInterface,
+    MusicProgressViewUpdateHelper.Callback {
     private lateinit var mPlayerService: PlayerService
-    private var sBound = false
 //    private val mMediaPlayerHolder get() = MediaPlayerHolder.getInstance()
     private val mMusicViewModel: MusicViewModel by viewModels()
-    private lateinit var mBindingIntent: Intent
     private val mMediaPlayerHolder get() = MediaPlayerHolder.getInstance()
 
     // Fragments
     private var mArtistsFragment: MusicContainersFragment? = null
     private var mAllMusicFragment: AllMusicFragment? = null
+    private var mLocalMusicFragment: LocalMusicFragment? = null
     private var mAlbumsFragment: MusicContainersFragment? = null
     private var mSettingsFragment: SettingsFragment? = null
     private var mFoldersFragment: MusicContainersFragment? = null
@@ -64,26 +64,57 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
     // Sleep timer dialog
     private var mSleepTimerDialog: RecyclerSheet? = null
 
-    private val connection = object : ServiceConnection {
-        override fun onServiceConnected(componentName: ComponentName, service: IBinder) {
-            Log.d("DDD","onServiceConnected")
-            // get bound service and instantiate MediaPlayerHolder
-            val binder = service as PlayerService.LocalBinder
-            mPlayerService = binder.getService()
-            sBound = true
+     var binder: ExoPlayerService.Binder? = null
 
-            mMediaPlayerHolder.mediaPlayerInterface = mMediaPlayerInterface
+     var playerConnection: PlayerConnection? = null
+     lateinit var progressViewUpdateHelper: MusicProgressViewUpdateHelper
 
-            // load music and setup UI
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            Log.d("DHP","serviceConnection")
+            if (service is ExoPlayerService.Binder) {
+                this@MainActivity.binder = service
+                playerConnection = PlayerConnection(this@MainActivity, service, lifecycleScope)
+                playerConnection!!.mediaPlayerInterface = mMediaPlayerInterface
+//                progressViewUpdateHelper.start(playerConnection)
+
+                lifecycleScope.launch {
+                    playerConnection?.isPlaying?.collect { isPlaying ->
+                        Log.d("DHP","isPlaying: $isPlaying")
+                        progressViewUpdateHelper.apply {
+                            if (isPlaying) start(playerConnection) else stop()
+                        }
+                        mPlayerControlsPanelBinding.playPauseButton.setImageResource(
+                            if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play
+                        )
+                    }
+                }
+                lifecycleScope.launch {
+                    playerConnection?.currentMediaItem?.collect {
+                        Log.d("DHP","currentMediaItem: $it")
+                        mPlayerControlsPanelBinding.miniPlayer.handleViewVisibility(it != null)
+
+                        mPlayerControlsPanelBinding.playingSong.text = it?.mediaMetadata?.title
+                        mPlayerControlsPanelBinding.playingArtist.text = it?.mediaMetadata?.artist
+
+                    }
+                }
+
+            }
             mMusicViewModel.getDeviceMusic()
         }
 
-        override fun onServiceDisconnected(componentName: ComponentName) {
-            sBound = false
+        override fun onServiceDisconnected(name: ComponentName?) {
+            binder = null
+            playerConnection?.dispose()
         }
     }
 
-    private var mNpDialog: NowPlaying? = null
+
+    private var nowPlayingFragment: NowPlaying? = null
+    // Queue dialog
+    private var mQueueDialog: RecyclerSheet? = null
+
     private var mAllMusic: List<Music>? = null
 
     // interface to let MediaPlayerHolder update the UI media player controls.
@@ -99,13 +130,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
         }
 
         override fun onPositionChanged(position: Int) {
-            mPlayerControlsPanelBinding.songProgress.setProgressCompat(position, true)
-            mNpDialog?.updateProgress(position)
+//            mPlayerControlsPanelBinding.songProgress.setProgressCompat(position, true)
+//            nowPlayingFragment?.updateProgress(position)
         }
 
         override fun onStateChanged() {
             updatePlayingStatus()
-            mNpDialog?.updatePlayingStatus()
+            nowPlayingFragment?.updatePlayingStatus()
             if (mMediaPlayerHolder.state != Constants.RESUMED && mMediaPlayerHolder.state != Constants.PAUSED) {
                 updatePlayingInfo(restore = false)
 //                if (mMediaPlayerHolder.isQueue != null) {
@@ -179,6 +210,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
         override fun onListEnded() {
             Toast.makeText(this@MainActivity, R.string.error_list_ended, Toast.LENGTH_SHORT).show()
         }
+
+        override fun onPlayerReady() {
+            com.dhp.musicplayer.utils.Log.d("onPlayerReady: ${playerConnection?.player?.duration!!.toInt()}")
+//            mPlayerControlsPanelBinding.songProgress.progress = 0
+//            mPlayerControlsPanelBinding.songProgress.max = playerConnection?.player?.duration!!.toInt()
+            onUpdateProgressViews(playerConnection?.player?.currentPosition!!.toInt(), playerConnection?.player?.duration!!.toInt())
+        }
     }
 
     private fun updatePlayingStatus() {
@@ -192,15 +230,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
     // method to update info on controls panel
     private fun updatePlayingInfo(restore: Boolean) {
 
-        val selectedSong = mMediaPlayerHolder.currentSongFM ?: mMediaPlayerHolder.currentSong
-
-        mPlayerControlsPanelBinding.songProgress.progress = 0
-        mPlayerControlsPanelBinding.songProgress.max = selectedSong?.duration!!.toInt()
-
-        updatePlayingSongTitle(selectedSong)
-
-        mPlayerControlsPanelBinding.playingArtist.text =
-            getString(R.string.artist_and_album, selectedSong.artist, selectedSong.album)
+//        val selectedSong = mMediaPlayerHolder.currentSongFM ?: mMediaPlayerHolder.currentSong
+//
+//        mPlayerControlsPanelBinding.songProgress.progress = 0
+//        mPlayerControlsPanelBinding.songProgress.max = selectedSong?.duration!!.toInt()
+//
+//        mPlayerControlsPanelBinding.playingSong.text = selectedSong.title
+//
+//        mPlayerControlsPanelBinding.playingArtist.text = getString(R.string.artist_and_album, selectedSong.artist, selectedSong.album)
 
 //            mNpDialog?.run {
 //                updateRepeatStatus(onPlaybackCompletion = false)
@@ -230,26 +267,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
         }
     }
 
-    private fun updatePlayingSongTitle(currentSong: Music) {
-        var songTitle = currentSong.title
-        //if (GoPreferences.getPrefsInstance().songsVisualization == GoConstants.FN) {
-//        songTitle = currentSong.displayName.toFilenameWithoutExtension()
-        //}
-        mPlayerControlsPanelBinding.playingSong.text = songTitle
-    }
-
-    private fun doBindService() {
-        Log.d("DDD","doBindService")
-        mBindingIntent = Intent(this, PlayerService::class.java).also {
-            bindService(it, connection, Context.BIND_AUTO_CREATE)
-        }
-    }
-
     private val requestReadStoragePermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            doBindService()
+//            doBindService()
         }
     }
 
@@ -276,6 +298,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
         if (intent.hasExtra(Constants.RESTORE_FRAGMENT) && mTabToRestore == -1) {
             mTabToRestore = intent.getIntExtra(Constants.RESTORE_FRAGMENT, -1)
         }
+
+        progressViewUpdateHelper = MusicProgressViewUpdateHelper(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -312,6 +336,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
         }
 //        handleIntent(intent)
     }
+
     private fun restorePlayerStatus() {
         // If we are playing and the activity was restarted
         // update the controls panel
@@ -345,7 +370,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
                 if (!mAllMusic.isNullOrEmpty()) {
                     isPlay = false
                     updateCurrentSong(restoredSong, mAllMusic, restoredSong.launchedBy)
-                    preparePlayback(restoredSong)
                     updatePlayingInfo(restore = false)
                     mPlayerControlsPanelBinding.songProgress.setProgressCompat(
                        0, //if (isCurrentSongFM) 0 else restoredSong.startFrom,
@@ -359,7 +383,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
     }
 
     private fun initMediaButtons() {
-        mPlayerControlsPanelBinding.playPauseButton.setOnClickListener { mMediaPlayerHolder.resumeOrPause() }
+        mPlayerControlsPanelBinding.playPauseButton.setOnClickListener {
+//            mMediaPlayerHolder.resumeOrPause()
+            playerConnection?.playOrPause()
+        }
 
         with(mPlayerControlsPanelBinding.playingSongContainer) {
             safeClickListener {
@@ -372,14 +399,19 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
         }
     }
 
+
     private fun openNowPlayingFragment() {
         if (//  checkIsPlayer(showError = true) &&
             //mMediaPlayerHolder.isCurrentSong &&
-            mNpDialog == null) {
-            mNpDialog = NowPlaying.newInstance().apply {
+            nowPlayingFragment == null) {
+            val bundle = Bundle()
+            bundle.putInt("progress", mPlayerControlsPanelBinding.songProgress.progress)
+            bundle.putInt("max", mPlayerControlsPanelBinding.songProgress.max)
+            nowPlayingFragment = NowPlaying.newInstance().apply {
                 show(supportFragmentManager, null)
+                arguments = bundle
                 onNowPlayingCancelled = {
-                    mNpDialog = null
+                    nowPlayingFragment = null
                 }
             }
         }
@@ -387,20 +419,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
 
     private fun initFragmentAt(position: Int): Fragment {
         when (mPreferences.activeTabs.toList()[position]) {
-            Constants.ARTISTS_TAB -> mArtistsFragment = MusicContainersFragment.newInstance(Constants.ARTIST_VIEW)
-            Constants.ALBUM_TAB -> mAlbumsFragment = MusicContainersFragment.newInstance(Constants.ALBUM_VIEW)
-            Constants.SONGS_TAB -> mAllMusicFragment = AllMusicFragment.newInstance()
-            Constants.FOLDERS_TAB -> mFoldersFragment = MusicContainersFragment.newInstance(Constants.FOLDER_VIEW)
+//            Constants.SONGS_TAB -> mAllMusicFragment = AllMusicFragment.newInstance()
+            Constants.LOCAL_SONG_TAB -> mLocalMusicFragment = LocalMusicFragment.newInstance()
             else -> mSettingsFragment = SettingsFragment.newInstance()
         }
         return handleOnNavigationItemSelected(position)
     }
 
     private fun handleOnNavigationItemSelected(index: Int) = when (mPreferences.activeTabs.toList()[index]) {
-        Constants.ARTISTS_TAB -> mArtistsFragment ?: initFragmentAt(index)
-        Constants.ALBUM_TAB -> mAlbumsFragment ?: initFragmentAt(index)
-        Constants.SONGS_TAB -> mAllMusicFragment ?: initFragmentAt(index)
-        Constants.FOLDERS_TAB -> mFoldersFragment ?: initFragmentAt(index)
+//        Constants.SONGS_TAB -> mAllMusicFragment ?: initFragmentAt(index)
+        Constants.LOCAL_SONG_TAB -> mLocalMusicFragment ?: initFragmentAt(index)
         else -> mSettingsFragment ?: initFragmentAt(index)
     }
 
@@ -411,69 +439,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
             Permissions.manageAskForReadStoragePermission(this, requestReadStoragePermissionLauncher)
             return
         }
-        doBindService()
+        bindService(intent<ExoPlayerService>(), serviceConnection, Context.BIND_AUTO_CREATE)
+        progressViewUpdateHelper.start(playerConnection)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (!mMediaPlayerHolder.isPlaying && ::mPlayerService.isInitialized && mPlayerService.isRunning && !mMediaPlayerHolder.isSongFromPrefs) {
-            Log.d("DHP","onDestroy")
-            ServiceCompat.stopForeground(mPlayerService, ServiceCompat.STOP_FOREGROUND_REMOVE)
-            stopService(mBindingIntent)
-            if (sBound) unbindService(connection)
-        }
-    }
-
-    override fun onSongSelected(song: Music?, songs: List<Music>?, songLaunchedBy: String) {
-        with(mMediaPlayerHolder) {
-            if (!isPlay) isPlay = true
-            if (isSongFromPrefs) isSongFromPrefs = false
-
-            val albumSongs = songs ?: MusicUtils.getAlbumSongs(
-                song?.artist,
-                song?.album,
-                mMusicViewModel.deviceAlbumsByArtist
-            )
-            updateCurrentSong(song, albumSongs, songLaunchedBy)
-
-        }
-        preparePlayback(song)
-    }
-
-    private fun preparePlayback(song: Music?) {
-        if (::mPlayerService.isInitialized && !mPlayerService.isRunning) {
-            Log.d("DDD","preparePlayback : startService")
-            startService(mBindingIntent)
-        }
-        mMediaPlayerHolder.initMediaPlayer(song, forceReset = false)
-    }
-
-    override fun onSongsShuffled(songs: List<Music>?, songLaunchedBy: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onAddToQueue(song: Music?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onAddAlbumToQueue(songs: List<Music>?, forcePlay: Pair<Boolean, Music?>) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onUpdatePlayingAlbumSongs(songs: List<Music>?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onPlaybackSpeedToggled() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onHandleCoverOptionsUpdate() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onUpdatePositionFromNP(position: Int) {
-        mPlayerControlsPanelBinding.songProgress.setProgressCompat(position, true)
+    override fun onStop() {
+        unbindService(serviceConnection)
+        progressViewUpdateHelper.stop()
+         super.onStop()
     }
 
     private fun initViewPager() {
@@ -525,7 +498,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
             })
         }
 
-
         binding.viewPager2.setCurrentItem(
             when {
                 mTabToRestore != -1 -> mTabToRestore
@@ -557,19 +529,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
     }
 
     override fun onOpenNewDetailsFragment() {
-        TODO("Not yet implemented")
     }
 
     override fun onArtistOrFolderSelected(artistOrFolder: String, launchedBy: String) {
-        TODO("Not yet implemented")
     }
 
     override fun onFavoritesUpdated(clear: Boolean) {
-        TODO("Not yet implemented")
     }
 
     override fun onFavoriteAddedOrRemoved() {
-        TODO("Not yet implemented")
     }
 
     override fun onCloseActivity() {
@@ -581,23 +549,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
     }
 
     override fun onAddToFilter(stringsToFilter: List<String>?) {
-        TODO("Not yet implemented")
     }
 
     override fun onFiltersCleared() {
-        TODO("Not yet implemented")
     }
 
     override fun onDenyPermission() {
-        TODO("Not yet implemented")
     }
 
     override fun onOpenPlayingArtistAlbum() {
-        TODO("Not yet implemented")
     }
 
     override fun onOpenEqualizer() {
-        TODO("Not yet implemented")
     }
 
     override fun onOpenSleepTimerDialog() {
@@ -633,11 +596,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), MediaControlInterface,
     }
 
     override fun onEnableEqualizer() {
-        TODO("Not yet implemented")
     }
 
     override fun onUpdateSortings() {
-        TODO("Not yet implemented")
+    }
+
+    override fun onUpdateProgressViews(progress: Int, total: Int) {
+        com.dhp.musicplayer.utils.Log.d("onUpdateProgressViews: $progress - $total")
+        if (mPlayerControlsPanelBinding.songProgress.max != total) {
+            mPlayerControlsPanelBinding.songProgress.max = total
+        }
+        mPlayerControlsPanelBinding.songProgress.setProgressCompat(progress, true)
+        nowPlayingFragment?.onUpdateProgressViews(progress, total)
     }
 
 }

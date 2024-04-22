@@ -29,4 +29,7 @@
 
     <color name="main_bg">#151515</color>
     <color name="toolbar_bg">#111111</color>
+
+    <color name="bg_item_queue">#FF000000</color>
+
 </resources>

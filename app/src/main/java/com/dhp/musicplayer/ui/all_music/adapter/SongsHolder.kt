@@ -2,21 +2,19 @@ package com.dhp.musicplayer.ui.all_music.adapter
 
 import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
-import com.dhp.musicplayer.Constants
+import com.dhp.musicplayer.Innertube
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.databinding.MusicItemBinding
 import com.dhp.musicplayer.extensions.toFormattedDate
 import com.dhp.musicplayer.extensions.toFormattedDuration
 import com.dhp.musicplayer.extensions.toName
-import com.dhp.musicplayer.model.Music
-import com.dhp.musicplayer.player.MediaControlInterface
 import com.dhp.musicplayer.player.MediaPlayerHolder
 
 class SongsHolder(private val binding: MusicItemBinding): RecyclerView.ViewHolder(binding.root) {
-    fun bindItems(itemSong: Music?, mAllMusic: List<Music>? ,mMediaControlInterface: MediaControlInterface) {
+    fun bindItems(songItem: Innertube.SongItem?, mAllMusic: List<Innertube.SongItem>?, allMusicClickListener: AllMusicClickListener) {
 
         with(binding) {
-
+            val itemSong = songItem?.asMusic()
             val formattedDuration = itemSong?.duration?.toFormattedDuration(
                 isAlbum = false,
                 isSeekBar = false
@@ -34,11 +32,12 @@ class SongsHolder(private val binding: MusicItemBinding): RecyclerView.ViewHolde
                 with(MediaPlayerHolder.getInstance()) {
 //                    if (isCurrentSongFM) currentSongFM = null
                 }
-                mMediaControlInterface.onSongSelected(
-                    itemSong,
-                    mAllMusic,
-                    Constants.ARTIST_VIEW
-                )
+                allMusicClickListener.onClick(songItem)
+//                mMediaControlInterface.onSongSelected(
+//                    itemSong,
+//                    mAllMusic,
+//                    Constants.ARTIST_VIEW
+//                )
             }
 
             root.setOnLongClickListener {

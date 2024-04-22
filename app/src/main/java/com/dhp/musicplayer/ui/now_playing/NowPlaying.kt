@@ -3,52 +3,60 @@ package com.dhp.musicplayer.ui.now_playing
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.SeekBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.doOnPreDraw
-import com.dhp.musicplayer.Constants
+import androidx.lifecycle.lifecycleScope
+import com.dhp.musicplayer.MainActivity
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.base.BaseBottomSheetDialogFragment
 import com.dhp.musicplayer.databinding.BottomSheetFragmentNowPlayingBinding
 import com.dhp.musicplayer.databinding.NowPlayingControlsBinding
 import com.dhp.musicplayer.databinding.NowPlayingCoverBinding
-import com.dhp.musicplayer.databinding.NowPlayingVolControlBinding
-import com.dhp.musicplayer.extensions.applyFullHeightDialog
-import com.dhp.musicplayer.extensions.toBitrate
-import com.dhp.musicplayer.extensions.toContentUri
-import com.dhp.musicplayer.extensions.toFormattedDuration
-import com.dhp.musicplayer.player.MediaControlInterface
-import com.dhp.musicplayer.player.MediaPlayerHolder
-import com.dhp.musicplayer.player.UIControlInterface
-import com.dhp.musicplayer.utils.Lists
+import com.dhp.musicplayer.dialogs.RecyclerSheet
+import com.dhp.musicplayer.enums.RepeatMode
+import com.dhp.musicplayer.extensions.*
+import com.dhp.musicplayer.player.*
+import com.dhp.musicplayer.utils.Log
 import com.dhp.musicplayer.utils.Theming
-import com.dhp.musicplayer.utils.Versioning
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.dhp.musicplayer.utils.forceSeekToNext
+import com.dhp.musicplayer.utils.forceSeekToPrevious
+import com.dhp.musicplayer.utils.getRepeatMode
+import com.dhp.musicplayer.utils.preferences
+import com.dhp.musicplayer.utils.putRepeatMode
+import com.dhp.musicplayer.utils.queueLoopEnabledKey
+import com.google.android.material.slider.Slider
+import kotlinx.coroutines.launch
 
-class NowPlaying: BaseBottomSheetDialogFragment<BottomSheetFragmentNowPlayingBinding>() {
+class NowPlaying : BaseBottomSheetDialogFragment<BottomSheetFragmentNowPlayingBinding>(),
+    CustomButtonClickListener{
 
     private lateinit var mMediaControlInterface: MediaControlInterface
     private lateinit var mUIControlInterface: UIControlInterface
-    private var _npCoverBinding: NowPlayingCoverBinding? = null
-    private var _npControlsBinding: NowPlayingControlsBinding? = null
-    private var _npExtControlsBinding: NowPlayingVolControlBinding? = null
+    private lateinit var _npCoverBinding: NowPlayingCoverBinding
+    private lateinit var _npControlsBinding: NowPlayingControlsBinding
 
     var onNowPlayingCancelled: (() -> Unit)? = null
     private val mMediaPlayerHolder get() = MediaPlayerHolder.getInstance()
 
+    private var playConnection: PlayerConnection? = null
 
-    override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = BottomSheetFragmentNowPlayingBinding.inflate(layoutInflater, container, false)
+    override fun getViewBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): BottomSheetFragmentNowPlayingBinding {
+        return BottomSheetFragmentNowPlayingBinding.inflate(layoutInflater, container, false)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
-            mMediaControlInterface = activity as MediaControlInterface
+//            mMediaControlInterface = activity as MediaControlInterface
             mUIControlInterface = activity as UIControlInterface
+            playConnection = (activity as? MainActivity)?.playerConnection
         } catch (e: ClassCastException) {
             e.printStackTrace()
         }
@@ -56,12 +64,34 @@ class NowPlaying: BaseBottomSheetDialogFragment<BottomSheetFragmentNowPlayingBin
 
     override fun initUI() {
         super.initUI()
+        val bundle = arguments
+        val progress = bundle?.getInt("progress") ?: 0
+        val max = bundle?.getInt("max") ?: 1
+//        onUpdateProgressViews(progress, max)
         binding.apply {
             _npCoverBinding = NowPlayingCoverBinding.bind(root)
             _npControlsBinding = NowPlayingControlsBinding.bind(root)
-            _npExtControlsBinding = NowPlayingVolControlBinding.bind(root)
         }
         setupView()
+
+        Log.d("bindUI: ${requireContext().preferences.getRepeatMode(queueLoopEnabledKey)}")
+        _npControlsBinding.repeatBtn.setState(
+            requireContext().preferences.getRepeatMode(
+                queueLoopEnabledKey
+            )
+        )
+        _npControlsBinding.repeatBtn.setCustomButtonClickListener(this)
+        _npControlsBinding.npQueue.safeClickListener {
+            openQueueFragment()
+        }
+    }
+
+    private fun openQueueFragment() {
+        val fragmentManager = (activity as? MainActivity)?.supportFragmentManager ?: return
+         RecyclerSheet.newInstance(RecyclerSheet.QUEUE_TYPE).apply {
+            show(fragmentManager, RecyclerSheet.TAG_MODAL_RV)
+            onQueueCancelled = {}
+        }
     }
 
     private fun setupView() {
@@ -71,24 +101,27 @@ class NowPlaying: BaseBottomSheetDialogFragment<BottomSheetFragmentNowPlayingBin
             setupNPCoverLayout()
         }
 
-        _npControlsBinding?.run {
-            npSkipPrev.setOnClickListener { skip(isNext = false) }
+        _npControlsBinding.run {
+            npSkipPrev.setOnClickListener { playConnection?.player?.forceSeekToPrevious() }
             //npFastRewind.setOnClickListener { mMediaPlayerHolder.fastSeek(isForward = false) }
-            npPlay.setOnClickListener { mMediaPlayerHolder.resumeOrPause() }
-            npSkipNext.setOnClickListener { skip(isNext = true) }
+            npPlay.setOnClickListener {
+                Log.d("NowPlay OnClick: ${playConnection == null}")
+
+                playConnection?.playOrPause()
+            }
+            npSkipNext.setOnClickListener { playConnection?.player?.forceSeekToNext() }
             //npFastForward.setOnClickListener { mMediaPlayerHolder.fastSeek(isForward = true) }
         }
-        setupSeekBarProgressListener()
         updateNpInfo()
+        setUpProgressSlider()
+        playConnection?.player?.let {
+//            currentMediaItem.value.let { song ->
 
-        with(mMediaPlayerHolder) {
-            (currentSongFM ?: currentSong)?.let { song ->
                 //loadNpCover(song)
-                binding.npSeek.text =
-                    playerPosition.toLong().toFormattedDuration(isAlbum = false, isSeekBar = true)
-                binding.npSeekBar.progress = playerPosition
+//                binding.npSeek.text = it.currentPosition.toFormattedDuration(isAlbum = false, isSeekBar = true)
+//                binding.npSeekBar.progress = it.currentPosition.toInt()
                 dialog.applyFullHeightDialog(requireActivity())
-            }
+//            }
         }
     }
 
@@ -98,37 +131,19 @@ class NowPlaying: BaseBottomSheetDialogFragment<BottomSheetFragmentNowPlayingBin
             binding.npSong.textAlignment = TextView.TEXT_ALIGNMENT_TEXT_START
         }
 
-        _npCoverBinding?.npCover?.doOnPreDraw {
+        _npCoverBinding.npCover.doOnPreDraw {
             val ratio = ResourcesCompat.getFloat(resources, R.dimen.cover_ratio)
             val dim = (it.width * ratio).toInt()
             it.layoutParams = LinearLayout.LayoutParams(dim, dim)
         }
 
         mMediaPlayerHolder.let { mph ->
-            _npCoverBinding?.run {
-                if (Versioning.isMarshmallow()) {
-//                    setupNPCoverButtonsToasts(npPlaybackSpeed)
-                    npPlaybackSpeed.setOnClickListener { view ->
-//                        Popups.showPopupForPlaybackSpeed(requireActivity(), view)
-                    }
-                } else {
-                    npPlaybackSpeed.visibility = View.GONE
-                }
+            _npCoverBinding.run {
+
 
                 npCover.background.alpha = Theming.getAlbumCoverAlpha(requireContext())
                 //npSaveTime.setOnClickListener { saveSongPosition() }
-                npEqualizer.setOnClickListener { mUIControlInterface.onOpenEqualizer() }
-                npLove.setOnClickListener {
-                    Lists.addToFavorites(
-                        requireContext(),
-                        mph.currentSong,
-                        canRemove = true,
-                        0,
-                        mph.launchedBy)
-                    mUIControlInterface.onFavoritesUpdated(clear = false)
-                    //mph.onUpdateFavorites()
-                    //updateNpFavoritesIcon()
-                }
+
 
 //                with(npRepeat) {
 //                    setImageResource(
@@ -145,135 +160,88 @@ class NowPlaying: BaseBottomSheetDialogFragment<BottomSheetFragmentNowPlayingBin
 //                    setupNPCoverButtonsToasts(npSaveTime, npLove, npEqualizer, this)
 //                }
 
-                with (npPauseOnEnd) {
-                    isChecked = true//mGoPreferences.continueOnEnd
-                    setOnCheckedChangeListener { _, isChecked ->
-                        //mGoPreferences.continueOnEnd = isChecked
-                        var msg = R.string.pause_on_end
-                        if (isChecked) msg = R.string.pause_on_end_disabled
-                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                    setOnLongClickListener { switch ->
-                        Toast.makeText(requireContext(), switch.contentDescription, Toast.LENGTH_SHORT)
-                            .show()
-                        return@setOnLongClickListener true
-                    }
-                }
             }
         }
     }
 
-    private fun skip(isNext: Boolean) {
-        with(mMediaPlayerHolder) {
-            if (!isPlay) isPlay = true
-            if (isSongFromPrefs) isSongFromPrefs = false
-            if (isNext) {
-                skip(isNext = true)
-                return
+    private fun setUpProgressSlider() {
+        val progressSlider = binding.progressSlider
+        val progressViewUpdateHelper = (activity as? MainActivity)?.progressViewUpdateHelper
+        progressSlider.addOnChangeListener(Slider.OnChangeListener { _, value, fromUser ->
+            Log.d("progressSlider OnChange: $value - $fromUser")
+            if (fromUser) {
+                (activity as? MainActivity)?.onUpdateProgressViews(
+                    value.toInt(),
+                    playConnection?.player?.duration?.toInt() ?: 0
+                )
             }
-            skip(isNext = false)
-        }
-    }
-
-    private fun setupSeekBarProgressListener() {
-
-        mMediaPlayerHolder.let { mph ->
-            binding.run {
-                npSeekBar.setOnSeekBarChangeListener(
-                    object : SeekBar.OnSeekBarChangeListener {
-
-                        val defaultPositionColor = npSeek.currentTextColor
-                        val selectedColor = R.color.purple_200//Theming.resolveThemeColor(resources)
-                        var userSelectedPosition = 0
-                        var isUserSeeking = false
-
-                        override fun onProgressChanged(
-                            seekBar: SeekBar?,
-                            progress: Int,
-                            fromUser: Boolean
-                        ) {
-                            if (fromUser) userSelectedPosition = progress
-                            npSeek.text =
-                                progress.toLong().toFormattedDuration(isAlbum = false, isSeekBar = true)
-                        }
-
-                        override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                            isUserSeeking = true
-                            npSeek.setTextColor(selectedColor)
-                        }
-
-                        override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                            if (isUserSeeking) {
-                                npSeek.setTextColor(defaultPositionColor)
-                                mph.onPauseSeekBarCallback()
-                                isUserSeeking = false
-                            }
-                            if (mph.state != Constants.PLAYING) {
-                                mMediaControlInterface.onUpdatePositionFromNP(userSelectedPosition)
-                                npSeekBar.progress = userSelectedPosition
-                            }
-                            mph.seekTo(
-                                userSelectedPosition,
-                                updatePlaybackStatus = mph.isPlaying,
-                                restoreProgressCallBack = !isUserSeeking
-                            )
-                        }
-                    })
+        })
+        progressSlider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: Slider) {
+                Log.d("progressSlider onStartTrackingTouch")
+                progressViewUpdateHelper?.stop()
             }
-        }
+
+            override fun onStopTrackingTouch(slider: Slider) {
+                Log.d("progressSlider onStopTrackingTouch: ${slider.value}")
+                playConnection?.player?.seekTo(slider.value.toLong())
+                progressViewUpdateHelper?.start(playConnection)
+            }
+        })
     }
 
 
-    fun updateNpInfo() {
-        if (::mMediaControlInterface.isInitialized) {
-            with(mMediaPlayerHolder) {
-                (currentSongFM ?: currentSong)?.let { song ->
+    private fun updateNpInfo() {
+
+        lifecycleScope.launch {
+            playConnection?.currentMediaItem?.collect { mediaItem ->
+                binding.npSong.text = mediaItem?.mediaMetadata?.title
+                binding.npArtistAlbum.text = mediaItem?.mediaMetadata?.artist
+                val songDuration = playConnection?.player?.duration ?: 0
+                binding.npDuration.text = songDuration.toFormattedDuration(isAlbum = false, isSeekBar = true)
+            }
+        }
+        updatePlayingStatus()
+
+//        if (::mMediaControlInterface.isInitialized) {
+//            with(mMediaPlayerHolder) {
+                (playConnection?.currentMediaItem?.value)?.let { song ->
                     // load album cover
 //                    if (mAlbumIdNp != song.albumId && mGoPreferences.isCovers) {
 //                        loadNpCover(song)
 //                    }
-                    // load album/song info
-                    var songTitle = song.title
-//                    if (mGoPreferences.songsVisualization == GoConstants.FN) {
-//                        songTitle = song.displayName.toFilenameWithoutExtension()
-//                    }
-                    binding.npSong.text = songTitle
-                    binding.npArtistAlbum.text =
-                        getString(
-                            R.string.artist_and_album,
-                            song.artist,
-                            song.album
-                        )
+
+//                    binding.npSong.text = song.mediaMetadata.title
+//                    binding.npArtistAlbum.text = song.mediaMetadata.artist
 
                     // load song's duration
-                    val selectedSongDuration = song.duration
-                    binding.npDuration.text =
-                        selectedSongDuration.toFormattedDuration(isAlbum = false, isSeekBar = true)
-                    binding.npSeekBar.max = song.duration.toInt()
+//                    val songDuration = playConnection?.player?.duration ?: 0
+//                    binding.npDuration.text = songDuration.toFormattedDuration(isAlbum = false, isSeekBar = true)
+//                    binding.npSeekBar.max = selectedSongDuration.toInt()
 
-                    song.id?.toContentUri()?.toBitrate(requireContext())?.let { (first, second) ->
-                        binding.npRates.text =
-                            getString(R.string.rates, first, second)
-                    }
-                    updatePlayingStatus()
+
+//                    song.id?.toContentUri()?.toBitrate(requireContext())?.let { (first, second) ->
+//
+//                    }
                 }
-            }
-        }
+//            }
+//        }
     }
 
     fun updatePlayingStatus() {
-        with(mMediaPlayerHolder) {
-            if (isPlaying) {
-                _npControlsBinding?.npPlay?.setImageResource(R.drawable.ic_pause)
-                return
+        lifecycleScope.launch {
+            playConnection?.isPlaying?.collect {
+                Log.d("NowPlay isPlaying: $it")
+                _npControlsBinding.npPlay.setImageResource(
+                    if (it) R.drawable.ic_pause else R.drawable.ic_play
+                )
             }
-            _npControlsBinding?.npPlay?.setImageResource(R.drawable.ic_play)
         }
     }
 
-    fun updateProgress(position: Int) {
-        binding.npSeekBar.progress = position
+    override fun onStateChange(newState: RepeatMode) {
+        Log.d("onStateChange: $newState")
+        requireContext().preferences.putRepeatMode(queueLoopEnabledKey, newState)
     }
 
     override fun onDestroyView() {
@@ -291,5 +259,17 @@ class NowPlaying: BaseBottomSheetDialogFragment<BottomSheetFragmentNowPlayingBin
          */
         @JvmStatic
         fun newInstance() = NowPlaying()
+    }
+
+    fun onUpdateProgressViews(progress: Int, total: Int) {
+        val progressSlider = binding.progressSlider
+        if (progressSlider.valueTo != total.toFloat()) {
+            progressSlider.valueTo = total.toFloat()
+            binding.npDuration.text = total.toLong().toFormattedDuration(isAlbum = false, isSeekBar = true)
+        }
+
+        progressSlider.value = progress.toFloat().coerceIn(progressSlider.valueFrom, progressSlider.valueTo)
+        binding.npSeek.text = progress.toLong().toFormattedDuration(isAlbum = false, isSeekBar = true)
+
     }
 }

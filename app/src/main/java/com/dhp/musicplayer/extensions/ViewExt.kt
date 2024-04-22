@@ -107,3 +107,8 @@ fun ImageView.loadWithError(bitmap: Bitmap?, error: Boolean, albumArt: Int) {
     scaleType = ImageView.ScaleType.CENTER_CROP
     load(bitmap)
 }
+
+fun RecyclerView.disableScrollbars() {
+    isVerticalScrollBarEnabled = false
+    isHorizontalScrollBarEnabled = false
+}

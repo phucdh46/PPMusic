@@ -48,10 +48,26 @@ class Constants {
         const val SONGS_TAB = "SONGS_TAB"
         const val FOLDERS_TAB = "FOLDERS_TAB"
         const val SETTINGS_TAB = "SETTINGS_TAB"
+        const val LOCAL_SONG_TAB = "LOCAL_SONG_TAB"
 
-        val DEFAULT_ACTIVE_FRAGMENTS = listOf(ARTISTS_TAB, ALBUM_TAB, SONGS_TAB, FOLDERS_TAB, SETTINGS_TAB)
+        val DEFAULT_ACTIVE_FRAGMENTS = listOf(LOCAL_SONG_TAB,  SETTINGS_TAB)
 
         const val RESTORE_FRAGMENT = "RESTORE_FRAGMENT"
+
+        //innnertube
+        const val HOST = ""
+        const val HEADER_NAME = ""
+        const val HEADER_KEY = ""
+        const val HOST_PLAYER = ""
+        const val HEADER_MASK = ""
+
+        //Context
+        const val visitorData = ""
+        const val userAgentAndroid = ""
+
+        // player
+
+        const val embedUrl = ""
 
     }
 }

@@ -6,22 +6,28 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dhp.musicplayer.ItemTouchCallback
+import com.dhp.musicplayer.MainActivity
 import com.dhp.musicplayer.Preferences
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.base.BaseBottomSheetDialogFragment
 import com.dhp.musicplayer.databinding.ModalRvBinding
 import com.dhp.musicplayer.databinding.SleeptimerItemBinding
+import com.dhp.musicplayer.extensions.disableScrollbars
 import com.dhp.musicplayer.extensions.handleViewVisibility
 import com.dhp.musicplayer.player.MediaControlInterface
 import com.dhp.musicplayer.player.MediaPlayerHolder
 import com.dhp.musicplayer.player.UIControlInterface
 import com.dhp.musicplayer.ui.setting.adapter.AccentsAdapter
 import com.dhp.musicplayer.ui.setting.adapter.ActiveTabsAdapter
+import com.dhp.musicplayer.utils.Log
 import com.dhp.musicplayer.utils.Theming
+import com.dhp.musicplayer.utils.windows
+import kotlinx.coroutines.launch
 
 class RecyclerSheet: BaseBottomSheetDialogFragment<ModalRvBinding>() {
 
@@ -37,6 +43,9 @@ class RecyclerSheet: BaseBottomSheetDialogFragment<ModalRvBinding>() {
 
     private val mMediaPlayerHolder get() = MediaPlayerHolder.getInstance()
     private val mPreferences get() = Preferences.getPrefsInstance()
+
+    private lateinit var mQueueAdapter: QueueAdapter
+
 
     override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = ModalRvBinding.inflate(layoutInflater, container, false)
 
@@ -162,6 +171,83 @@ class RecyclerSheet: BaseBottomSheetDialogFragment<ModalRvBinding>() {
                         dismiss()
                     }
                 }
+
+                QUEUE_TYPE -> {
+
+                    dialogTitle = getString(R.string.queue)
+
+                    binding.btnContainer.handleViewVisibility(show = false)
+                    sleepTimerElapsed.handleViewVisibility(show = false)
+
+                    bottomDivider.handleViewVisibility(show = true)
+//                    btnDelete.handleViewVisibility(show = true)
+//                    btnDelete.setOnClickListener {
+//                        Dialogs.showClearQueueDialog(requireContext())
+//                    }
+
+                    modalRv.disableScrollbars()
+
+//                    FastScrollerBuilder(modalRv).useMd2Style().build()
+
+//                    with(mMediaPlayerHolder) {
+
+                    val playerConnection = (activity as? MainActivity)?.playerConnection
+
+                    val queueSongs = playerConnection?.player?.currentTimeline?.windows ?: listOf()
+
+                    mQueueAdapter = QueueAdapter(playerConnection)
+                    mQueueAdapter.submitList(queueSongs)
+
+                        modalRv.adapter = mQueueAdapter
+
+                    lifecycleScope.launch {
+                        playerConnection?.isPlaying?.collect {
+                            Log.d("notifyCurrentSelectedItem")
+                            mQueueAdapter.notifyCurrentSelectedItem()
+                        }
+                    }
+
+                    lifecycleScope.launch {
+                        playerConnection?.currentMediaItem?.collect {
+                            if (mQueueAdapter.currentSelectedMediaItem != it) {
+                                Log.d("notifyDataSetChanged currentMediaItem")
+                                mQueueAdapter.notifyDataSetChanged()
+                            }
+                        }
+                    }
+
+
+//                  if (Theming.isDeviceLand(resources)) modalRv.layoutManager = GridLayoutManager(context, 3)
+
+                    val callback = ItemMoveCallback(mQueueAdapter)
+                    val itemTouchHelper = ItemTouchHelper(callback)
+                    itemTouchHelper.attachToRecyclerView(modalRv)
+
+                        mQueueAdapter.onQueueCleared = {
+                            dismiss()
+//                        }
+
+//                        ItemTouchHelper(ItemTouchCallback(mQueueAdapter.queueSongs, isActiveTabs = false))
+//                            .attachToRecyclerView(modalRv)
+//                        ItemTouchHelper(ItemSwipeCallback(isQueueDialog = true, isFavoritesDialog = false) { viewHolder: RecyclerView.ViewHolder, _: Int ->
+//                            if (!mQueueAdapter.performQueueSongDeletion(
+//                                    requireActivity(),
+//                                    viewHolder.absoluteAdapterPosition)
+//                            ) {
+//                                mQueueAdapter.notifyItemChanged(viewHolder.absoluteAdapterPosition)
+//                            }
+//                        }).attachToRecyclerView(modalRv)
+
+                        modalRv.post {
+//                            if (isQueueStarted) {
+//                                val indexOfCurrentSong = queueSongs.findIndex(currentSong)
+                                val layoutManager = modalRv.layoutManager as LinearLayoutManager
+//                                layoutManager.scrollToPositionWithOffset(indexOfCurrentSong, 0)
+//                            }
+                        }
+                    }
+                }
+
             }
             title.text = dialogTitle
 
