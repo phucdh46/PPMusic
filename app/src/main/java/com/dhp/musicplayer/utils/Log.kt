@@ -10,6 +10,7 @@ object Log {
         val info = (//stackTrace.methodName +
                 " (" + fileName + ":"
                 + stackTrace.lineNumber + ")")
-        Log.d("DHP", "$info: $log")
+        Log.d("PPP", "$info: $log")
     }
+
 }

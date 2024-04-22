@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="false"
@@ -12,15 +13,26 @@
     <include layout="@layout/now_playing_cover" />
 
     <!-- the SeekBar + seek value -->
-    <SeekBar
-        android:id="@+id/np_seek_bar"
+<!--    <SeekBar-->
+<!--        android:id="@+id/np_seek_bar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:clickable="true"-->
+<!--        android:focusable="true"-->
+<!--        android:progressBackgroundTint="?attr/colorPrimary"-->
+<!--        android:progressBackgroundTintMode="src_in"-->
+<!--        android:splitTrack="false" />-->
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/progressSlider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:progressBackgroundTint="?attr/colorPrimary"
-        android:progressBackgroundTintMode="src_in"
-        android:splitTrack="false" />
+        android:layout_marginTop="16dp"
+        style="@style/ProgressSlider"
+        app:trackColor="@color/grey"
+        app:thumbColor="@color/black"
+        tools:ignore="RtlHardcoded,UnusedAttribute"
+        tools:progress="20" />
 
     <!-- the SeekBar value -->
     <LinearLayout
@@ -92,22 +104,9 @@
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             android:textColor="?android:attr/textColorSecondary" />
 
-        <TextView
-            android:id="@+id/np_rates"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:alpha="0.5"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="@string/unknown_year"
-            android:textAlignment="textStart"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-            android:textColor="?android:attr/textColorTertiary" />
     </LinearLayout>
 
     <include layout="@layout/now_playing_controls" />
 
-    <include layout="@layout/now_playing_vol_control" />
 
 </LinearLayout>

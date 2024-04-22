@@ -4,10 +4,8 @@ import android.app.ForegroundServiceStartNotAllowedException
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
-import android.media.audiofx.AudioEffect
 import android.os.Build
 import android.os.CountDownTimer
-import android.os.PowerManager
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
@@ -15,7 +13,6 @@ import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.toBitmap
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
@@ -27,7 +24,6 @@ import com.dhp.musicplayer.extensions.toFilenameWithoutExtension
 import com.dhp.musicplayer.extensions.waitForCover
 import com.dhp.musicplayer.model.Music
 import com.dhp.musicplayer.utils.MediaPlayerUtils
-import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
@@ -201,22 +197,22 @@ class MediaPlayerHolder: MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletio
 
     private fun startUpdatingCallbackWithPosition() {
 
-        if (mSeekBarPositionUpdateTask == null) {
-            mSeekBarPositionUpdateTask = Runnable { updateProgressCallbackTask() }
-        }
-
-        mExecutor = Executors.newSingleThreadScheduledExecutor()
-        mExecutor?.scheduleAtFixedRate(
-            mSeekBarPositionUpdateTask!!,
-            0,
-            1000,
-            TimeUnit.MILLISECONDS
-        )
+//        if (mSeekBarPositionUpdateTask == null) {
+//            mSeekBarPositionUpdateTask = Runnable { updateProgressCallbackTask() }
+//        }
+//
+//        mExecutor = Executors.newSingleThreadScheduledExecutor()
+//        mExecutor?.scheduleAtFixedRate(
+//            mSeekBarPositionUpdateTask!!,
+//            0,
+//            1000,
+//            TimeUnit.MILLISECONDS
+//        )
     }
 
     private fun updateProgressCallbackTask() {
         if (isPlaying && ::mediaPlayerInterface.isInitialized) {
-            mediaPlayerInterface.onPositionChanged(mediaPlayer.currentPosition)
+//            mediaPlayerInterface.onPositionChanged(mediaPlayer.currentPosition)
         }
     }
 

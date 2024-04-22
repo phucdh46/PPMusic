@@ -13,7 +13,7 @@
         android:paddingBottom="16dp">
 
         <ImageButton
-            android:id="@+id/np_fast_rewind"
+            android:id="@+id/npQueue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -21,7 +21,7 @@
             android:background="?android:attr/actionBarItemBackground"
             android:contentDescription="@string/fast_seeking_pref_title"
             android:padding="16dp"
-            app:srcCompat="@drawable/ic_fast_rewind" />
+            app:srcCompat="@drawable/ic_queue_music" />
 
         <ImageButton
             android:id="@+id/np_skip_prev"
@@ -56,16 +56,16 @@
             android:padding="16dp"
             app:srcCompat="@drawable/ic_skip_next" />
 
-        <ImageButton
-            android:id="@+id/np_fast_forward"
+        <com.dhp.musicplayer.player.RepeatButton
+            android:id="@+id/repeatBtn"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:background="?android:attr/actionBarItemBackground"
             android:contentDescription="@string/fast_seeking_pref_title"
-            android:padding="16dp"
-            app:srcCompat="@drawable/ic_fast_forward" />
+            android:padding="16dp"/>
+
 
     </LinearLayout>
 </merge>

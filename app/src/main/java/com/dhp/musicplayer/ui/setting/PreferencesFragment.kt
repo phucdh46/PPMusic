@@ -9,7 +9,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.dhp.musicplayer.Preferences
 import com.dhp.musicplayer.R
-import com.dhp.musicplayer.dialogs.RecyclerSheet
 import com.dhp.musicplayer.player.MediaControlInterface
 import com.dhp.musicplayer.player.MediaPlayerHolder
 import com.dhp.musicplayer.player.UIControlInterface
@@ -55,16 +54,6 @@ class PreferencesFragment: PreferenceFragmentCompat(),
             R.drawable.ic_day
         })
 
-        findPreference<Preference>(getString(R.string.accent_pref))?.run {
-            summary = Theming.getAccentName(resources, mGoPreferences.accent)
-            onPreferenceClickListener = this@PreferencesFragment
-        }
-
-        findPreference<Preference>(getString(R.string.active_tabs_pref))?.run {
-            summary = mGoPreferences.activeTabs.size.toString()
-            onPreferenceClickListener = this@PreferencesFragment
-        }
-
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -79,13 +68,7 @@ class PreferencesFragment: PreferenceFragmentCompat(),
     }
 
     override fun onPreferenceClick(preference: Preference): Boolean {
-        when (preference.key) {
-            getString(R.string.accent_pref) -> RecyclerSheet.newInstance(RecyclerSheet.ACCENT_TYPE)
-                .show(requireActivity().supportFragmentManager, RecyclerSheet.TAG_MODAL_RV)
-            getString(R.string.active_tabs_pref) -> RecyclerSheet.newInstance(RecyclerSheet.TABS_TYPE)
-                .show(requireActivity().supportFragmentManager, RecyclerSheet.TAG_MODAL_RV)
 
-        }
         return false
     }
 

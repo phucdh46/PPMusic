@@ -13,90 +13,80 @@
         android:elevation="2dp"
         android:orientation="vertical">
 
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/song_progress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="false"
-            app:indicatorColor="?attr/colorPrimary"
-            app:trackCornerRadius="2dp"
-            app:trackThickness="2dp" />
-
         <LinearLayout
+            android:id="@+id/miniPlayer"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:padding="4dp">
+            android:layout_height="wrap_content">
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/song_progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                app:indicatorColor="?attr/colorPrimary"
+                app:trackCornerRadius="2dp"
+                app:trackThickness="2dp" />
 
             <LinearLayout
-                android:id="@+id/playing_song_container"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:background="@drawable/ripple_rounded_corners"
-                android:orientation="vertical"
-                android:paddingStart="8dp"
-                android:paddingTop="4dp"
-                android:paddingEnd="2dp"
-                android:paddingBottom="4dp">
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:padding="4dp">
 
-                <TextView
-                    android:id="@+id/playing_song"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:id="@+id/playing_song_container"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:ellipsize="marquee"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:singleLine="true"
-                    android:text="@string/app_name"
-                    android:textAlignment="textStart"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:textStyle="bold" />
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:background="@drawable/ripple_rounded_corners"
+                    android:orientation="vertical"
+                    android:paddingStart="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="2dp"
+                    android:paddingBottom="4dp">
 
-                <TextView
-                    android:id="@+id/playing_artist"
-                    android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/playing_song"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:singleLine="true"
+                        android:text="@string/app_name"
+                        android:textAlignment="textStart"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/playing_artist"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:singleLine="true"
+                        android:text="@string/versionName"
+                        android:textAlignment="textStart"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                        android:textColor="?android:attr/textColorPrimary" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/play_pause_button"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:ellipsize="marquee"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:singleLine="true"
-                    android:text="@string/versionName"
-                    android:textAlignment="textStart"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                    android:textColor="?android:attr/textColorPrimary" />
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/content_play"
+                    android:background="?android:attr/actionBarItemBackground"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_play" />
+
             </LinearLayout>
-
-            <ImageButton
-                android:id="@+id/play_pause_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:contentDescription="@string/content_play"
-                android:background="?android:attr/actionBarItemBackground"
-                android:padding="8dp"
-                app:srcCompat="@drawable/ic_play" />
-
-            <ImageButton
-                android:id="@+id/queue_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="?android:attr/actionBarItemBackground"
-                android:contentDescription="@string/queue"
-                android:padding="8dp"
-                app:srcCompat="@drawable/ic_queue_music" />
-
-            <ImageButton
-                android:id="@+id/favorites_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="?android:attr/actionBarItemBackground"
-                android:contentDescription="@string/favorites"
-                android:padding="8dp" />
         </LinearLayout>
+
+
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"

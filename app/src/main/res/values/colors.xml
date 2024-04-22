@@ -37,4 +37,6 @@
     <color name="nav_bar_color">@color/status_bar_color</color>
     <color name="nav_bar_color_sheets">@color/nav_bar_color</color>
 
+    <color name="bg_item_queue">#FFFFFFFF</color>
+
 </resources>

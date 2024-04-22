@@ -37,14 +37,7 @@
             app:key="@string/theme_pref_black"
             app:title="@string/theme_pref_black_title" />
 
-        <Preference
-            app:icon="@drawable/ic_colorize"
-            app:key="@string/accent_pref"
-            app:title="@string/accent_pref_title" />
 
-        <Preference
-            app:key="@string/active_tabs_pref"
-            app:title="@string/active_fragments_pref_title" />
     </PreferenceCategory>
 
 
