@@ -59,7 +59,7 @@ class MusicNotificationManager(private val playerService: PlayerService) {
             .setSilent(true)
             .setShowWhen(false)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setLargeIcon(null)
+//            .setLargeIcon(null)
             .setOngoing(mMediaPlayerHolder.isPlaying)
             .setSmallIcon(R.drawable.ic_music_note)
             .addAction(getNotificationAction(Constants.PREV_ACTION))
