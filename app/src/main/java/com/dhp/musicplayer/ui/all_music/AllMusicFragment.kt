@@ -32,7 +32,7 @@ class RingBuffer<T>(val size: Int, init: (index: Int) -> T) {
     fun append(element: T) = list.set(index++ % size, element)
 }
 
-@UnstableApi @Suppress("DEPRECATION")
+@UnstableApi
 class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>(), SearchView.OnQueryTextListener {
 
     private val allMusicViewModel: AllMusicViewModel by activityViewModels()
@@ -114,9 +114,6 @@ class AllMusicFragment: BaseFragment<FragmentAllMusicBinding>(), SearchView.OnQu
                     binder.exoPlayerService.isOfflineSong = false
                     binder.player.forcePlay(music.asMediaItem)
 
-//                        (activity as? MainActivity)?.binder?.player?.forcePlay(
-//                            it
-//                        )
                 }
             }
 
