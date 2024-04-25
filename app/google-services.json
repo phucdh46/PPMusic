@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "453304655757",
+    "project_id": "ppmusic-fce73",
+    "storage_bucket": "ppmusic-fce73.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453304655757:android:1d984d25922c992097a7c4",
+        "android_client_info": {
+          "package_name": "com.dhp.musicplayer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGPAbruo-RBvMCBzkFigV2s9yCFmx_Dhg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453304655757:android:7725e8cb607d828797a7c4",
+        "android_client_info": {
+          "package_name": "com.dhp.musicplayer.debug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGPAbruo-RBvMCBzkFigV2s9yCFmx_Dhg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
