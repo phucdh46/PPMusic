@@ -3,7 +3,7 @@ package com.dhp.musicplayer
 import android.content.Context
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.models.Music
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import java.lang.reflect.Type

@@ -1,9 +1,12 @@
 package com.dhp.musicplayer.utils
 
+import android.content.Context
 import android.content.res.Resources
+import com.dhp.musicplayer.R
 import com.dhp.musicplayer.extensions.toFormattedYear
-import com.dhp.musicplayer.model.Album
-import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.models.Album
+import com.dhp.musicplayer.models.Music
+import com.dhp.musicplayer.models.Song
 
 object MusicUtils {
 
@@ -72,6 +75,12 @@ object MusicUtils {
         }
 
         return sortedAlbums
+    }
+
+    fun getSongCountString(context: Context, songCount: Int): String {
+        val songString = if (songCount == 1) context.resources
+            .getString(R.string.song) else context.resources.getString(R.string.songs)
+        return "$songCount $songString"
     }
 
 }

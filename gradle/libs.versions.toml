@@ -32,6 +32,12 @@ googleServices = "4.4.1"
 crashlytics = "2.9.9"
 lifecycle = "2.6.1"
 navigation = "2.6.0"
+room = "2.6.1"
+
+afollestad_materialCab_version = "2.0.1"
+afollestad_dialog_version = "3.3.0"
+kotlinPlugin = "1.8.10"
+kotlinxSerializationJson = "1.6.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -77,7 +83,17 @@ material = { group = "com.google.android.material", name = "material", version.r
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebaseAnalytics" }
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
+
+#material dialog
+afollestad-material-dialogs-color = { module = "com.afollestad.material-dialogs:color", version.ref = "afollestad_dialog_version" }
+afollestad-material-dialogs-core = { module = "com.afollestad.material-dialogs:core", version.ref = "afollestad_dialog_version" }
+afollestad-material-dialogs-input = { module = "com.afollestad.material-dialogs:input", version.ref = "afollestad_dialog_version" }
+afollestad-material-cab = { module = "com.afollestad:material-cab", version.ref = "afollestad_materialCab_version" }
+
+#
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -87,4 +103,5 @@ jetbrainsKotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize",  version.ref = "kotlinPlugin"  }
 

@@ -11,7 +11,7 @@ import androidx.media3.common.util.UnstableApi
 import com.dhp.musicplayer.*
 import com.dhp.musicplayer.base.BaseFragment
 import com.dhp.musicplayer.databinding.FragmentLocalMusicBinding
-import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.models.Music
 import com.dhp.musicplayer.ui.local_music.adapter.LocalSongAdapter
 import com.dhp.musicplayer.ui.local_music.adapter.LocalSongClickListener
 import com.dhp.musicplayer.utils.Lists

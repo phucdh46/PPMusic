@@ -37,6 +37,16 @@
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
         android:textColor="?android:attr/textColorTertiary" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:visibility="gone"
+        android:layout_margin="8dp"
+        android:padding="8dp"
+        android:id="@+id/btnCreatePlaylist"
+        android:text="@string/create_playlist"
+        android:background="@drawable/bg_button_round_conner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/modal_rv"
         android:layout_width="match_parent"

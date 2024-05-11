@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.crashlytics)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -87,6 +88,7 @@ dependencies {
     implementation(libs.rxjava3.retrofit.adapter)
     implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.kotlinx.serialization.json)
+
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.exoplayer.dash)
     implementation(libs.media3.ui)
@@ -101,6 +103,13 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
     implementation(libs.navigation.fragment)
+    ksp(libs.room.compiler)
+    implementation(libs.room.ktx)
+
+//    implementation(libs.afollestad.material.dialogs.core)
+//    implementation(libs.afollestad.material.dialogs.input)
+//    implementation(libs.afollestad.material.dialogs.color)
+//    implementation(libs.afollestad.material.cab)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

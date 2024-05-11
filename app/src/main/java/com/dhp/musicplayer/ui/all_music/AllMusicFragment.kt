@@ -14,7 +14,7 @@ import com.dhp.musicplayer.base.BaseFragment
 import com.dhp.musicplayer.databinding.FragmentAllMusicBinding
 import com.dhp.musicplayer.extensions.handleViewVisibility
 import com.dhp.musicplayer.extensions.setTitleColor
-import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.models.Music
 import com.dhp.musicplayer.player.MediaControlInterface
 import com.dhp.musicplayer.player.UIControlInterface
 import com.dhp.musicplayer.ui.all_music.adapter.AllMusicAdapter
