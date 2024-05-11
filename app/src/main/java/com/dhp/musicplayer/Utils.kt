@@ -10,7 +10,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.source.MediaSource
 import com.dhp.musicplayer.extensions.toContentUri
 import com.dhp.musicplayer.extensions.toName
-import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.models.Music
 import com.dhp.musicplayer.utils.windows
 
 inline val isAtLeastAndroid8

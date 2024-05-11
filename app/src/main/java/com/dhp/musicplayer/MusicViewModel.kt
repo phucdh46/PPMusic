@@ -5,8 +5,8 @@ import android.content.res.Resources
 import android.provider.MediaStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.dhp.musicplayer.model.Album
-import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.models.Album
+import com.dhp.musicplayer.models.Music
 import com.dhp.musicplayer.utils.MusicUtils
 import com.dhp.musicplayer.utils.Versioning
 import kotlinx.coroutines.*

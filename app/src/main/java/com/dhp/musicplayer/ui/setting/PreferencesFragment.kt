@@ -106,10 +106,10 @@ class PreferencesFragment: PreferenceFragmentCompat(),
 
         // Inflate and set the layout for the dialog
         val inflater = getLayoutInflater()
-        val dialogView: View = inflater.inflate(R.layout.dialog_password_input, null)
+        val dialogView: View = inflater.inflate(R.layout.dialog_text_input, null)
         builder.setView(dialogView)
 
-        val passwordEditText = dialogView.findViewById<EditText>(R.id.passwordEditText)
+        val passwordEditText = dialogView.findViewById<EditText>(R.id.editText)
 
         // Add action buttons
 

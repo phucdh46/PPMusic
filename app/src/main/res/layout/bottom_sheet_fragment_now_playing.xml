@@ -108,5 +108,18 @@
 
     <include layout="@layout/now_playing_controls" />
 
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/imgMenu"
+            android:padding="16dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ellipsis_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
 
 </LinearLayout>

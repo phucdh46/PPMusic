@@ -1,6 +1,6 @@
 package com.dhp.musicplayer
 
-import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.models.Music
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import io.ktor.client.HttpClient

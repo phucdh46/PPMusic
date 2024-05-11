@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import com.dhp.musicplayer.asMediaItem
-import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.models.Music
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.lang.Runnable

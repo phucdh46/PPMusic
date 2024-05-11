@@ -2,7 +2,6 @@ package com.dhp.musicplayer
 
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.content.ServiceConnection
 import android.content.res.ColorStateList
 import android.os.Build
@@ -13,7 +12,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.app.ServiceCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
@@ -26,12 +24,13 @@ import com.dhp.musicplayer.databinding.ActivityMainBinding
 import com.dhp.musicplayer.databinding.PlayerControlsPanelBinding
 import com.dhp.musicplayer.dialogs.RecyclerSheet
 import com.dhp.musicplayer.extensions.*
-import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.models.Music
 import com.dhp.musicplayer.player.*
 import com.dhp.musicplayer.ui.all_music.AllMusicFragment
 import com.dhp.musicplayer.ui.list_music.MusicContainersFragment
 import com.dhp.musicplayer.ui.local_music.LocalMusicFragment
 import com.dhp.musicplayer.ui.now_playing.NowPlaying
+import com.dhp.musicplayer.ui.playlist.LibraryFragment
 import com.dhp.musicplayer.ui.setting.SettingsFragment
 import com.dhp.musicplayer.utils.*
 import com.google.android.material.tabs.TabLayout
@@ -51,6 +50,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), UIControlInterface,
     private var mArtistsFragment: MusicContainersFragment? = null
     private var mAllMusicFragment: AllMusicFragment? = null
     private var mLocalMusicFragment: LocalMusicFragment? = null
+    private var mLibraryFragment: LibraryFragment? = null
     private var mAlbumsFragment: MusicContainersFragment? = null
     private var mSettingsFragment: SettingsFragment? = null
     private var mFoldersFragment: MusicContainersFragment? = null
@@ -421,6 +421,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), UIControlInterface,
         when (mPreferences.activeTabs.toList()[position]) {
             Constants.LOCAL_SONG_TAB -> mLocalMusicFragment = LocalMusicFragment.newInstance()
             Constants.ONLINE_SONG_TAB -> mAllMusicFragment = AllMusicFragment.newInstance()
+            Constants.LIBRARY_TAB -> mLibraryFragment = LibraryFragment.newInstance()
             else -> mSettingsFragment = SettingsFragment.newInstance()
         }
         return handleOnNavigationItemSelected(position)
@@ -429,6 +430,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), UIControlInterface,
     private fun handleOnNavigationItemSelected(index: Int) = when (mPreferences.activeTabs.toList()[index]) {
         Constants.LOCAL_SONG_TAB -> mLocalMusicFragment ?: initFragmentAt(index)
         Constants.ONLINE_SONG_TAB -> mAllMusicFragment ?: initFragmentAt(index)
+        Constants.LIBRARY_TAB -> mLibraryFragment ?: initFragmentAt(index)
         else -> mSettingsFragment ?: initFragmentAt(index)
     }
 

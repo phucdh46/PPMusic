@@ -22,7 +22,7 @@ import com.dhp.musicplayer.extensions.findIndex
 import com.dhp.musicplayer.extensions.toContentUri
 import com.dhp.musicplayer.extensions.toFilenameWithoutExtension
 import com.dhp.musicplayer.extensions.waitForCover
-import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.models.Music
 import com.dhp.musicplayer.utils.MediaPlayerUtils
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
