@@ -48,6 +48,14 @@
     <string name="on_close_activity">Bạn có muốn dừng phát không\?</string>
     <string name="yes">Có</string>
     <string name="cancel">Hủy</string>
+    <string name="create">Tạo</string>
+
+    <!--playlist-->
+    <string name="playlist">Playlist</string>
+    <string name="create_playlist">Tạo playlist</string>
+    <string name="add_playlist_title">Playlist</string>
+    <string name="playlist_name_empty">Tên playlist</string>
+    <string name="rename_playlist_title">Rename playlist</string>
 
     <!-- Sleep timer-->
     <string name="sleeptimer">Sleep timer</string>
@@ -76,6 +84,7 @@
     <string name="settings">Cài đặt</string>
 
     <string name="folders">Thư mục</string>
+    <string name="library">Thư viện</string>
     <string name="songs">Bài hát</string>
     <string name="albums">Album</string>
     <string name="artists">Nghệ sĩ</string>
@@ -125,7 +134,13 @@
 
     <string name="artist_info">%1d album, %2d bài hát</string>
     <string name="folder_info">%1d bài hát</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--playlist-->
+    <string name="empty_text_emoji" translatable="false">&#128561;</string>
+    <string name="no_songs">You have no songs</string>
+    <string name="song">Bài hát</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_delete">Delete</string>
+
 
 </resources>

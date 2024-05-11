@@ -4,12 +4,17 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dhp.musicplayer.Constants
 import com.dhp.musicplayer.ItemTouchCallback
 import com.dhp.musicplayer.MainActivity
 import com.dhp.musicplayer.Preferences
@@ -17,8 +22,11 @@ import com.dhp.musicplayer.R
 import com.dhp.musicplayer.base.BaseBottomSheetDialogFragment
 import com.dhp.musicplayer.databinding.ModalRvBinding
 import com.dhp.musicplayer.databinding.SleeptimerItemBinding
+import com.dhp.musicplayer.db.MusicDao
 import com.dhp.musicplayer.extensions.disableScrollbars
 import com.dhp.musicplayer.extensions.handleViewVisibility
+import com.dhp.musicplayer.extensions.safeClickListener
+import com.dhp.musicplayer.models.Playlist
 import com.dhp.musicplayer.player.MediaControlInterface
 import com.dhp.musicplayer.player.MediaPlayerHolder
 import com.dhp.musicplayer.player.UIControlInterface
@@ -27,9 +35,13 @@ import com.dhp.musicplayer.ui.setting.adapter.ActiveTabsAdapter
 import com.dhp.musicplayer.utils.Log
 import com.dhp.musicplayer.utils.Theming
 import com.dhp.musicplayer.utils.windows
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class RecyclerSheet: BaseBottomSheetDialogFragment<ModalRvBinding>() {
+
 
     // sheet type
     var sheetType = ACCENT_TYPE
@@ -178,28 +190,14 @@ class RecyclerSheet: BaseBottomSheetDialogFragment<ModalRvBinding>() {
 
                     binding.btnContainer.handleViewVisibility(show = false)
                     sleepTimerElapsed.handleViewVisibility(show = false)
-
                     bottomDivider.handleViewVisibility(show = true)
-//                    btnDelete.handleViewVisibility(show = true)
-//                    btnDelete.setOnClickListener {
-//                        Dialogs.showClearQueueDialog(requireContext())
-//                    }
-
                     modalRv.disableScrollbars()
 
-//                    FastScrollerBuilder(modalRv).useMd2Style().build()
-
-//                    with(mMediaPlayerHolder) {
-
                     val playerConnection = (activity as? MainActivity)?.playerConnection
-
                     val queueSongs = playerConnection?.player?.currentTimeline?.windows ?: listOf()
-
                     mQueueAdapter = QueueAdapter(playerConnection)
                     mQueueAdapter.submitList(queueSongs)
-
-                        modalRv.adapter = mQueueAdapter
-
+                    modalRv.adapter = mQueueAdapter
                     lifecycleScope.launch {
                         playerConnection?.isPlaying?.collect {
                             Log.d("notifyCurrentSelectedItem")
@@ -225,18 +223,7 @@ class RecyclerSheet: BaseBottomSheetDialogFragment<ModalRvBinding>() {
 
                         mQueueAdapter.onQueueCleared = {
                             dismiss()
-//                        }
 
-//                        ItemTouchHelper(ItemTouchCallback(mQueueAdapter.queueSongs, isActiveTabs = false))
-//                            .attachToRecyclerView(modalRv)
-//                        ItemTouchHelper(ItemSwipeCallback(isQueueDialog = true, isFavoritesDialog = false) { viewHolder: RecyclerView.ViewHolder, _: Int ->
-//                            if (!mQueueAdapter.performQueueSongDeletion(
-//                                    requireActivity(),
-//                                    viewHolder.absoluteAdapterPosition)
-//                            ) {
-//                                mQueueAdapter.notifyItemChanged(viewHolder.absoluteAdapterPosition)
-//                            }
-//                        }).attachToRecyclerView(modalRv)
 
                         modalRv.post {
 //                            if (isQueueStarted) {

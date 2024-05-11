@@ -9,10 +9,12 @@ import android.media.MediaFormat
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.graphics.drawable.toBitmap
+import androidx.media3.common.MediaItem
 import coil.Coil
 import coil.request.ImageRequest
 import com.dhp.musicplayer.R
-import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.models.Music
+import com.dhp.musicplayer.models.Song
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -122,5 +124,15 @@ fun Uri.toBitrate(context: Context): Pair<Int, Int>? {
 fun Int.toFormattedYear(resources: Resources): String {
     if (this != 0) return toString()
     return resources.getString(R.string.unknown_year)
+}
+
+fun MediaItem.toSong(): Song {
+    return Song(
+        id = mediaId,
+        title = mediaMetadata.title!!.toString(),
+        artistsText = mediaMetadata.artist?.toString(),
+        durationText = mediaMetadata.extras?.getString("durationText"),
+        thumbnailUrl = mediaMetadata.artworkUri?.toString()
+    )
 }
 

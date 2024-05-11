@@ -8,13 +8,16 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.doOnPreDraw
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.dhp.musicplayer.MainActivity
+import com.dhp.musicplayer.MainViewModel
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.base.BaseBottomSheetDialogFragment
 import com.dhp.musicplayer.databinding.BottomSheetFragmentNowPlayingBinding
 import com.dhp.musicplayer.databinding.NowPlayingControlsBinding
 import com.dhp.musicplayer.databinding.NowPlayingCoverBinding
+import com.dhp.musicplayer.dialogs.AddToPlaylistDialog
 import com.dhp.musicplayer.dialogs.RecyclerSheet
 import com.dhp.musicplayer.enums.RepeatMode
 import com.dhp.musicplayer.extensions.*
@@ -32,6 +35,8 @@ import kotlinx.coroutines.launch
 
 class NowPlaying : BaseBottomSheetDialogFragment<BottomSheetFragmentNowPlayingBinding>(),
     CustomButtonClickListener{
+
+    private val mainViewModel by activityViewModels<MainViewModel>()
 
     private lateinit var mMediaControlInterface: MediaControlInterface
     private lateinit var mUIControlInterface: UIControlInterface
@@ -84,6 +89,19 @@ class NowPlaying : BaseBottomSheetDialogFragment<BottomSheetFragmentNowPlayingBi
         _npControlsBinding.npQueue.safeClickListener {
             openQueueFragment()
         }
+        binding.imgMenu.setOnClickListener { openPlaylistFragment() }
+    }
+
+    private fun openPlaylistFragment() {
+        val fragmentManager = (activity as? MainActivity)?.supportFragmentManager ?: return
+        val song = playConnection?.currentMediaItem?.value?.toSong() ?: return
+        Log.d("openPlaylistFragment: $song")
+        mainViewModel.playlist.observe(viewLifecycleOwner) {
+            AddToPlaylistDialog.create(it, song)
+                .show(fragmentManager, "ADD_PLAYLIST")
+        }
+
+
     }
 
     private fun openQueueFragment() {

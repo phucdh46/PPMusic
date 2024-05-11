@@ -50,11 +50,16 @@ class Constants {
         const val SETTINGS_TAB = "SETTINGS_TAB"
         const val LOCAL_SONG_TAB = "LOCAL_SONG_TAB"
         const val ONLINE_SONG_TAB = "ONLINE_SONG_TAB"
+        const val LIBRARY_TAB = "LIBRARY_TAB"
 
-        val DEFAULT_ACTIVE_FRAGMENTS = listOf(LOCAL_SONG_TAB,  SETTINGS_TAB)
-        val DEVELOPER_MODE_ACTIVE_FRAGMENTS = listOf(LOCAL_SONG_TAB, ONLINE_SONG_TAB,  SETTINGS_TAB)
+        val DEFAULT_ACTIVE_FRAGMENTS = listOf(LOCAL_SONG_TAB, LIBRARY_TAB,  SETTINGS_TAB)
+        val DEVELOPER_MODE_ACTIVE_FRAGMENTS = listOf(LOCAL_SONG_TAB, ONLINE_SONG_TAB, LIBRARY_TAB,  SETTINGS_TAB)
 
         const val RESTORE_FRAGMENT = "RESTORE_FRAGMENT"
+
+        const val EXTRA_SONG = "extra_songs"
+        const val EXTRA_PLAYLISTS = "extra_playlists"
+        const val EXTRA_PLAYLIST_ID = "extra_playlist_id"
 
         //innnertube
         var HOST = ""

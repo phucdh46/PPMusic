@@ -7,7 +7,7 @@ import android.widget.Toast
 import com.dhp.musicplayer.Constants
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.extensions.toFormattedDuration
-import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.models.Music
 import java.util.*
 
 object Lists {

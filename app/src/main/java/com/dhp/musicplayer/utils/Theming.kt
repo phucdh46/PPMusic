@@ -103,6 +103,7 @@ object Theming {
         Constants.ALBUM_TAB -> R.drawable.ic_library_music
         Constants.SONGS_TAB -> R.drawable.ic_music_note
         Constants.FOLDERS_TAB -> R.drawable.ic_folder_music
+        Constants.LIBRARY_TAB -> R.drawable.ic_playlist
         Constants.SETTINGS_TAB -> R.drawable.ic_settings
         else -> R.drawable.ic_music_note
     }
@@ -113,6 +114,7 @@ object Theming {
         Constants.ALBUM_TAB -> R.string.albums
         Constants.SONGS_TAB -> R.string.songs
         Constants.FOLDERS_TAB -> R.string.folders
+        Constants.LIBRARY_TAB -> R.string.library
         Constants.SETTINGS_TAB -> R.string.settings
         else -> R.string.songs
     }

@@ -8,7 +8,7 @@ import com.dhp.musicplayer.databinding.MusicItemBinding
 import com.dhp.musicplayer.extensions.toFormattedDate
 import com.dhp.musicplayer.extensions.toFormattedDuration
 import com.dhp.musicplayer.extensions.toName
-import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.models.Music
 
 interface LocalSongClickListener {
     fun onClick(music: Music?)
