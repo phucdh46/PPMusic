@@ -2,10 +2,10 @@ package com.dhp.musicplayer.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.dhp.musicplayer.models.Song
-import com.dhp.musicplayer.models.SongPlaylistMap
-import com.dhp.musicplayer.models.Playlist
-import com.dhp.musicplayer.models.SortedSongPlaylistMap
+import com.dhp.musicplayer.model.Playlist
+import com.dhp.musicplayer.model.Song
+import com.dhp.musicplayer.model.SongPlaylistMap
+import com.dhp.musicplayer.model.SortedSongPlaylistMap
 
 @Database(
     entities = [

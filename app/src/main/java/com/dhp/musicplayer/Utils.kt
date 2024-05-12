@@ -10,7 +10,10 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.source.MediaSource
 import com.dhp.musicplayer.extensions.toContentUri
 import com.dhp.musicplayer.extensions.toName
-import com.dhp.musicplayer.models.Music
+import com.dhp.musicplayer.innnertube.Innertube
+import com.dhp.musicplayer.model.Music
+import com.dhp.musicplayer.model.Song
+import com.dhp.musicplayer.navigation.PLAYLIST_DETAIL_ROUTE
 import com.dhp.musicplayer.utils.windows
 
 inline val isAtLeastAndroid8
@@ -41,6 +44,31 @@ val Innertube.SongItem.asMediaItem: MediaItem
                 .build()
         )
         .build()
+
+fun Song.asMediaItem(): MediaItem {
+    val builder = MediaItem.Builder()
+        .setMediaId(id)
+        .setCustomCacheKey(id)
+        .setMediaMetadata(
+            MediaMetadata.Builder()
+                .setTitle(title)
+                .setArtist(artistsText)
+//                .setAlbumTitle(album)
+                .setArtworkUri(thumbnailUrl?.toUri())
+                .setExtras(
+                    bundleOf(
+//                        "albumId" to albumId,
+                        "durationText" to durationText,
+                        "artistNames" to artistsText,
+//                        "artistIds" to authors?.mapNotNull { it.endpoint?.browseId },
+                    )
+                )
+                .build()
+        )
+    if (isOffline) builder.setUri(idLocal.toContentUri()) else builder.setUri(id)
+    return builder.build()
+}
+
 
 val Music.asMediaItem: MediaItem
     get() = MediaItem.Builder()
@@ -87,4 +115,11 @@ fun Player.forcePlay(mediaItem: MediaItem, mediaSource:  MediaSource.Factory) {
     setMediaItem(a, true)
     playWhenReady = true
     prepare()
+}
+
+fun getAppBarTitle(route: String?) : Int? {
+    return when(route) {
+        PLAYLIST_DETAIL_ROUTE -> R.string.playlist_title
+        else -> null
+    }
 }

@@ -1,7 +1,7 @@
 package com.dhp.musicplayer.utils
 import android.util.Log
 
-object Log {
+object Logg {
     fun d(log: String) {
         val stackTrace = Exception().stackTrace[1]
         var fileName = stackTrace.fileName
