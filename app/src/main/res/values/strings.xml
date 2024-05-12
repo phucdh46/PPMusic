@@ -1,146 +1,43 @@
 <resources>
     <string name="app_name">PPMusic</string>
 
-    //main
-    <string name="versionName" translatable="false">1.0.0</string>
-    <string name="content_play">Phát/tạm dừng</string>
-    <string name="queue">Hàng đợi</string>
-    <string name="favorites">Bài hát yêu thích</string>
+    <string name="feature_foryou_title">For you</string>
+    <string name="feature_search_title">Search</string>
+    <string name="feature_library_title">Library</string>
+
+    <string name="feature_settings_top_app_bar_action_icon_description">Settings</string>
+    <string name="feature_settings_top_app_bar_navigation_icon_description">Search</string>
+
+    <string name="feature_settings_title">Settings</string>
+    <string name="feature_settings_loading">Loading…</string>
+    <string name="feature_settings_dismiss_dialog_button_text">OK</string>
+    <string name="feature_settings_dark_mode_preference">Theme setting</string>
+    <string name="feature_settings_dark_mode_config_system_default">System default</string>
+    <string name="feature_settings_dark_mode_config_light">Light</string>
+    <string name="feature_settings_dark_mode_config_dark">Dark</string>
+
     <string name="slash">/</string>
-    <string name="perm_rationale">Music Player cần quyền truy cập tệp để phát nhạc.</string>
-    <string name="ok">OK</string>
-    <string name="no">Không</string>
-    <string name="error_fs_not_allowed_sum">Error! Turn off battery optimization for App</string>
-    <string name="error_fs_not_allowed">Something went wrong! :( Consider turning off battery optimization in the system settings: Apps &gt; All apps &gt; Music Player &gt; Battery &gt; Unrestricted, as it could cause the media player service to stop.</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="create_playlist">Create playlist</string>
+    <string name="playlist_title">Playlist</string>
 
+    <string name="loading_data">Loading data</string>
+    <string name="empty_data">"No available data"</string>
 
-    <string name="duration_date_added">%1s, %2s</string>
-    <string name="artist_and_album">%1s&#160;/&#160;%2s</string>
-
-    <string name="error_list_ended">Đã kết thúc danh sách.</string>
-
-    //now playing
-    <string name="covers_pref_title">Bìa album tích hợp</string>
-    <string name="content_playback_speed">Tốc độ phát</string>
-    <string name="favorites_save_time">Lưu vị trí bài hát</string>
-    <string name="equalizer">Bộ cân bằng</string>
-    <string name="favorite_add">Thêm vào bài hát yêu thích</string>
-    <string name="content_repeat">Bật/tắt tuỳ chọn lặp lại</string>
-    <string name="continue_on_end_desc">Choose whether to continue playback or pause on completion</string>
-    <string name="unknown_year">N&#x2F;A</string>
-
-    //now playing controls
-    <string name="fast_seeking_pref_title">Tua nhanh</string>
-    <string name="content_skip_next">Nhảy sang bài tiếp</string>
-    <string name="content_skip_prev">Nhảy sang bài trước</string>
-
-    //now playing volume controls
-    <string name="precise_volume_pref_title">Điều khiển âm lượng chính xác</string>
-
-    //ui player
-    <string name="favorite_added">Đã thêm %1s (%2s) vào bài hát yêu thích</string>
-    <string name="favorites_no_position">"&#x20;(00:00)"</string>
-    <string name="pause_on_end">Pause on completion on.</string>
-    <string name="pause_on_end_disabled">Pause on completion off.</string>
-    <string name="rates">%1d&#160;kHz,&#160;%2d&#160;kbps</string>
-
-    //dialog
-    <string name="on_close_activity">Bạn có muốn dừng phát không\?</string>
-    <string name="yes">Có</string>
-    <string name="cancel">Hủy</string>
-    <string name="create">Tạo</string>
-
-    <!--playlist-->
-    <string name="playlist">Playlist</string>
-    <string name="create_playlist">Tạo playlist</string>
-    <string name="add_playlist_title">Playlist</string>
-    <string name="playlist_name_empty">Tên playlist</string>
-    <string name="rename_playlist_title">Rename playlist</string>
-
-    <!-- Sleep timer-->
-    <string name="sleeptimer">Sleep timer</string>
-
-    <!-- Popup/Menu titles -->
-    <string name="sorting_pref">Sorting</string>
-    <string name="sorting_pref_default">Default</string>
-
-    <!-- Sorting menu -->
-    <string name="sorting_pref_ascending">A-Z</string>
-    <string name="sorting_pref_descending">Z-A</string>
-    <string name="sorting_pref_album_inv">Theo album Z-A</string>
-    <string name="sorting_pref_album">Theo album A-Z</string>
-    <string name="sorting_pref_artist_inv">Theo nghệ sĩ Z-A</string>
-    <string name="sorting_pref_artist">Theo nghệ sĩ A-Z</string>
-    <string name="sorting_pref_date_added_inv">Ngày cũ nhất trước</string>
-    <string name="sorting_pref_date_added">Ngày mới nhất trước</string>
-
-
-    <string name="delete">Xoá</string>
-    <string name="accent_pref_title">Màu nhấn</string>
-    <string name="sleeptimer_stop">Stop</string>
-    <string name="sleeptimer_cancel_desc">Stop sleep timer</string>
-    <string name="sleeptimer_enabled">Stop playback %1s after</string>
-
-    <string name="settings">Cài đặt</string>
-
-    <string name="folders">Thư mục</string>
-    <string name="library">Thư viện</string>
-    <string name="songs">Bài hát</string>
-    <string name="albums">Album</string>
-    <string name="artists">Nghệ sĩ</string>
-
-    <!-- Preferences keys used in settings-->
-    <string name="theme_pref">theme_pref</string>
-    <string name="accent_pref">color_primary_pref</string>
-    <string name="theme_pref_auto">theme_pref_auto</string>
-    <string name="theme_pref_title">Theme</string>
-    <string name="theme_pref_light_title">Light</string>
-    <string name="theme_pref_dark_title">Dark</string>
-    <string name="theme_pref_auto_title">System</string>
-    <string name="theme_pref_black_title">Pure black</string>
-    <string name="theme_pref_light">theme_pref_light</string>
-    <string name="theme_pref_dark">theme_pref_dark</string>
-    <string name="theme_pref_black">theme_pref_black</string>
-    <string name="active_tabs_pref">active_tabs_pref</string>
-    <string name="active_fragments_pref_title">Active tabs</string>
-    <string name="developer_mode">developer_mode</string>
-
-    <!-- Preferences - Categories -->
-    <string name="category_ui">UI</string>
-    <string name="category_audio">Audio</string>
-    <string name="category_general">General</string>
-
-
-    <!-- Preferences - Accents names -->
-    <string name="red">Red</string>
-    <string name="pink">Pink</string>
-    <string name="purple">Purple</string>
-    <string name="deep_purple">Deep purple</string>
-    <string name="indigo">Indigo</string>
-    <string name="blue">Blue</string>
-    <string name="light_blue">Light blue</string>
-    <string name="cyan">Cyan</string>
-    <string name="teal">Teal</string>
-    <string name="green">Green</string>
-    <string name="light_green">Light green</string>
-    <string name="lime">Lime</string>
-    <string name="yellow">Yellow</string>
-    <string name="amber">Amber</string>
-    <string name="orange">Orange</string>
-    <string name="deep_orange">Deep orange</string>
-    <string name="brown">Brown</string>
-    <string name="grey">Grey</string>
-    <string name="blue_grey">Blue grey</string>
-
-    <string name="artist_info">%1d album, %2d bài hát</string>
-    <string name="folder_info">%1d bài hát</string>
-
-    <!--playlist-->
-    <string name="empty_text_emoji" translatable="false">&#128561;</string>
-    <string name="no_songs">You have no songs</string>
-    <string name="song">Bài hát</string>
-    <string name="action_rename">Rename</string>
-    <string name="action_delete">Delete</string>
-
-
+    <plurals name="n_song">
+        <item quantity="one">%d song</item>
+        <item quantity="other">%d songs</item>
+    </plurals>
+    <plurals name="n_artist">
+        <item quantity="one">%d artist</item>
+        <item quantity="other">%d artists</item>
+    </plurals>
+    <plurals name="n_album">
+        <item quantity="one">%d album</item>
+        <item quantity="other">%d albums</item>
+    </plurals>
+    <plurals name="n_playlist">
+        <item quantity="one">%d playlist</item>
+        <item quantity="other">%d playlists</item>
+    </plurals>
 </resources>

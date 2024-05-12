@@ -1,7 +1,6 @@
 package com.dhp.musicplayer.di
 
 import com.dhp.musicplayer.api.ApiService
-import com.dhp.musicplayer.repository.Repository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -59,7 +58,5 @@ class NetworkModules {
     @Provides
     fun provideApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
 
-    @Singleton
-    @Provides
-    fun providesRepository(apiService: ApiService) = Repository(apiService)
+
 }

@@ -1,11 +1,14 @@
 package com.dhp.musicplayer.player
 
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.SharedPreferences
 import android.media.MediaMetadata
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
@@ -13,6 +16,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
+import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
@@ -34,58 +38,50 @@ import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.RenderersFactory
-import androidx.media3.exoplayer.audio.*
+import androidx.media3.exoplayer.audio.AudioRendererEventListener
+import androidx.media3.exoplayer.audio.DefaultAudioSink
+import androidx.media3.exoplayer.audio.MediaCodecAudioRenderer
+import androidx.media3.exoplayer.audio.SilenceSkippingAudioProcessor
+import androidx.media3.exoplayer.audio.SonicAudioProcessor
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
-import androidx.media3.extractor.ExtractorsFactory
-import androidx.media3.extractor.mkv.MatroskaExtractor
-import androidx.media3.extractor.mp4.FragmentedMp4Extractor
-import com.dhp.musicplayer.Innertube
 import com.dhp.musicplayer.R
+import com.dhp.musicplayer.innnertube.RingBuffer
 import com.dhp.musicplayer.enums.ExoPlayerDiskCacheMaxSize
-import com.dhp.musicplayer.enums.RepeatMode
-import com.dhp.musicplayer.innnertube.*
+import com.dhp.musicplayer.innnertube.Innertube
+import com.dhp.musicplayer.innnertube.LoginRequiredException
+import com.dhp.musicplayer.innnertube.PlayableFormatNotFoundException
+import com.dhp.musicplayer.innnertube.PlayerBody
+import com.dhp.musicplayer.innnertube.UnplayableException
+import com.dhp.musicplayer.innnertube.VideoIdMismatchException
+import com.dhp.musicplayer.innnertube.player
 import com.dhp.musicplayer.isAtLeastAndroid6
 import com.dhp.musicplayer.isAtLeastAndroid8
-import com.dhp.musicplayer.repository.Repository
-import com.dhp.musicplayer.ui.all_music.RingBuffer
 import com.dhp.musicplayer.utils.forceSeekToNext
 import com.dhp.musicplayer.utils.forceSeekToPrevious
-import com.dhp.musicplayer.utils.getRepeatMode
 import com.dhp.musicplayer.utils.intent
-import com.dhp.musicplayer.utils.preferences
-import com.dhp.musicplayer.utils.queueLoopEnabledKey
 import com.dhp.musicplayer.utils.shouldBePlaying
-import com.dhp.musicplayer.utils.trackLoopEnabledKey
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
 
-@UnstableApi
-@Suppress("DEPRECATION")
-@AndroidEntryPoint
-class ExoPlayerService: Service(), Player.Listener,
-    SharedPreferences.OnSharedPreferenceChangeListener{
-
-    @Inject
-    lateinit var repository: Repository
+@OptIn(UnstableApi::class)
+class ExoPlayerService: Service(), Player.Listener{
 
     private val binder = Binder()
+
     private var notificationManager: NotificationManager? = null
     private var isNotificationStarted = false
 
     private lateinit var player: ExoPlayer
+    @UnstableApi
     private lateinit var cache: SimpleCache
     private lateinit var mediaSession: MediaSession
 
     private lateinit var notificationActionReceiver: NotificationActionReceiver
 
     private val metadataBuilder = MediaMetadata.Builder()
-
-     var isOfflineSong = true
+    var isOfflineSong = true
 
     private val stateBuilder = PlaybackState.Builder()
         .setActions(
@@ -109,23 +105,28 @@ class ExoPlayerService: Service(), Player.Listener,
             else -> PlaybackState.STATE_NONE
         }
 
-    override fun onBind(p0: Intent?): IBinder? {
-        Log.d("DHP","ExoplayerService onBind")
+    private class NotificationActionReceiver(private val player: Player) : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                Action.pause.value -> player.pause()
+                Action.play.value -> player.play()
+                Action.next.value -> player.forceSeekToNext()
+                Action.previous.value -> player.forceSeekToPrevious()
+            }
+        }
+    }
 
+    override fun onBind(p0: Intent?): IBinder {
         return binder
     }
 
     override fun onCreate() {
         super.onCreate()
-        Log.d("DHP","ExoplayerService onCreate")
-        preferences.registerOnSharedPreferenceChangeListener(this)
-
         createNotificationChannel()
         val cacheEvictor = when (val size = ExoPlayerDiskCacheMaxSize.`2GB`) {
             ExoPlayerDiskCacheMaxSize.Unlimited -> NoOpCacheEvictor()
             else -> LeastRecentlyUsedCacheEvictor(size.bytes)
         }
-//        val cacheEvictor = LeastRecentlyUsedCacheEvictor((100 * 1024 * 1024).toLong())
         val directory = cacheDir.resolve("exoplayer").also { directory ->
             if (directory.exists()) return@also
 
@@ -142,10 +143,7 @@ class ExoPlayerService: Service(), Player.Listener,
             filesDir.resolve("coil").deleteRecursively()
         }
         cache = SimpleCache(directory, cacheEvictor, StandaloneDatabaseProvider(this))
-//        player = ExoPlayer.Builder(this, createRendersFactory())
         player = ExoPlayer.Builder(this, createRendersFactory(), createMediaSourceFactory(this))
-
-//        player = ExoPlayer.Builder(this)
             .setHandleAudioBecomingNoisy(true)
             .setWakeMode(C.WAKE_MODE_LOCAL)
             .setAudioAttributes(
@@ -157,7 +155,6 @@ class ExoPlayerService: Service(), Player.Listener,
             )
             .setUsePlatformDiagnostics(false)
             .build()
-
 
         player.addListener(this)
 
@@ -176,10 +173,8 @@ class ExoPlayerService: Service(), Player.Listener,
             addAction(Action.previous.value)
         }
 
-        setPLayerRepeatMode()
 
         registerReceiver(notificationActionReceiver, filter)
-
     }
 
     override fun onEvents(player: Player, events: Player.Events) {
@@ -238,6 +233,7 @@ class ExoPlayerService: Service(), Player.Listener,
         }
     }
 
+
     private fun createRendersFactory(): RenderersFactory {
         val audioSink = DefaultAudioSink.Builder()
             .setEnableFloatOutput(false)
@@ -265,14 +261,8 @@ class ExoPlayerService: Service(), Player.Listener,
         }
     }
 
-     fun createMediaSourceFactory(context: Context): MediaSource.Factory {
+    private fun createMediaSourceFactory(context: Context): MediaSource.Factory {
         return DefaultMediaSourceFactory(createDataSourceFactory(context))
-    }
-
-    private fun createExtractorsFactory(): ExtractorsFactory {
-        return ExtractorsFactory {
-            arrayOf(MatroskaExtractor(), FragmentedMp4Extractor())
-        }
     }
 
     private fun createDataSourceFactory(context: Context): DataSource.Factory {
@@ -315,22 +305,18 @@ class ExoPlayerService: Service(), Player.Listener,
                             val urlResult = runBlocking(Dispatchers.IO) {
 //                            repository.getPlayers(videoId)
                                 Innertube.player(PlayerBody(videoId = videoId))
-                            }
-//                        ?.map {
-//                            it.result
-//                        }
+                            }?.mapCatching { body ->
 
-                                ?.mapCatching { body ->
-                                    if (body ==  null) {
-                                        Log.d("DHP","Body null")
-                                        throw PlayableFormatNotFoundException()
-                                    }
-                                    if (body.videoDetails?.videoId != videoId) {
-                                        throw VideoIdMismatchException()
-                                    }
+                                if (body ==  null) {
+                                    Log.d("DHP","Body null")
+                                    throw PlayableFormatNotFoundException()
+                                }
+                                if (body.videoDetails?.videoId != videoId) {
+                                    throw VideoIdMismatchException()
+                                }
 
-                                    when (val status = body.playabilityStatus?.status) {
-                                        "OK" -> body.streamingData?.highestQualityFormat?.let { format ->
+                                when (val status = body.playabilityStatus?.status) {
+                                    "OK" -> body.streamingData?.highestQualityFormat?.let { format ->
 //                                    val mediaItem = runBlocking(Dispatchers.Main) {
 //                                        player.findNextMediaItemById(videoId)
 //                                    }
@@ -363,18 +349,20 @@ class ExoPlayerService: Service(), Player.Listener,
 //                                        )
 //                                    }
 
-                                            format.url
-                                        } ?: throw PlayableFormatNotFoundException()
+                                        format.url
+                                    } ?: throw PlayableFormatNotFoundException()
 
-                                        "UNPLAYABLE" -> throw UnplayableException()
-                                        "LOGIN_REQUIRED" -> throw LoginRequiredException()
-                                        else -> throw PlaybackException(
-                                            status,
-                                            null,
-                                            PlaybackException.ERROR_CODE_REMOTE_ERROR
-                                        )
-                                    }
+                                    "UNPLAYABLE" -> throw UnplayableException()
+                                    "LOGIN_REQUIRED" -> throw LoginRequiredException()
+                                    else -> throw PlaybackException(
+                                        status,
+                                        null,
+                                        PlaybackException.ERROR_CODE_REMOTE_ERROR
+                                    )
                                 }
+                            }
+
+                            Log.d("DHP","url result $urlResult")
 
                             urlResult?.getOrThrow()?.let { url ->
                                 Log.d("DHP","url: $url")
@@ -429,8 +417,8 @@ class ExoPlayerService: Service(), Player.Listener,
             .setAutoCancel(false)
             .setOnlyAlertOnce(true)
             .setShowWhen(false)
-            .setSmallIcon(player.playerError?.let { R.drawable.button_icon }
-                ?: R.drawable.ic_sort)
+            .setSmallIcon(player.playerError?.let { R.drawable.ic_pause }
+                ?: R.drawable.ic_play)
             .setOngoing(false)
 //            .setContentIntent(activityPendingIntent<MainActivity>(
 //                flags = PendingIntent.FLAG_UPDATE_CURRENT
@@ -494,8 +482,6 @@ class ExoPlayerService: Service(), Player.Listener,
     }
 
     override fun onDestroy() {
-        preferences.unregisterOnSharedPreferenceChangeListener(this)
-
         player.stop()
         player.release()
 
@@ -504,6 +490,7 @@ class ExoPlayerService: Service(), Player.Listener,
         mediaSession.isActive = false
         mediaSession.release()
         cache.release()
+        super.onDestroy()
         super.onDestroy()
     }
 
@@ -522,21 +509,7 @@ class ExoPlayerService: Service(), Player.Listener,
         val player: ExoPlayer
             get() = this@ExoPlayerService.player
 
-        var isOffline : Boolean = true
-            get() = this@ExoPlayerService.isOfflineSong
-
         val exoPlayerService = this@ExoPlayerService
-    }
-
-    private class NotificationActionReceiver(private val player: Player) : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                Action.pause.value -> player.pause()
-                Action.play.value -> player.play()
-                Action.next.value -> player.forceSeekToNext()
-                Action.previous.value -> player.forceSeekToPrevious()
-            }
-        }
     }
 
     @JvmInline
@@ -562,27 +535,6 @@ class ExoPlayerService: Service(), Player.Listener,
         const val NotificationId = 1001
         const val NotificationChannelId = "default_channel_id"
 
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        when(key) {
-            queueLoopEnabledKey -> {
-                com.dhp.musicplayer.utils.Log.d("onSharedPreferenceChanged: ${preferences.getRepeatMode(queueLoopEnabledKey)}")
-                setPLayerRepeatMode()
-            }
-
-        }
-    }
-
-    private fun setPLayerRepeatMode() {
-        val currentMode =
-        when(preferences.getRepeatMode(queueLoopEnabledKey)) {
-            RepeatMode.ONE-> Player.REPEAT_MODE_ONE
-            RepeatMode.ALL -> Player.REPEAT_MODE_ALL
-            else -> Player.REPEAT_MODE_OFF
-        }
-        com.dhp.musicplayer.utils.Log.d("setPLayerRepeatMode: $currentMode")
-        player.repeatMode = currentMode
     }
 
 }

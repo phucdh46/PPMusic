@@ -18,9 +18,8 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="${appName}"
-
         android:supportsRtl="true"
-        android:theme="@style/BaseTheme.Default"
+        android:theme="@style/Theme.App"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
