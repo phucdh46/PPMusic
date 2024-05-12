@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool
+import org.gradle.configurationcache.extensions.capitalized
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -7,9 +10,25 @@ plugins {
     alias(libs.plugins.googleServices)
     alias(libs.plugins.crashlytics)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.protobuf)
 }
 
 android {
+
+    // Issue Hilt using DataStore and Proto https://github.com/google/dagger/issues/4051
+    androidComponents {
+        onVariants(selector().all()) { variant ->
+            afterEvaluate {
+                project.tasks.getByName("ksp" + variant.name.capitalized() + "Kotlin") {
+                    val buildConfigTask = project.tasks.getByName("generate${variant.name.capitalized()}Proto")
+                            as com.google.protobuf.gradle.GenerateProtoTask
+                    dependsOn(buildConfigTask)
+                    (this as AbstractKotlinCompileTool<*>).setSource(buildConfigTask.outputBaseDir)
+                }
+            }
+        }
+    }
+
     namespace = "com.dhp.musicplayer"
     compileSdk = 34
 
@@ -17,8 +36,8 @@ android {
         applicationId = "com.dhp.musicplayer"
         minSdk = 26
         targetSdk = 34
-        versionCode = 103
-        versionName = "1.0.3"
+        versionCode = 104
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -51,7 +70,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
-//        compose = true
+        compose = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -66,16 +85,29 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
-//    implementation(libs.androidx.lifecycle.runtime.ktx)
-//    implementation(libs.androidx.activity.compose)
-//    implementation(platform(libs.androidx.compose.bom))
-//    implementation(libs.androidx.ui)
-//    implementation(libs.androidx.ui.graphics)
-//    implementation(libs.androidx.ui.tooling.preview)
-//    implementation(libs.androidx.material3)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.coil.compose)
+    implementation(libs.runtime.livedata)
+
+    api(libs.protobuf.kotlin.lite)
+    api(libs.androidx.dataStore.core)
 
     implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
+
+    implementation(libs.accompanist.permissions)
+    implementation(libs.accompanist.placeholder)
+    implementation(libs.accompanist.pager)
+
     implementation(libs.bumptech.glide)
     implementation(libs.androidx.media)
     implementation(libs.coil.kt)
@@ -83,6 +115,7 @@ dependencies {
     implementation(libs.androidx.preference)
     implementation(libs.squareup.moshi)
     ksp(libs.squareup.moshi.kotlin.codegen)
+
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.rxjava3.retrofit.adapter)
@@ -92,24 +125,24 @@ dependencies {
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.exoplayer.dash)
     implementation(libs.media3.ui)
+
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.encoding)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.logging)
     implementation(libs.brotli)
+
     implementation(libs.material)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
     implementation(libs.navigation.fragment)
+
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
 
-//    implementation(libs.afollestad.material.dialogs.core)
-//    implementation(libs.afollestad.material.dialogs.input)
-//    implementation(libs.afollestad.material.dialogs.color)
-//    implementation(libs.afollestad.material.cab)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -118,4 +151,7 @@ dependencies {
 //    androidTestImplementation(libs.androidx.ui.test.junit4)
 //    debugImplementation(libs.androidx.ui.tooling)
 //    debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation("androidx.compose.material:material-icons-extended")
+
 }

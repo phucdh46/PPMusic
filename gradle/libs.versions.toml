@@ -1,6 +1,6 @@
 [versions]
 agp = "8.3.2"
-kotlin = "1.9.10"
+kotlin = "1.9.22"
 coreKtx = "1.12.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -9,12 +9,25 @@ lifecycleRuntimeKtx = "2.7.0"
 activityCompose = "1.8.2"
 composeBom = "2023.08.00"
 
-hilt = "2.48.1"
+androidxNavigation = "2.7.4"
+material3Android = "1.2.1"
+
+protobufPlugin = "0.9.4"
+protobuf = "3.24.1"
+androidxDataStore = "1.0.0"
+androidxHiltNavigationCompose = "1.2.0"
+androidxLifecycle = "2.7.0"
+composeRuntime = "1.6.1"
+accompanist = "0.34.0"
+placeholder = "0.26.3-beta"
+kotlinParcelize = "1.8.10"
+
+hilt = "2.51"
 serialization = "1.6.10"
 ksp = "1.9.10-1.0.13"
 glide = "4.15.0"
 media = "1.6.0"
-coil = "2.2.2"
+coil = "2.6.0"
 window = "1.0.0"
 preference-ktx = "1.2.0"
 moshi = "1.14.0"
@@ -34,10 +47,7 @@ lifecycle = "2.6.1"
 navigation = "2.6.0"
 room = "2.6.1"
 
-afollestad_materialCab_version = "2.0.1"
-afollestad_dialog_version = "3.3.0"
 kotlinPlugin = "1.8.10"
-kotlinxSerializationJson = "1.6.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,46 +64,59 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "composeRuntime" }
+
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
+androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
+
+protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
+androidx-dataStore-core = { group = "androidx.datastore", name = "datastore", version.ref = "androidxDataStore" }
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
+androidx-lifecycle-runtimeCompose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+
 bumptech-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+
 androidx-media = { group = "androidx.media", name = "media", version.ref = "media" }
 coil-kt = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 androidx-window = { group = "androidx.window", name = "window", version.ref = "window" }
 androidx-preference = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference-ktx" }
 squareup-moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
 squareup-moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
+
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 rxjava3-retrofit-adapter = { group = "com.github.akarnokd", name = "rxjava3-retrofit-adapter", version.ref = "retrofitAdapter" }
 okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+
 media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "exoplayer" }
 media3-exoplayer-dash = { group = "androidx.media3", name = "media3-exoplayer-dash", version.ref = "exoplayer" }
 media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "exoplayer" }
+
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-encoding = { group = "io.ktor", name = "ktor-client-encoding", version.ref = "ktor" }
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
 brotli = { group = "org.brotli", name = "dec", version.ref = "brotli" }
+
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebaseAnalytics" }
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
+
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
-
-#material dialog
-afollestad-material-dialogs-color = { module = "com.afollestad.material-dialogs:color", version.ref = "afollestad_dialog_version" }
-afollestad-material-dialogs-core = { module = "com.afollestad.material-dialogs:core", version.ref = "afollestad_dialog_version" }
-afollestad-material-dialogs-input = { module = "com.afollestad.material-dialogs:input", version.ref = "afollestad_dialog_version" }
-afollestad-material-cab = { module = "com.afollestad:material-cab", version.ref = "afollestad_materialCab_version" }
-
-#
+accompanist-placeholder = { group = "com.google.accompanist", name = "accompanist-placeholder-material", version.ref = "placeholder" }
+accompanist-pager = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "placeholder" }
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -104,4 +127,5 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize",  version.ref = "kotlinPlugin"  }
+protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 
