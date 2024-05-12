@@ -10,11 +10,11 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.dhp.musicplayer.enums.PlaylistSortBy
 import com.dhp.musicplayer.enums.SortOrder
-import com.dhp.musicplayer.models.Playlist
-import com.dhp.musicplayer.models.PlaylistPreview
-import com.dhp.musicplayer.models.PlaylistWithSongs
-import com.dhp.musicplayer.models.Song
-import com.dhp.musicplayer.models.SongPlaylistMap
+import com.dhp.musicplayer.model.Playlist
+import com.dhp.musicplayer.model.PlaylistPreview
+import com.dhp.musicplayer.model.PlaylistWithSongs
+import com.dhp.musicplayer.model.Song
+import com.dhp.musicplayer.model.SongPlaylistMap
 import kotlinx.coroutines.flow.Flow
 
 @Dao
