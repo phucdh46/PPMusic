@@ -8,16 +8,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.dhp.musicplayer.navigation.FOR_YOU_ROUTE
-import com.dhp.musicplayer.navigation.LIBRARY_ROUTE
-import com.dhp.musicplayer.navigation.SEARCH_ROUTE
 import com.dhp.musicplayer.navigation.TopLevelDestination
 import com.dhp.musicplayer.navigation.TopLevelDestination.FOR_YOU
 import com.dhp.musicplayer.navigation.TopLevelDestination.LIBRARY
 import com.dhp.musicplayer.navigation.TopLevelDestination.SEARCH
-import com.dhp.musicplayer.navigation.navigateToForYou
-import com.dhp.musicplayer.navigation.navigateToLibrary
-import com.dhp.musicplayer.navigation.navigateToSearch
+import com.dhp.musicplayer.ui.screens.home.navigation.FOR_YOU_ROUTE
+import com.dhp.musicplayer.ui.screens.home.navigation.navigateToForYou
+import com.dhp.musicplayer.ui.screens.library.navigation.LIBRARY_ROUTE
+import com.dhp.musicplayer.ui.screens.library.navigation.navigateToLibrary
+import com.dhp.musicplayer.ui.screens.search.navigation.SEARCH_ROUTE
+import com.dhp.musicplayer.ui.screens.search.navigation.navigateToSearch
+
 
 @Composable
 fun rememberAppState(

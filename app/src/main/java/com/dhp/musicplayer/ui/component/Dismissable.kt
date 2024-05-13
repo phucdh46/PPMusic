@@ -19,9 +19,10 @@ fun Dismissable(
         }
         true
     })
-    SwipeToDismissBox(
-        state = dismissState,
-        backgroundContent = {},
-        content = { content() }
-    )
+//    SwipeToDismissBox(
+//        state = dismissState,
+//        backgroundContent = {},
+//        content = { content() }
+//    )
+    content()
 }

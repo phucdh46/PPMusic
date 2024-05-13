@@ -1,6 +1,5 @@
 package com.dhp.musicplayer.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -13,6 +12,7 @@ import com.dhp.musicplayer.enums.SortOrder
 import com.dhp.musicplayer.model.Playlist
 import com.dhp.musicplayer.model.PlaylistPreview
 import com.dhp.musicplayer.model.PlaylistWithSongs
+import com.dhp.musicplayer.model.SearchHistory
 import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.model.SongPlaylistMap
 import kotlinx.coroutines.flow.Flow
@@ -22,35 +22,39 @@ interface MusicDao {
 
     @Transaction
     @Query("SELECT * FROM Playlist WHERE id = :id")
-    fun playlistWithSongs(id: Long): LiveData<PlaylistWithSongs?>
+    fun playlistWithSongs(id: Long): Flow<PlaylistWithSongs?>
 
     @Transaction
     @Query("SELECT * FROM Playlist")
     fun playlists(): Flow<List<Playlist>?>
 
     @Transaction
-    @Query("SELECT id, name, (SELECT COUNT(*) FROM SongPlaylistMap WHERE playlistId = id) as songCount FROM Playlist ORDER BY name ASC")
+    @Query("SELECT id, name, browseId, (SELECT COUNT(*) FROM SongPlaylistMap WHERE playlistId = id) as songCount FROM Playlist ORDER BY name ASC")
     fun playlistPreviewsByNameAsc(): Flow<List<PlaylistPreview>>
 
     @Transaction
-    @Query("SELECT id, name, (SELECT COUNT(*) FROM SongPlaylistMap WHERE playlistId = id) as songCount FROM Playlist ORDER BY ROWID ASC")
+    @Query("SELECT id, name, browseId, (SELECT COUNT(*) FROM SongPlaylistMap WHERE playlistId = id) as songCount FROM Playlist ORDER BY ROWID ASC")
     fun playlistPreviewsByDateAddedAsc(): Flow<List<PlaylistPreview>>
 
     @Transaction
-    @Query("SELECT id, name, (SELECT COUNT(*) FROM SongPlaylistMap WHERE playlistId = id) as songCount FROM Playlist ORDER BY songCount ASC")
+    @Query("SELECT id, name, browseId, (SELECT COUNT(*) FROM SongPlaylistMap WHERE playlistId = id) as songCount FROM Playlist ORDER BY songCount ASC")
     fun playlistPreviewsByDateSongCountAsc(): Flow<List<PlaylistPreview>>
 
     @Transaction
-    @Query("SELECT id, name, (SELECT COUNT(*) FROM SongPlaylistMap WHERE playlistId = id) as songCount FROM Playlist ORDER BY name DESC")
+    @Query("SELECT id, name, browseId, (SELECT COUNT(*) FROM SongPlaylistMap WHERE playlistId = id) as songCount FROM Playlist ORDER BY name DESC")
     fun playlistPreviewsByNameDesc(): Flow<List<PlaylistPreview>>
 
     @Transaction
-    @Query("SELECT id, name, (SELECT COUNT(*) FROM SongPlaylistMap WHERE playlistId = id) as songCount FROM Playlist ORDER BY ROWID DESC")
+    @Query("SELECT id, name, browseId, (SELECT COUNT(*) FROM SongPlaylistMap WHERE playlistId = id) as songCount FROM Playlist ORDER BY ROWID DESC")
     fun playlistPreviewsByDateAddedDesc(): Flow<List<PlaylistPreview>>
 
     @Transaction
-    @Query("SELECT id, name, (SELECT COUNT(*) FROM SongPlaylistMap WHERE playlistId = id) as songCount FROM Playlist ORDER BY songCount DESC")
+    @Query("SELECT id, name, browseId, (SELECT COUNT(*) FROM SongPlaylistMap WHERE playlistId = id) as songCount FROM Playlist ORDER BY songCount DESC")
     fun playlistPreviewsByDateSongCountDesc(): Flow<List<PlaylistPreview>>
+
+    @Transaction
+    @Query("SELECT id, name, browseId, (SELECT COUNT(*) FROM SongPlaylistMap WHERE playlistId = id) as songCount FROM Playlist ")
+    fun playlistPreviews(): Flow<List<PlaylistPreview>>
 
     fun playlistPreviews(
         sortBy: PlaylistSortBy,
@@ -106,5 +110,21 @@ interface MusicDao {
 
     @Delete
     fun delete(songPlaylistMap: SongPlaylistMap)
+
+    @Query("SELECT * FROM SearchHistory WHERE query LIKE :query ORDER BY timestamp DESC")
+    fun queries(query: String): Flow<List<SearchHistory>>
+
+    @Query("SELECT * FROM SearchHistory ORDER BY timestamp DESC")
+    fun getAllQueries(): Flow<List<SearchHistory>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(searchQuery: SearchHistory)
+
+    @Delete
+    fun delete(searchQuery: SearchHistory)
+
+    @Query("SELECT * FROM Song")
+    fun getAllSongs(): Flow<List<Song>>
+
 
 }
