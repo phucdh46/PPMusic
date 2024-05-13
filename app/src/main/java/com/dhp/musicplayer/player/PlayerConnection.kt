@@ -7,12 +7,12 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import com.dhp.musicplayer.asMediaItem
 import com.dhp.musicplayer.enums.RepeatMode
+import com.dhp.musicplayer.extensions.asMediaItem
+import com.dhp.musicplayer.extensions.currentMetadata
+import com.dhp.musicplayer.extensions.playQueue
 import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.model.Song
-import com.dhp.musicplayer.utils.currentMetadata
-import com.dhp.musicplayer.utils.playQueue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -69,11 +69,12 @@ class PlayerConnection(
         repeatMode.value = player.repeatMode
     }
 
-    fun playSongWithQueue(song: Song, musics: List<Song>?) {
+    fun playSongWithQueue(song: Song?, musics: List<Song>?) {
         musics ?: return
         player.clearMediaItems()
         player.addMediaItems(musics.map { it.asMediaItem() })
         _currentQueue.value = musics
+        song?:return
         exoPlayerService.isOfflineSong = song.isOffline
         player.playQueue(song.asMediaItem())
     }

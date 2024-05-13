@@ -1,8 +1,5 @@
 package com.dhp.musicplayer.ui.component
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBackIosNew
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -15,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import com.dhp.musicplayer.ui.IconApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,7 +35,7 @@ fun TopAppBar(
                 showBackButton -> {
                     IconButton(onClick = onNavigationClick) {
                         Icon(
-                            imageVector = Icons.Rounded.ArrowBackIosNew,
+                            imageVector = IconApp.ArrowBackIosNew,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface,
                         )
@@ -46,7 +44,7 @@ fun TopAppBar(
                 showSearchButton -> {
                     IconButton(onClick = onSearchClick) {
                         Icon(
-                            imageVector = Icons.Rounded.Search,
+                            imageVector = IconApp.Search,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface,
                         )

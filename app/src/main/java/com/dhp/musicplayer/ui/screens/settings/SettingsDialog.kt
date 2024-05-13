@@ -1,6 +1,7 @@
 package com.dhp.musicplayer.ui.screens.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dhp.musicplayer.BuildConfig
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.enums.DarkThemeConfig
 
@@ -73,10 +75,19 @@ fun SettingsDialog(
         modifier = Modifier.widthIn(max = configuration.screenWidthDp.dp - 80.dp),
         onDismissRequest = { onDismiss() },
         title = {
-            Text(
-                text = stringResource(R.string.feature_settings_title),
-                style = MaterialTheme.typography.titleLarge,
-            )
+            Row(horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically){
+                Text(
+                    text = stringResource(R.string.feature_settings_title),
+                    style = MaterialTheme.typography.titleLarge,
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = BuildConfig.VERSION_NAME,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+
         },
         text = {
             HorizontalDivider()

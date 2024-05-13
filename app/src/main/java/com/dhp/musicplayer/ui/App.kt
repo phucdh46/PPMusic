@@ -26,22 +26,22 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.dhp.musicplayer.R
-import com.dhp.musicplayer.getAppBarTitle
-import com.dhp.musicplayer.navigation.FOR_YOU_ROUTE
-import com.dhp.musicplayer.navigation.LIBRARY_ROUTE
-import com.dhp.musicplayer.navigation.SEARCH_BY_TEXT_ROUTE
-import com.dhp.musicplayer.navigation.SEARCH_ROUTE
 import com.dhp.musicplayer.navigation.ScreensShowBackOnTopAppBar
 import com.dhp.musicplayer.navigation.ScreensShowBottomNavigation
 import com.dhp.musicplayer.navigation.ScreensShowSearchOnTopAppBar
 import com.dhp.musicplayer.navigation.TopLevelDestination
-import com.dhp.musicplayer.navigation.navigateToSearchByText
 import com.dhp.musicplayer.ui.component.NavHost
 import com.dhp.musicplayer.ui.component.NavigationBar
 import com.dhp.musicplayer.ui.component.NavigationBarItem
 import com.dhp.musicplayer.ui.component.TopAppBar
 import com.dhp.musicplayer.ui.player.PlaybackMiniControls
+import com.dhp.musicplayer.ui.screens.home.navigation.FOR_YOU_ROUTE
+import com.dhp.musicplayer.ui.screens.library.navigation.LIBRARY_ROUTE
+import com.dhp.musicplayer.ui.screens.search.navigation.SEARCH_BY_TEXT_ROUTE
+import com.dhp.musicplayer.ui.screens.search.navigation.SEARCH_ROUTE
+import com.dhp.musicplayer.ui.screens.search.navigation.navigateToSearchByText
 import com.dhp.musicplayer.ui.screens.settings.SettingsDialog
+import com.dhp.musicplayer.utils.getAppBarTitle
 
 @Composable
 fun App(appState: AppState, modifier: Modifier = Modifier) {
@@ -151,7 +151,7 @@ internal fun App(
                         ),
                         showBackButton = shouldBackOnTopAppBar,
                         showSearchButton = shouldSearchOnTopAppBar,
-                        actionIcon = Icons.Settings,
+                        actionIcon = IconApp.Settings,
                         actionIconContentDescription = stringResource(
                             id = R.string.feature_settings_top_app_bar_action_icon_description,
                         ),

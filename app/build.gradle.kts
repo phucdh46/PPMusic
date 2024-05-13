@@ -69,8 +69,8 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
-        viewBinding = true
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
@@ -162,6 +162,9 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
 
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.app.update)
+    implementation(libs.app.update.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

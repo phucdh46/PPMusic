@@ -9,13 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
-import com.dhp.musicplayer.navigation.FOR_YOU_ROUTE
-import com.dhp.musicplayer.navigation.forYouScreen
-import com.dhp.musicplayer.navigation.libraryScreen
-import com.dhp.musicplayer.navigation.playlistDetailScreen
-import com.dhp.musicplayer.navigation.searchScreen
-import com.dhp.musicplayer.navigation.searchScreenByText
 import com.dhp.musicplayer.ui.AppState
+import com.dhp.musicplayer.ui.screens.home.navigation.FOR_YOU_ROUTE
+import com.dhp.musicplayer.ui.screens.home.navigation.forYouScreen
+import com.dhp.musicplayer.ui.screens.library.navigation.libraryScreen
+import com.dhp.musicplayer.ui.screens.library.navigation.playlistDetailScreen
+import com.dhp.musicplayer.ui.screens.search.navigation.searchScreen
+import com.dhp.musicplayer.ui.screens.search.navigation.searchScreenByText
 
 @Composable
 fun NavigationBar(
@@ -83,18 +83,11 @@ fun NavHost(
         startDestination = startDestination,
         modifier = modifier,
     ) {
-        forYouScreen(navController = navController)
-        searchScreen(navController)
-        searchScreenByText(navController = navController)
-        libraryScreen (
-            navController = navController,
-        )
-        playlistDetailScreen(navController = navController)
-//        searchScreen(
-//            onBackClick = navController::popBackStack,
-//            onInterestsClick = { appState.navigateToTopLevelDestination(INTERESTS) },
-//            onTopicClick = navController::navigateToInterests,
-//        )
-//        interestsListDetailScreen()
+        forYouScreen(appState = appState)
+        searchScreen(appState = appState)
+        searchScreenByText(appState = appState)
+        libraryScreen (appState = appState)
+        playlistDetailScreen(appState = appState)
+
     }
 }
