@@ -49,6 +49,8 @@ navigation = "2.6.0"
 room = "2.6.1"
 
 kotlinPlugin = "1.8.10"
+androidxCoreSplashscreen = "1.0.1"
+appUpdate = "2.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -119,6 +121,10 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 accompanist-placeholder = { group = "com.google.accompanist", name = "accompanist-placeholder-material", version.ref = "placeholder" }
 accompanist-pager = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "placeholder" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
+
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashscreen" }
+app-update = { group = "com.google.android.play", name = "app-update", version.ref = "appUpdate" }
+app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "appUpdate" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

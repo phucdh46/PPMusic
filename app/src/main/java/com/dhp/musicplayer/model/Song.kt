@@ -45,10 +45,3 @@ data class Song (
         }
     }
 }
-
-fun Song.asMusic(): Music {
-    return Music(
-        title = title,
-        artist = artistsText
-    )
-}

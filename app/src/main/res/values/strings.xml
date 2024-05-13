@@ -23,6 +23,14 @@
 
     <string name="loading_data">Loading data</string>
     <string name="empty_data">"No available data"</string>
+    <string name="empty_recent_searches">There are no recent searches</string>
+    <string name="empty_playlists">There are no playlists</string>
+    <string name="empty_songs">There are no songs</string>
+
+    <string name="permission_not_available">Read file and media permission not available</string>
+    <string name="permission_denied">The read file and media permission is important for this app.
+ Please grant the permission.</string>
+    <string name="grant_permission_button">Grant permission</string>
 
     <plurals name="n_song">
         <item quantity="one">%d song</item>

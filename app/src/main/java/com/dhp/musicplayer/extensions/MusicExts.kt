@@ -1,27 +1,13 @@
 package com.dhp.musicplayer.extensions
 
 import android.content.ContentUris
-import android.content.Context
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.media.MediaExtractor
-import android.media.MediaFormat
 import android.net.Uri
 import android.provider.MediaStore
-import android.util.Log
-import androidx.core.graphics.drawable.toBitmap
+import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
-import coil.Coil
-import coil.request.ImageRequest
-import com.dhp.musicplayer.R
-import com.dhp.musicplayer.model.MediaMetadata
-import com.dhp.musicplayer.model.Music
+import androidx.media3.common.MediaMetadata
 import com.dhp.musicplayer.model.Song
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
 
 
 fun Long.toContentUri(): Uri = ContentUris.withAppendedId(
@@ -29,25 +15,32 @@ fun Long.toContentUri(): Uri = ContentUris.withAppendedId(
     this
 )
 
-fun Music?.toName(): String? {
-//    if (GoPreferences.getPrefsInstance().songsVisualization == GoConstants.FN) {
-//        return this?.displayName?.toFilenameWithoutExtension()
-//    }
-    return this?.title
+fun Uri?.thumbnail(size: Int): Uri? {
+    return toString().thumbnail(size)?.toUri()
 }
 
-val MediaItem.metadata: MediaMetadata?
-    get() = localConfiguration?.tag as? MediaMetadata
-
-fun MediaItem.toSong(): Song {
-    val idLocal = mediaId.toLongOrNull()
-    return Song(
-        id = mediaId,
-        idLocal = mediaId.toLongOrNull() ?: 0L,
-        title = mediaMetadata.title!!.toString(),
-        artistsText = mediaMetadata.artist?.toString(),
-        durationText = mediaMetadata.extras?.getString("durationText"),
-        thumbnailUrl = mediaMetadata.artworkUri?.toString(),
-        isOffline = idLocal != null
-    )
+fun Song.asMediaItem(): MediaItem {
+    val builder = MediaItem.Builder()
+        .setMediaId(id)
+        .setCustomCacheKey(id)
+        .setMediaMetadata(
+            MediaMetadata.Builder()
+                .setTitle(title)
+                .setArtist(artistsText)
+//                .setAlbumTitle(album)
+                .setArtworkUri(thumbnailUrl?.toUri())
+                .setExtras(
+                    bundleOf(
+//                        "albumId" to albumId,
+                        "durationText" to durationText,
+                        "artistNames" to artistsText,
+//                        "artistIds" to authors?.mapNotNull { it.endpoint?.browseId },
+                    )
+                )
+                .build()
+        )
+    if (isOffline) builder.setUri(idLocal.toContentUri()) else builder.setUri(id)
+    return builder.build()
 }
+
+
