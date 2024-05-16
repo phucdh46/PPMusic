@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
-import com.dhp.musicplayer.LocalPlayerConnection
+import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.player.PlayerConnection
 import com.google.accompanist.pager.ExperimentalPagerApi

@@ -13,12 +13,6 @@ import com.dhp.musicplayer.ui.screens.library.navigation.PLAYLIST_DETAIL_ROUTE
 import com.dhp.musicplayer.ui.screens.search.navigation.SEARCH_BY_TEXT_ROUTE
 import com.dhp.musicplayer.ui.screens.search.navigation.SEARCH_ROUTE
 
-//import com.dhp.musicplayer.ui.screens.library.LibraryScreen
-//import com.dhp.musicplayer.ui.screens.library.playlist_detail.PlaylistDetailScreen
-//import com.dhp.musicplayer.ui.screens.search.SearchScreen
-//import com.dhp.musicplayer.ui.screens.search.search_text.SearchByTextScreen
-
-
 fun NavGraphBuilder.composableAnimation(
     route: String,
     deepLinks: List<NavDeepLink> = emptyList(),
@@ -53,8 +47,24 @@ fun NavGraphBuilder.composableUpDownAnimation(
     content()
 }
 
+fun NavGraphBuilder.composableWithoutAnimation(
+    route: String,
+    deepLinks: List<NavDeepLink> = emptyList(),
+    arguments: List<NamedNavArgument> = emptyList(),
+    content: (@Composable () -> Unit),
+) = composable(
+    route = route,
+    deepLinks = deepLinks,
+    arguments =arguments,
+    enterTransition = null,
+    exitTransition = null,
+    popEnterTransition = null,
+    popExitTransition = null,
+) {
+    content()
+}
 
 val ScreensShowBottomNavigation = listOf(FOR_YOU_ROUTE, SEARCH_ROUTE, LIBRARY_ROUTE)
-val ScreensShowBackOnTopAppBar = listOf( SEARCH_BY_TEXT_ROUTE, PLAYLIST_DETAIL_ROUTE)
-val ScreensShowSearchOnTopAppBar = listOf(SEARCH_ROUTE)
+val ScreensShowBackOnTopAppBar = listOf(SEARCH_BY_TEXT_ROUTE, PLAYLIST_DETAIL_ROUTE)
+val ScreensShowSearchOnTopAppBar = listOf(FOR_YOU_ROUTE, SEARCH_ROUTE, LIBRARY_ROUTE)
 

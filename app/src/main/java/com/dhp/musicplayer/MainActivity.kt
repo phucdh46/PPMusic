@@ -211,11 +211,7 @@ class MainActivity : ComponentActivity() {
                 val readAudioPermissionState = rememberPermissionState(PERMISSION_READ_AUDIO)
                 if (readAudioPermissionState.status.isGranted) {
                     doBindService()
-                    CompositionLocalProvider(
-                        LocalPlayerConnection provides playerConnection,
-                    ) {
-                        App(appState = appState)
-                    }
+                    App(appState = appState, playerConnection)
                 } else {
                     Column(
                         Modifier
@@ -298,7 +294,3 @@ private val lightScrim = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
  * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:activity/activity/src/main/java/androidx/activity/EdgeToEdge.kt;l=40-44;drc=27e7d52e8604a080133e8b842db10c89b4482598
  */
 private val darkScrim = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
-
-
-val LocalPlayerConnection =
-    staticCompositionLocalOf<PlayerConnection?> { error("No PlayerConnection provided") }

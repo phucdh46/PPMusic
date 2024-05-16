@@ -4,7 +4,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.dhp.musicplayer.navigation.composableAnimation
 import com.dhp.musicplayer.navigation.composableUpDownAnimation
+import com.dhp.musicplayer.navigation.composableWithoutAnimation
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.screens.search.SearchScreen
 import com.dhp.musicplayer.ui.screens.search.search_text.SearchByTextScreen
@@ -38,7 +40,7 @@ fun NavController.navigateToSearchByText(query: String? = null, navOptions: NavO
 fun NavGraphBuilder.searchScreenByText(
     appState: AppState
 ) {
-    composableUpDownAnimation(route = SEARCH_BY_TEXT_ROUTE) {
+    composableWithoutAnimation(route = SEARCH_BY_TEXT_ROUTE) {
         SearchByTextScreen(appState)
     }
 }

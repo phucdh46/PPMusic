@@ -7,9 +7,12 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -39,12 +42,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.dhp.musicplayer.LocalPlayerConnection
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.GridThumbnailHeight
 import com.dhp.musicplayer.enums.LibraryViewType
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.IconApp
+import com.dhp.musicplayer.ui.LocalWindowInsets
 import com.dhp.musicplayer.ui.component.ConfirmationDialog
 import com.dhp.musicplayer.ui.component.EmptyList
 import com.dhp.musicplayer.ui.component.HideOnScrollFAB
@@ -171,7 +174,10 @@ fun LibraryScreen(
     if (playlistPreview.isEmpty()) {
        EmptyList(text = stringResource(id = R.string.empty_playlists), floatContent = {
            FloatingActionButton(
-               modifier = Modifier.padding(16.dp).align(Alignment.BottomEnd),
+               modifier = Modifier
+               .windowInsetsPadding(LocalWindowInsets.current.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
+                   .padding(16.dp)
+                   .align(Alignment.BottomEnd),
                onClick = { showAddPlaylistDialog = true }
            ) {
                Icon(
@@ -182,7 +188,9 @@ fun LibraryScreen(
        })
     } else {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .windowInsetsPadding(LocalWindowInsets.current)
+                .fillMaxSize()
         ) {
             when (viewType) {
                 LibraryViewType.LIST -> {

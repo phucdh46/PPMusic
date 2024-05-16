@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -41,7 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.dhp.musicplayer.LocalPlayerConnection
+import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.px
@@ -49,6 +50,7 @@ import com.dhp.musicplayer.model.PlaylistWithSongs
 import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.IconApp
+import com.dhp.musicplayer.ui.LocalWindowInsets
 import com.dhp.musicplayer.ui.component.ConfirmationDialog
 import com.dhp.musicplayer.ui.component.EmptyList
 import com.dhp.musicplayer.ui.component.TextFieldDialog
@@ -150,7 +152,9 @@ fun PlaylistDetailScreen(
         )
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier
+        .windowInsetsPadding(LocalWindowInsets.current)
+        .fillMaxSize()) {
         LazyColumn(state = lazyListState, modifier = Modifier.padding(16.dp)) {
             stickyHeader {
                 Row(modifier = Modifier
