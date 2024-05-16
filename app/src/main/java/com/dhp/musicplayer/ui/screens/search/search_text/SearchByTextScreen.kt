@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsTopHeight
@@ -36,7 +37,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.dhp.musicplayer.LocalPlayerConnection
+import com.dhp.musicplayer.ui.LocalPlayerConnection
+import com.dhp.musicplayer.constant.TopBarHeight
 import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.IconApp
@@ -100,7 +102,7 @@ private fun SearchToolbar(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().height(TopBarHeight),
     ) {
         IconButton(onClick = { onBackClick() }) {
             Icon(
@@ -163,7 +165,7 @@ private fun SearchTextField(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+//            .padding(16.dp)
             .focusRequester(focusRequester)
             .onKeyEvent {
                 if (it.key == Key.Enter) {

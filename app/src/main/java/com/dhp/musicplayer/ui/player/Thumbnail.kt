@@ -32,7 +32,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import coil.compose.AsyncImage
-import com.dhp.musicplayer.LocalPlayerConnection
+import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.px

@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.dhp.musicplayer.navigation.composableAnimation
 import com.dhp.musicplayer.navigation.composableUpDownAnimation
+import com.dhp.musicplayer.navigation.composableWithoutAnimation
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.screens.library.LibraryScreen
 import com.dhp.musicplayer.ui.screens.library.playlist_detail.PlaylistDetailScreen
@@ -30,7 +31,7 @@ fun NavController.navigateToLibrary(topicId: String? = null, navOptions: NavOpti
 fun NavGraphBuilder.libraryScreen(
     appState: AppState
 ) {
-    composableAnimation(
+    composableWithoutAnimation(
         route = LIBRARY_ROUTE,
         arguments = listOf(
             navArgument(TOPIC_ID_ARG) {
@@ -62,7 +63,7 @@ fun NavController.navigateToPlaylistDetail(playlistId: Long? = null, navOptions:
 fun NavGraphBuilder.playlistDetailScreen(
     appState: AppState
 ) {
-    composableUpDownAnimation(
+    composableWithoutAnimation(
         route = PLAYLIST_DETAIL_ROUTE,
         arguments = listOf(
             navArgument(PLAYLIST_ID_ARG) {

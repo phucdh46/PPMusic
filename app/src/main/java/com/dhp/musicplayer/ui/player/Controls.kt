@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
-import com.dhp.musicplayer.LocalPlayerConnection
+import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.enums.RepeatMode
 import com.dhp.musicplayer.extensions.forceSeekToNext
@@ -91,12 +91,6 @@ fun Controls(
         label = "playPauseRoundness",
         targetValueByState = { if (it) 32.dp else 16.dp }
     )
-    var openBottomSheet by rememberSaveable { mutableStateOf(false) }
-    if (openBottomSheet) {
-        Queue(onDismissBottomSheet =  {
-            openBottomSheet = false
-        })
-    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -189,25 +183,7 @@ fun Controls(
                 .fillMaxWidth()
         ) {
             IconButton(
-//                icon = if (likedAt == null) R.drawable.heart_outline else R.drawable.heart,
-//                icon =  R.drawable.info,
-//                color = MaterialTheme.colorScheme.primary,
-                onClick = { openBottomSheet = !openBottomSheet
-
-//                    val currentMediaItem = binder.player.currentMediaItem
-//                    query {
-//                        if (Database.like(
-//                                mediaId,
-//                                if (likedAt == null) System.currentTimeMillis() else null
-//                            ) == 0
-//                        ) {
-//                            currentMediaItem
-//                                ?.takeIf { it.mediaId == mediaId }
-//                                ?.let {
-//                                    Database.insert(currentMediaItem, Song::toggleLike)
-//                                }
-//                        }
-//                    }
+                onClick = {
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -221,8 +197,6 @@ fun Controls(
             }
 
             IconButton(
-//                icon = R.drawable.ic_skip_previous,
-//                color = MaterialTheme.colorScheme.primary,
                 onClick = playerConnection.player::forceSeekToPrevious,
                 modifier = Modifier
                     .weight(1f)

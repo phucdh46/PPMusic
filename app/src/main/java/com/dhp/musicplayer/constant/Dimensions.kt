@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 
 val NavigationBarHeight = 80.dp
 val MiniPlayerHeight = 64.dp
+val TopBarHeight = 56.dp
 
 val ThumbnailCornerRadius = 6.dp
 

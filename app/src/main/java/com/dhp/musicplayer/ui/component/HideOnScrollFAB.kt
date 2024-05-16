@@ -4,7 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.FloatingActionButton
@@ -19,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.dhp.musicplayer.ui.LocalWindowInsets
 
 
 @Composable
@@ -51,10 +55,10 @@ fun BoxScope.HideOnScrollFAB(
         exit = slideOutVertically { it },
         modifier = Modifier
             .align(Alignment.BottomEnd)
-//            .windowInsetsPadding(
-//                LocalPlayerAwareWindowInsets.current
-//                    .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
-//            )
+            .windowInsetsPadding(
+                LocalWindowInsets.current
+                    .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
+            )
     ) {
         FloatingActionButton(
             modifier = Modifier.padding(16.dp),
@@ -99,10 +103,10 @@ fun BoxScope.HideOnScrollFAB(
         exit = slideOutVertically { it },
         modifier = Modifier
             .align(Alignment.BottomEnd)
-//            .windowInsetsPadding(
-//                LocalPlayerAwareWindowInsets.current
-//                    .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
-//            )
+            .windowInsetsPadding(
+                LocalWindowInsets.current
+                    .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
+            )
     ) {
         FloatingActionButton(
             modifier = Modifier.padding(16.dp),

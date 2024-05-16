@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,13 +42,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.dhp.musicplayer.LocalPlayerConnection
+import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.px
 import com.dhp.musicplayer.extensions.isLandscape
 import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.IconApp
+import com.dhp.musicplayer.ui.LocalWindowInsets
 import com.dhp.musicplayer.ui.dialog.AddToPlaylistDialog
 import com.dhp.musicplayer.ui.items.AlbumItem
 import com.dhp.musicplayer.ui.items.HomeGridSection
@@ -70,7 +73,7 @@ internal fun ForYouScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun ForYouScreen(
     musicList: List<Song>,
@@ -103,7 +106,10 @@ internal fun ForYouScreen(
     val albumThumbnailSizeDp = 108.dp
     val albumThumbnailSizePx = albumThumbnailSizeDp.px
 
-    BoxWithConstraints {
+    BoxWithConstraints(modifier = Modifier
+        .windowInsetsPadding(LocalWindowInsets.current)
+        .background(MaterialTheme.colorScheme.background)
+    ) {
         val quickPicksLazyGridItemWidthFactor = if (isLandscape && maxWidth * 0.475f >= 320.dp) {
             0.475f
         } else {
