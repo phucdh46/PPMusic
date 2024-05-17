@@ -1,5 +1,6 @@
 package com.dhp.musicplayer.ui.screens.home
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,8 +23,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,12 +44,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.px
+import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.extensions.isLandscape
 import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.ui.LocalWindowInsets
-import com.dhp.musicplayer.ui.dialog.AddToPlaylistDialog
+import com.dhp.musicplayer.ui.component.LocalMenuState
+import com.dhp.musicplayer.ui.component.MediaItemMenu
 import com.dhp.musicplayer.ui.items.AlbumItem
 import com.dhp.musicplayer.ui.items.HomeGridSection
 import com.dhp.musicplayer.ui.items.SongItem
@@ -73,7 +74,9 @@ internal fun ForYouScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class,
+    ExperimentalAnimationApi::class
+)
 @Composable
 internal fun ForYouScreen(
     musicList: List<Song>,
@@ -89,19 +92,7 @@ internal fun ForYouScreen(
         mutableStateOf(false)
     }
 
-    AddToPlaylistDialog(
-        isVisible = showChoosePlaylistDialog,
-        onDismiss = { showChoosePlaylistDialog = false },
-        currentSelectSong = currentSelectSong
-    )
-
-//    Surface(modifier = modifier
-//        .fillMaxSize()
-//        .padding(start = 8.dp, top = 8.dp, end = 8.dp)
-//        .clip(RoundedCornerShape(8.dp))
-//        , color = MaterialTheme.colorScheme.surfaceVariant
-//
-//    ) {
+    val menuState = LocalMenuState.current
     val quickPicksLazyGridState = rememberLazyGridState()
     val albumThumbnailSizeDp = 108.dp
     val albumThumbnailSizePx = albumThumbnailSizeDp.px
@@ -157,8 +148,6 @@ internal fun ForYouScreen(
                     .height((Dimensions.thumbnails.song + Dimensions.itemsVerticalPadding * 2) * 4)
             ) {
                 items(musicList, key = {it.id}) { song ->
-                    var expanded by remember { mutableStateOf(false) }
-
                     SongItem(
                         song = song,
                         thumbnailSizePx = Dimensions.thumbnails.song.px,
@@ -166,21 +155,18 @@ internal fun ForYouScreen(
                         trailingContent = {
                             Box {
                                 IconButton(
-                                    onClick = { expanded = true }
+                                    onClick = {
+                                        menuState.show {
+                                            MediaItemMenu(
+                                                onDismiss = menuState::dismiss,
+                                                mediaItem = song.asMediaItem()
+                                            )
+                                        }
+                                    }
                                 ) {
                                     Icon(
                                         imageVector = IconApp.MoreVert,
                                         contentDescription = null
-                                    )
-                                }
-                                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                                    DropdownMenuItem(
-                                        text = {  Text("Add to playlist") },
-                                        onClick = {
-                                            currentSelectSong = song
-                                            expanded = false
-                                            showChoosePlaylistDialog = true
-                                        }
                                     )
                                 }
                             }
@@ -188,7 +174,12 @@ internal fun ForYouScreen(
                         modifier = Modifier
                             .combinedClickable(
                                 onLongClick = {
-
+                                    menuState.show {
+                                        MediaItemMenu(
+                                            onDismiss = menuState::dismiss,
+                                            mediaItem = song.asMediaItem()
+                                        )
+                                    }
                                 },
                                 onClick = {
                                     onItemClicked(song)

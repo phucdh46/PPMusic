@@ -43,3 +43,19 @@ fun Player.forcePlay(mediaItem: MediaItem) {
     playWhenReady = true
     prepare()
 }
+
+fun Player.addNext(mediaItem: MediaItem) {
+    if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
+        forcePlay(mediaItem)
+    } else {
+        addMediaItem(currentMediaItemIndex + 1, mediaItem)
+    }
+}
+
+fun Player.enqueue(mediaItem: MediaItem) {
+    if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
+        forcePlay(mediaItem)
+    } else {
+        addMediaItem(mediaItemCount, mediaItem)
+    }
+}

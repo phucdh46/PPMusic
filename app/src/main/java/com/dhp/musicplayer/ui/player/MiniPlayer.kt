@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -63,6 +65,7 @@ import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.player.PlayerConnection
 import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.utils.Logg
+import com.dhp.musicplayer.utils.drawableToBitmap
 import com.google.accompanist.pager.ExperimentalPagerApi
 import kotlin.math.absoluteValue
 
@@ -87,6 +90,7 @@ fun MiniPlayer(
         modifier = modifier
             .fillMaxWidth()
             .height(MiniPlayerHeight)
+            .background(MaterialTheme.colorScheme.background)
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
     ) {
         Column {
@@ -158,19 +162,26 @@ private fun RowScope.PlaybackNowPlaying(
         val size = maxHeight - 12.dp
         val sizeMod = if (size.isSpecified) Modifier.size(size) else Modifier
         Log.d("DHP","minicontrol: $song")
-        AsyncImage(
-            model = if (song?.isOffline == true) song.getBitmap(LocalContext.current) else song?.thumbnailUrl ,
-
-            error = painterResource(id = R.drawable.logo),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
+        if(song?.isOffline == true) {
+            Image(
+                bitmap = (song.getBitmap(LocalContext.current) ?: drawableToBitmap(LocalContext.current)).asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier.padding(8.dp)
+            )
+        } else {
+            AsyncImage(
+                model = song?.thumbnailUrl,
+                error = painterResource(id = R.drawable.logo),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
 //                    .clip(LocalAppearance.current.thumbnailShape)
 //                .fillMaxSize()
-                .padding(8.dp)
+                    .padding(8.dp)
 
-                .then(sizeMod)
-        )
+                    .then(sizeMod)
+            )
+        }
 
         if (!coverOnly && song != null)
             PlaybackPager(song = song) { song, _, pagerMod ->

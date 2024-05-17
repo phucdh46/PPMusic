@@ -1,11 +1,13 @@
 package com.dhp.musicplayer.ui.items
 
 import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -20,6 +22,7 @@ import com.dhp.musicplayer.R
 import com.dhp.musicplayer.extensions.thumbnail
 import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.utils.Logg
+import com.dhp.musicplayer.utils.drawableToBitmap
 
 @Composable
 fun AlbumItem(
@@ -63,18 +66,22 @@ fun AlbumItem(
         thumbnailSizeDp = thumbnailSizeDp,
         modifier = modifier
     ) {
-
-        AsyncImage(
-            model = if (isOffline) bitmap else thumbnailUrl?.thumbnail(thumbnailSizePx),
-            contentDescription = null,
-            error = painterResource(id = R.drawable.logo),
-            onLoading = { Logg.d("AsyncImage onLoading")},
-            onError = { Logg.d("AsyncImage onError")},
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
+        if(isOffline) {
+            Image(bitmap = (bitmap ?: drawableToBitmap(LocalContext.current)).asImageBitmap(), contentDescription = null)
+        } else {
+            AsyncImage(
+                model = thumbnailUrl?.thumbnail(thumbnailSizePx),
+                contentDescription = null,
+                error = painterResource(id = R.drawable.logo),
+                onLoading = { Logg.d("AsyncImage onLoading")},
+                onError = { Logg.d("AsyncImage onError")},
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
 //                .clip(thumbnailShape)
-                .size(thumbnailSizeDp)
-        )
+                    .size(thumbnailSizeDp)
+            )
+        }
+
 
         ItemInfoContainer {
             Text(

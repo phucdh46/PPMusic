@@ -106,6 +106,7 @@ fun PlayerQueue(
                 )
                 .asPaddingValues(),
             modifier = Modifier
+                .fillMaxSize()
 //                .reorderable(reorderableState)
                 .background(MaterialTheme.colorScheme.background)
                 .nestedScroll(state.preUpPostDownNestedScrollConnection)

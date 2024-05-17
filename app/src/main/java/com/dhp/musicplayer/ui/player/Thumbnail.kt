@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -44,6 +46,7 @@ import com.dhp.musicplayer.innertube.LoginRequiredException
 import com.dhp.musicplayer.innertube.PlayableFormatNotFoundException
 import com.dhp.musicplayer.innertube.UnplayableException
 import com.dhp.musicplayer.innertube.VideoIdMismatchException
+import com.dhp.musicplayer.utils.drawableToBitmap
 import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException
 
@@ -127,23 +130,38 @@ fun Thumbnail(
         ) {
             Log.d("DHP","Thumbnail: ${currentWindow.mediaItem.mediaMetadata.artworkUri.thumbnail(thumbnailSizePx)}")
             val song = currentWindow.mediaItem.toSong()
-            AsyncImage(
+            if(song.isOffline) {
+                Image(
+                    bitmap = (song.getBitmap(LocalContext.current) ?: drawableToBitmap(LocalContext.current)).asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onTap = { onShowLyrics(true) },
+                                onLongPress = { onShowStatsForNerds(true) }
+                            )
+                        }
+                        .fillMaxSize()
+                )
+            } else {
+                AsyncImage(
 //                model = currentWindow.mediaItem.mediaMetadata.artworkUri.thumbnail(thumbnailSizePx),
-                model =  if (song.isOffline) song.getBitmap(LocalContext.current) else song.thumbnailUrl?.thumbnail(thumbnailSizePx),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(id = R.drawable.logo),
-                error = painterResource(id = R.drawable.logo),
-                modifier = Modifier
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onTap = { onShowLyrics(true) },
-                            onLongPress = { onShowStatsForNerds(true) }
-                        )
-                    }
-                    .fillMaxSize()
+                    model =song.thumbnailUrl?.thumbnail(thumbnailSizePx),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.logo),
+                    error = painterResource(id = R.drawable.logo),
+                    modifier = Modifier
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onTap = { onShowLyrics(true) },
+                                onLongPress = { onShowStatsForNerds(true) }
+                            )
+                        }
+                        .fillMaxSize()
 
-            )
+                )
+            }
 
 //            Lyrics(
 //                mediaId = currentWindow.mediaItem.mediaId,
