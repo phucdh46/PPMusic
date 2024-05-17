@@ -1,13 +1,17 @@
 package com.dhp.musicplayer.ui
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowForwardIos
 import androidx.compose.material.icons.automirrored.rounded.List
+import androidx.compose.material.icons.automirrored.rounded.NextPlan
+import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.material.icons.automirrored.rounded.PlaylistPlay
 import androidx.compose.material.icons.automirrored.rounded.ShortText
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Upcoming
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
+import androidx.compose.material.icons.rounded.ArrowForwardIos
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DownloadForOffline
@@ -18,9 +22,11 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.material.icons.rounded.MusicNote
+import androidx.compose.material.icons.rounded.NextPlan
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.PlaylistAdd
 import androidx.compose.material.icons.rounded.Queue
 import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.RepeatOne
@@ -54,6 +60,9 @@ object IconApp {
     val GridView = Icons.Rounded.GridView
     val KeyboardArrowDown = Icons.Rounded.KeyboardArrowDown
 
+    val NextPlan = Icons.AutoMirrored.Rounded.NextPlan
+    val ArrowForwardIos = Icons.AutoMirrored.Rounded.ArrowForwardIos
+    val PlaylistAdd = Icons.AutoMirrored.Rounded.PlaylistAdd
     val List = Icons.AutoMirrored.Rounded.List
     val PlaylistPlay = Icons.AutoMirrored.Rounded.PlaylistPlay
     val Pause = Icons.Rounded.Pause

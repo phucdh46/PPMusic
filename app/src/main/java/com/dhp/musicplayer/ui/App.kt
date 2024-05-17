@@ -48,6 +48,8 @@ import com.dhp.musicplayer.navigation.ScreensShowBottomNavigation
 import com.dhp.musicplayer.navigation.ScreensShowSearchOnTopAppBar
 import com.dhp.musicplayer.navigation.TopLevelDestination
 import com.dhp.musicplayer.player.PlayerConnection
+import com.dhp.musicplayer.ui.component.BottomSheetMenu
+import com.dhp.musicplayer.ui.component.LocalMenuState
 import com.dhp.musicplayer.ui.component.NavHost
 import com.dhp.musicplayer.ui.component.NavigationBar
 import com.dhp.musicplayer.ui.component.NavigationBarItem
@@ -252,8 +254,11 @@ internal fun App(
                         )
                     }
                 }
+                BottomSheetMenu(
+                    state = LocalMenuState.current,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
             }
-
         }
     }
 }

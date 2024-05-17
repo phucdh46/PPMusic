@@ -26,12 +26,14 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.GridThumbnailHeight
 import com.dhp.musicplayer.constant.ListItemHeight
 import com.dhp.musicplayer.constant.ListThumbnailSize
+import com.dhp.musicplayer.constant.PlayListItemHeight
 import com.dhp.musicplayer.constant.ThumbnailCornerRadius
 import com.dhp.musicplayer.model.PlaylistPreview
 import com.dhp.musicplayer.ui.IconApp
@@ -96,6 +98,7 @@ fun PlaylistListItem(
 //        }
     },
     trailingContent = trailingContent,
+    listItemHeight = PlayListItemHeight,
     modifier = modifier
 )
 
@@ -107,6 +110,7 @@ fun ListItem(
     badges: @Composable RowScope.() -> Unit = {},
     thumbnailContent: @Composable () -> Unit,
     trailingContent: @Composable RowScope.() -> Unit = {},
+    listItemHeight: Dp = ListItemHeight,
 ) = ListItem(
     title = title,
     subtitle = {
@@ -124,6 +128,7 @@ fun ListItem(
     },
     thumbnailContent = thumbnailContent,
     trailingContent = trailingContent,
+    listItemHeight = listItemHeight,
     modifier = modifier
 )
 
@@ -134,12 +139,13 @@ inline fun ListItem(
     noinline subtitle: (@Composable RowScope.() -> Unit)? = null,
     thumbnailContent: @Composable () -> Unit,
     trailingContent: @Composable RowScope.() -> Unit = {},
+    listItemHeight: Dp = ListItemHeight,
 ) {
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .height(ListItemHeight)
+            .height(listItemHeight)
             .padding(horizontal = 6.dp),
     ) {
         Box(

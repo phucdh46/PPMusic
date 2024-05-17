@@ -2,6 +2,7 @@ package com.dhp.musicplayer.ui.items
 
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -21,6 +23,7 @@ import coil.compose.AsyncImage
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.extensions.thumbnail
 import com.dhp.musicplayer.model.Song
+import com.dhp.musicplayer.utils.drawableToBitmap
 
 @Composable
 fun SongItem(
@@ -65,22 +68,20 @@ fun SongItem(
         duration = duration,
         thumbnailSizeDp = thumbnailSizeDp,
         thumbnailContent = {
-//            val data = if (isOffline) bitmap else thumbnailUrl
-            AsyncImage(
-                model = if (isOffline) bitmap else thumbnailUrl
-//                ImageRequest.Builder(LocalContext.current)
-//                    .data(data)
-//                    .crossfade(true)
-//                    .build()
-                ,
-                error = painterResource(id = R.drawable.logo),
-                placeholder = painterResource(id = R.drawable.logo),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-//                    .clip(LocalAppearance.current.thumbnailShape)
-                    .fillMaxSize()
-            )
+            if(isOffline) {
+                Image(bitmap = (bitmap ?: drawableToBitmap(LocalContext.current)).asImageBitmap(), contentDescription = null)
+            } else {
+                AsyncImage(
+                    model = thumbnailUrl,
+                    error = painterResource(id = R.drawable.logo),
+//                placeholder = painterResource(id = R.drawable.logo),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+            }
+
 
             onThumbnailContent?.invoke(this)
         },
@@ -99,7 +100,6 @@ fun SongItem(
     modifier: Modifier = Modifier,
     trailingContent: @Composable (() -> Unit)? = null,
 ) {
-//    val (_, typography) = LocalAppearance.current
 
     ItemContainer(
         alternative = false,

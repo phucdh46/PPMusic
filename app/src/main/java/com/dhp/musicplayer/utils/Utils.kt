@@ -1,5 +1,8 @@
 package com.dhp.musicplayer.utils
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.text.format.DateUtils
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.ui.screens.library.navigation.PLAYLIST_DETAIL_ROUTE
@@ -32,3 +35,7 @@ fun joinByBullet(vararg str: String?) =
     str.filterNot {
         it.isNullOrEmpty()
     }.joinToString(separator = " • ")
+
+fun drawableToBitmap(context: Context, drawable: Int = R.drawable.logo) : Bitmap {
+    return BitmapFactory.decodeResource(context.resources, drawable)
+}

@@ -1,7 +1,10 @@
 package com.dhp.musicplayer.ui.component
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,8 +39,14 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.dhp.musicplayer.R
+import com.dhp.musicplayer.constant.Dimensions
+import com.dhp.musicplayer.constant.px
+import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.model.Song
+import com.dhp.musicplayer.ui.IconApp
+import com.dhp.musicplayer.ui.items.SongItem
 
+@OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun SongList(
     exploreList: List<Song>,
@@ -44,18 +54,51 @@ fun SongList(
     modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState()
 ) {
+    val menuState = LocalMenuState.current
     LazyColumn(
         modifier = modifier,
         contentPadding = WindowInsets.navigationBars.asPaddingValues(),
         state = listState
     ) {
-//        items(exploreList, key = {it.id}) { exploreItem ->
-        items(exploreList) { exploreItem ->
+        items(exploreList, key = {it.id}) { song ->
             Column(Modifier.fillParentMaxWidth()) {
-                SongListItem(
-                    modifier = Modifier.fillParentMaxWidth(),
-                    song = exploreItem,
-                    onItemClicked = onItemClicked
+                SongItem(
+                    song = song,
+                    thumbnailSizePx = Dimensions.thumbnails.song.px,
+                    thumbnailSizeDp = Dimensions.thumbnails.song,
+                    trailingContent = {
+                    Box {
+                        androidx.compose.material3.IconButton(
+                            onClick = {
+                                menuState.show {
+                                    MediaItemMenu(
+                                        onDismiss = menuState::dismiss,
+                                        mediaItem = song.asMediaItem()
+                                    )
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = IconApp.MoreVert,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .combinedClickable(
+                        onLongClick = {
+                            menuState.show {
+                                MediaItemMenu(
+                                    onDismiss = menuState::dismiss,
+                                    mediaItem = song.asMediaItem()
+                                )
+                            }
+                        },
+                        onClick = {
+                            onItemClicked(song)
+                        }
+                    )
                 )
                 HorizontalDivider()
             }

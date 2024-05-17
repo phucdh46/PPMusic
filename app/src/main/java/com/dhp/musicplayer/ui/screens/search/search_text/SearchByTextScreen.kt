@@ -1,6 +1,7 @@
 package com.dhp.musicplayer.ui.screens.search.search_text
 
 import android.util.Log
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,6 +43,7 @@ import com.dhp.musicplayer.constant.TopBarHeight
 import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.IconApp
+import com.dhp.musicplayer.ui.component.LocalMenuState
 import com.dhp.musicplayer.ui.component.SongList
 
 @Composable
@@ -61,6 +63,7 @@ fun SearchByTextScreen(
     )
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SearchByTextScreen(
     modifier: Modifier = Modifier,
@@ -71,6 +74,7 @@ fun SearchByTextScreen(
     onBackClick: () -> Unit = {},
 
     ) {
+    val menuState = LocalMenuState.current
     val playerConnection = LocalPlayerConnection.current
     Column(modifier = modifier.fillMaxSize()) {
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))

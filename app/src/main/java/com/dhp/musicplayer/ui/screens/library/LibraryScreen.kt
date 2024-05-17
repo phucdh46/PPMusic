@@ -78,7 +78,7 @@ fun LibraryScreen(
 
     if (showAddPlaylistDialog) {
         TextFieldDialog(
-            icon = { Icon(painter = painterResource(R.drawable.ic_play), contentDescription = null) },
+            icon = { Icon(imageVector = IconApp.PlaylistAdd, contentDescription = null) },
             title = { Text(text = stringResource(R.string.create_playlist)) },
             onDismiss = { showAddPlaylistDialog = false },
             onDone = { playlistName ->
