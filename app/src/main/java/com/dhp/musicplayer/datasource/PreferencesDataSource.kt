@@ -3,10 +3,8 @@ package com.dhp.musicplayer.datasource
 import androidx.datastore.core.DataStore
 import com.dhp.musicplayer.UserPreferences
 import com.dhp.musicplayer.UserPreferences.DarkThemeConfigProto
-import com.dhp.musicplayer.UserPreferences.RepeatModeProto
 import com.dhp.musicplayer.copy
 import com.dhp.musicplayer.enums.DarkThemeConfig
-import com.dhp.musicplayer.enums.RepeatMode
 import com.dhp.musicplayer.model.UserData
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -27,11 +25,6 @@ class PreferencesDataSource @Inject constructor(
                     DarkThemeConfigProto.DARK_THEME_CONFIG_LIGHT -> DarkThemeConfig.LIGHT
                     DarkThemeConfigProto.DARK_THEME_CONFIG_DARK -> DarkThemeConfig.DARK
                 },
-                repeatMode = when (it.repeatMode) {
-                    RepeatModeProto.REPEAT_ONE -> RepeatMode.REPEAT_ONE
-                    RepeatModeProto.REPEAT_ALL -> RepeatMode.REPEAT_ALL
-                    else -> RepeatMode.NONE
-                }
             )
         }
 
@@ -47,15 +40,4 @@ class PreferencesDataSource @Inject constructor(
         }
     }
 
-    suspend fun setRepeatMode(repeatMode: RepeatMode) {
-        userPreferences.updateData {
-            it.copy {
-                this.repeatMode = when (repeatMode) {
-                    RepeatMode.REPEAT_ONE -> RepeatModeProto.REPEAT_ONE
-                    RepeatMode.REPEAT_ALL -> RepeatModeProto.REPEAT_ALL
-                    else -> RepeatModeProto.NONE
-                }
-            }
-        }
-    }
 }

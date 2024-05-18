@@ -13,11 +13,4 @@ message UserPreferences {
   }
   DarkThemeConfigProto dark_theme_config = 1;
 
-  enum RepeatModeProto {
-    NONE = 0;
-    REPEAT_ONE = 1;
-    REPEAT_ALL = 2;
-  }
-  RepeatModeProto repeat_mode = 2;
-
 }
