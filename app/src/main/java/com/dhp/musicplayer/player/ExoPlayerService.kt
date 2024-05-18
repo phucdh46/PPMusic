@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
+import androidx.datastore.preferences.core.edit
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
@@ -47,13 +48,17 @@ import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
 import com.dhp.musicplayer.R
+import com.dhp.musicplayer.constant.PersistentQueueDataKey
 import com.dhp.musicplayer.enums.ExoPlayerDiskCacheMaxSize
+import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.extensions.forceSeekToNext
 import com.dhp.musicplayer.extensions.forceSeekToPrevious
 import com.dhp.musicplayer.extensions.intent
 import com.dhp.musicplayer.extensions.isAtLeastAndroid6
 import com.dhp.musicplayer.extensions.isAtLeastAndroid8
+import com.dhp.musicplayer.extensions.mediaItems
 import com.dhp.musicplayer.extensions.shouldBePlaying
+import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.innertube.Innertube
 import com.dhp.musicplayer.innertube.LoginRequiredException
 import com.dhp.musicplayer.innertube.PlayableFormatNotFoundException
@@ -62,6 +67,10 @@ import com.dhp.musicplayer.innertube.UnplayableException
 import com.dhp.musicplayer.innertube.VideoIdMismatchException
 import com.dhp.musicplayer.innertube.model.RingBuffer
 import com.dhp.musicplayer.innertube.player
+import com.dhp.musicplayer.model.PersistQueue
+import com.dhp.musicplayer.utils.dataStore
+import com.dhp.musicplayer.utils.get
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 
@@ -82,6 +91,7 @@ class ExoPlayerService: Service(), Player.Listener{
 
     private val metadataBuilder = MediaMetadata.Builder()
     var isOfflineSong = true
+    private val gson = Gson()
 
     private val stateBuilder = PlaybackState.Builder()
         .setActions(
@@ -158,6 +168,8 @@ class ExoPlayerService: Service(), Player.Listener{
 
         player.addListener(this)
 
+        restoreQueue()
+
         mediaSession = MediaSession(baseContext, "PlayerService")
         mediaSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS or MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS)
         mediaSession.setCallback(SessionCallback(player))
@@ -175,6 +187,17 @@ class ExoPlayerService: Service(), Player.Listener{
 
 
         registerReceiver(notificationActionReceiver, filter)
+    }
+
+    private fun restoreQueue() {
+        runBlocking {
+            val queueJson = dataStore[PersistentQueueDataKey]
+            val persistQueue = gson.fromJson(queueJson, PersistQueue::class.java)
+            player.addMediaItems(persistQueue.items.map { it.asMediaItem() })
+            player.seekToDefaultPosition(persistQueue.mediaItemIndex)
+            player.seekTo(persistQueue.position)
+            player.prepare()
+        }
     }
 
     override fun onEvents(player: Player, events: Player.Events) {
@@ -481,6 +504,24 @@ class ExoPlayerService: Service(), Player.Listener{
         }
     }
 
+    private fun saveQueue() {
+        runBlocking {
+        val queue = PersistQueue(
+                items = player.mediaItems.map { it.toSong() },
+                mediaItemIndex = player.currentMediaItemIndex,
+                position = player.currentPosition
+            )
+            dataStore.edit {
+                it[PersistentQueueDataKey] = gson.toJson(queue)
+            }
+        }
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        saveQueue()
+        return super.onUnbind(intent)
+    }
+
     override fun onDestroy() {
         player.stop()
         player.release()
@@ -490,7 +531,6 @@ class ExoPlayerService: Service(), Player.Listener{
         mediaSession.isActive = false
         mediaSession.release()
         cache.release()
-        super.onDestroy()
         super.onDestroy()
     }
 
