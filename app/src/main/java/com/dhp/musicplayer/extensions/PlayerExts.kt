@@ -59,3 +59,17 @@ fun Player.enqueue(mediaItem: MediaItem) {
         addMediaItem(mediaItemCount, mediaItem)
     }
 }
+
+val Player.mediaItems: List<MediaItem>
+    get() = object : AbstractList<MediaItem>() {
+        override val size: Int
+            get() = mediaItemCount
+
+        override fun get(index: Int): MediaItem = getMediaItemAt(index)
+    }
+
+val Timeline.mediaItems: List<MediaItem>
+    get() = List(windowCount) {
+        getWindow(it, Timeline.Window()).mediaItem
+    }
+

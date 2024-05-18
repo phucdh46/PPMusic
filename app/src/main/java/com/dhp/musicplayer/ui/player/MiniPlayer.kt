@@ -90,7 +90,7 @@ fun MiniPlayer(
         modifier = modifier
             .fillMaxWidth()
             .height(MiniPlayerHeight)
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
     ) {
         Column {
