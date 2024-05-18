@@ -7,7 +7,6 @@ import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -26,17 +25,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -46,9 +40,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.media3.common.Player
 import com.dhp.musicplayer.enums.DarkThemeConfig
-import com.dhp.musicplayer.enums.RepeatMode
 import com.dhp.musicplayer.extensions.intent
 import com.dhp.musicplayer.extensions.isAtLeastAndroid33
 import com.dhp.musicplayer.player.ExoPlayerService
@@ -60,7 +52,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
@@ -184,10 +175,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val darkTheme = shouldUseDarkTheme(uiState)
 
-            LaunchedEffect(playerConnection) {
-                playerConnection?.player?.repeatMode = getRepeatMode(uiState)
-            }
-
             DisposableEffect(darkTheme) {
                 enableEdgeToEdge(
                     statusBarStyle = SystemBarStyle.auto(
@@ -268,18 +255,6 @@ private fun shouldUseDarkTheme(
         DarkThemeConfig.FOLLOW_SYSTEM -> isSystemInDarkTheme()
         DarkThemeConfig.LIGHT -> false
         DarkThemeConfig.DARK -> true
-    }
-}
-
-
-private fun getRepeatMode(
-    uiState: MainActivityUiState,
-): Int = when (uiState) {
-    MainActivityUiState.Loading -> Player.REPEAT_MODE_OFF
-    is MainActivityUiState.Success -> when (uiState.userData.repeatMode) {
-        RepeatMode.REPEAT_ONE -> Player.REPEAT_MODE_ONE
-        RepeatMode.REPEAT_ALL -> Player.REPEAT_MODE_ALL
-        else -> Player.REPEAT_MODE_OFF
     }
 }
 

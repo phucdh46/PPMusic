@@ -1,13 +1,11 @@
 package com.dhp.musicplayer.player
 
 import android.content.Context
-import android.os.Handler
 import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import com.dhp.musicplayer.enums.RepeatMode
 import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.extensions.currentMetadata
 import com.dhp.musicplayer.extensions.playQueue
@@ -19,7 +17,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import java.util.concurrent.ScheduledExecutorService
 
 class PlayerConnection(
     val context: Context,
@@ -57,13 +54,6 @@ class PlayerConnection(
 
     val error = MutableStateFlow<PlaybackException?>(null)
 
-    //    lateinit var mediaPlayerInterface: MediaPlayerInterface
-    private var mExecutor: ScheduledExecutorService? = null
-    private var mSeekBarPositionUpdateTask: Runnable? = null
-    private var mSeekBarPositionUpdateHandler: Handler? = null
-    private var mSeekBarPositionUpdateRunnable: Runnable? = null
-
-
     init {
         player.addListener(this)
         repeatMode.value = player.repeatMode
@@ -91,14 +81,6 @@ class PlayerConnection(
                 player.prepare()
             }
             player.play()
-        }
-    }
-
-    fun updateRepeatMode(repeatMode: RepeatMode) {
-        player.repeatMode = when (repeatMode) {
-            RepeatMode.NONE -> Player.REPEAT_MODE_ONE
-            RepeatMode.REPEAT_ONE -> Player.REPEAT_MODE_ALL
-            RepeatMode.REPEAT_ALL -> Player.REPEAT_MODE_OFF
         }
     }
 

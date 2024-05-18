@@ -24,10 +24,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,18 +37,16 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
-import com.dhp.musicplayer.ui.LocalPlayerConnection
+import androidx.media3.common.Player
 import com.dhp.musicplayer.R
-import com.dhp.musicplayer.enums.RepeatMode
 import com.dhp.musicplayer.extensions.forceSeekToNext
 import com.dhp.musicplayer.extensions.forceSeekToPrevious
+import com.dhp.musicplayer.extensions.toggleRepeatMode
 import com.dhp.musicplayer.ui.IconApp
+import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.ui.component.SeekBar
-import com.dhp.musicplayer.ui.screens.nowplaying.NowPlayingUiState
-import com.dhp.musicplayer.ui.screens.nowplaying.NowPlayingViewModel
 import com.dhp.musicplayer.utils.formatAsDuration
 
 
@@ -61,28 +59,13 @@ fun Controls(
     position: Long,
     duration: Long,
     modifier: Modifier = Modifier,
-    viewModel: NowPlayingViewModel = hiltViewModel()
     ) {
-//    val (colorPalette, typography) = LocalAppearance.current
-
-//    val binder = LocalPlayerServiceBinder.current
-//    binder?.player ?: return
     val playerConnection = LocalPlayerConnection.current ?: return
     val shouldBePlaying by playerConnection.isPlaying.collectAsStateWithLifecycle()
 
-//    var trackLoopEnabled by rememberPreference(trackLoopEnabledKey, defaultValue = false)
-    val nowPLayingUiState by viewModel.nowPlayingUiState.collectAsStateWithLifecycle()
     var scrubbingPosition by remember(mediaId) {
         mutableStateOf<Long?>(null)
     }
-
-//    var likedAt by rememberSaveable {
-//        mutableStateOf<Long?>(null)
-//    }
-
-//    LaunchedEffect(mediaId) {
-//        Database.likedAt(mediaId).distinctUntilChanged().collect { likedAt = it }
-//    }
 
     val shouldBePlayingTransition = updateTransition(shouldBePlaying, label = "shouldBePlaying")
 
@@ -91,6 +74,8 @@ fun Controls(
         label = "playPauseRoundness",
         targetValueByState = { if (it) 32.dp else 16.dp }
     )
+    val repeatMode by playerConnection.repeatMode.collectAsState()
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -243,8 +228,6 @@ fun Controls(
             )
 
             IconButton(
-//                icon = R.drawable.ic_skip_next,
-//                color = MaterialTheme.colorScheme.primary,
                 onClick = playerConnection.player::forceSeekToNext,
                 modifier = Modifier
                     .weight(1f)
@@ -253,31 +236,20 @@ fun Controls(
                 Icon(imageVector = IconApp.SkipNext, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             }
 
-            val currentRepeatMode : RepeatMode = when(nowPLayingUiState) {
-                NowPlayingUiState.Loading -> RepeatMode.NONE
-                is NowPlayingUiState.Success -> (nowPLayingUiState as NowPlayingUiState.Success).settings.repeatMode
-            }
             IconButton(
-//                icon = R.drawable.infinite,
-//                color = if (trackLoopEnabled) colorPalette.text else colorPalette.textDisabled,
-//                color = MaterialTheme.colorScheme.primary,
-//                onClick = { trackLoopEnabled = !trackLoopEnabled },
-                onClick = {
-                    viewModel.updateRepeatMode(currentRepeatMode)
-                    playerConnection.updateRepeatMode(currentRepeatMode)
-                          },
+                onClick = { playerConnection.player.toggleRepeatMode() },
                 modifier = Modifier
                     .weight(1f)
                     .size(24.dp)
             ){
                 Icon(
-                    imageVector = when(currentRepeatMode) {
-                        RepeatMode.REPEAT_ONE -> IconApp.RepeatOne
+                    imageVector = when(repeatMode) {
+                        Player.REPEAT_MODE_ONE -> IconApp.RepeatOne
                         else -> IconApp.Repeat
                     }  ,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.alpha(if (currentRepeatMode == RepeatMode.NONE) 0.5f else 1f)
+                    modifier = Modifier.alpha(if (repeatMode == Player.REPEAT_MODE_OFF) 0.5f else 1f)
                 )
             }
         }

@@ -73,3 +73,11 @@ val Timeline.mediaItems: List<MediaItem>
         getWindow(it, Timeline.Window()).mediaItem
     }
 
+fun Player.toggleRepeatMode() {
+    repeatMode = when (repeatMode) {
+        Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
+        Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
+        Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_OFF
+        else -> throw IllegalStateException()
+    }
+}

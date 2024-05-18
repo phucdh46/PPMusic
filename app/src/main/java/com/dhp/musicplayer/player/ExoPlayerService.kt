@@ -49,6 +49,7 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.PersistentQueueDataKey
+import com.dhp.musicplayer.constant.RepeatModeKey
 import com.dhp.musicplayer.enums.ExoPlayerDiskCacheMaxSize
 import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.extensions.forceSeekToNext
@@ -71,7 +72,11 @@ import com.dhp.musicplayer.model.PersistQueue
 import com.dhp.musicplayer.utils.dataStore
 import com.dhp.musicplayer.utils.get
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 
 @OptIn(UnstableApi::class)
@@ -92,6 +97,7 @@ class ExoPlayerService: Service(), Player.Listener{
     private val metadataBuilder = MediaMetadata.Builder()
     var isOfflineSong = true
     private val gson = Gson()
+    private val scope = CoroutineScope(Dispatchers.Main) + Job()
 
     private val stateBuilder = PlaybackState.Builder()
         .setActions(
@@ -169,6 +175,7 @@ class ExoPlayerService: Service(), Player.Listener{
         player.addListener(this)
 
         restoreQueue()
+        player.repeatMode = dataStore.get(RepeatModeKey, Player.REPEAT_MODE_OFF)
 
         mediaSession = MediaSession(baseContext, "PlayerService")
         mediaSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS or MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS)
@@ -191,12 +198,16 @@ class ExoPlayerService: Service(), Player.Listener{
 
     private fun restoreQueue() {
         runBlocking {
-            val queueJson = dataStore[PersistentQueueDataKey]
-            val persistQueue = gson.fromJson(queueJson, PersistQueue::class.java)
-            player.addMediaItems(persistQueue.items.map { it.asMediaItem() })
-            player.seekToDefaultPosition(persistQueue.mediaItemIndex)
-            player.seekTo(persistQueue.position)
-            player.prepare()
+            try {
+                val queueJson = dataStore[PersistentQueueDataKey]
+                val persistQueue = gson.fromJson(queueJson, PersistQueue::class.java)
+                player.addMediaItems(persistQueue.items.map { it.asMediaItem() })
+                player.seekToDefaultPosition(persistQueue.mediaItemIndex)
+                player.seekTo(persistQueue.position)
+                player.prepare()
+            } catch (_: Exception){
+
+            }
         }
     }
 
@@ -256,6 +267,13 @@ class ExoPlayerService: Service(), Player.Listener{
         }
     }
 
+    override fun onRepeatModeChanged(repeatMode: Int) {
+        scope.launch {
+            dataStore.edit { settings ->
+                settings[RepeatModeKey] = repeatMode
+            }
+        }
+    }
 
     private fun createRendersFactory(): RenderersFactory {
         val audioSink = DefaultAudioSink.Builder()
