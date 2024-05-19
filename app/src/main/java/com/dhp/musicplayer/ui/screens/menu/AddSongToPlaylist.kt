@@ -4,12 +4,13 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +23,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -30,6 +34,7 @@ import com.dhp.musicplayer.R
 import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.ui.component.TextFieldDialog
+import com.dhp.musicplayer.ui.component.TextIconButton
 import com.dhp.musicplayer.ui.items.PlaylistListItem
 import com.dhp.musicplayer.ui.screens.library.LibraryViewModel
 
@@ -63,24 +68,41 @@ fun AddSongToPlaylist(
             stickyHeader {
                 Column {
                     Text(
-                        text = "Add ${mediaItem.toSong().title.orEmpty()} to playlist",
+                        text = buildAnnotatedString {
+                            append("Add ")
+                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                                append(mediaItem.toSong().title)
+                            }
+                            append(" to playlist")
+                        },
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(20.dp)
                     )
                     HorizontalDivider()
-
-
                 }
-
             }
             item(
                 key = "header",
                 contentType = "CONTENT_TYPE_HEADER"
             ) {
-                Text(
-                    text = "All playlist", style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "All playlist", style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    TextIconButton(
+                        text = "Add",
+                        imageVector = IconApp.Add,
+                        onClick = {
+                            showAddPlaylistDialog = true
+                        }
+                    )
+                }
+                HorizontalDivider()
+
             }
 
             items(
@@ -103,20 +125,6 @@ fun AddSongToPlaylist(
                         .animateItemPlacement()
                 )
             }
-        }
-
-        FloatingActionButton(
-            modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.BottomEnd),
-            onClick = {
-                showAddPlaylistDialog = true
-            }
-        ) {
-            Icon(
-                imageVector = IconApp.Add,
-                contentDescription = null
-            )
         }
     }
 }

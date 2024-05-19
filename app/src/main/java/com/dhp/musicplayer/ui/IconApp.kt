@@ -28,6 +28,7 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.PlaylistAdd
 import androidx.compose.material.icons.rounded.Queue
+import androidx.compose.material.icons.rounded.Reorder
 import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.RepeatOne
 import androidx.compose.material.icons.rounded.Search
@@ -59,6 +60,7 @@ object IconApp {
     val DownloadForOffline = Icons.Rounded.DownloadForOffline
     val GridView = Icons.Rounded.GridView
     val KeyboardArrowDown = Icons.Rounded.KeyboardArrowDown
+    val Reorder = Icons.Rounded.Reorder
 
     val NextPlan = Icons.AutoMirrored.Rounded.NextPlan
     val ArrowForwardIos = Icons.AutoMirrored.Rounded.ArrowForwardIos

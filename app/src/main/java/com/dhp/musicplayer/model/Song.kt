@@ -26,22 +26,15 @@ data class Song (
 ): Parcelable {
 
     fun getBitmap(context: Context): Bitmap? {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return try {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try {
                 context.contentResolver.loadThumbnail(
                     idLocal.toContentUri(), Size(640, 480), null)
             } catch(e: IOException) {
                 null
             }
         } else {
-//                val retriever = MediaMetadataRetriever()
-//                retriever.setDataSource(contentUri)
-//
-//                // Lấy ảnh thumbnail từ tệp âm thanh
-//                val thumbnail = retriever.embeddedPicture?.let { BitmapFactory.decodeByteArray(it, 0, it.size) }
-//
-//                retriever.release()
-            return null
+            null
         }
     }
 }
