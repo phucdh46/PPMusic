@@ -1,19 +1,14 @@
 package com.dhp.musicplayer.ui.items
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.ListThumbnailSize
 import com.dhp.musicplayer.model.Song
-import com.dhp.musicplayer.utils.drawableToBitmap
 import com.dhp.musicplayer.utils.joinByBullet
 import com.dhp.musicplayer.utils.makeTimeString
 
@@ -31,18 +26,15 @@ fun MediaMetadataListItem(
         makeTimeString(song.durationText?.toLongOrNull())
     ),
     thumbnailContent = {
-        if(song.isOffline) {
-            Image(bitmap = (song.getBitmap(LocalContext.current) ?: drawableToBitmap(LocalContext.current)).asImageBitmap(), contentDescription = null)
-        } else {
-            AsyncImage(
-                model = song.thumbnailUrl,
-                error = painterResource(id = R.drawable.logo),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(ListThumbnailSize)
+        AsyncImage(
+//                model = if(song.isOffline) a else song.thumbnailUrl,
+            model = song.thumbnailUrl,
+            error = painterResource(id = R.drawable.logo),
+            contentDescription = null,
+            modifier = Modifier
+                .size(ListThumbnailSize)
 //                .clip(RoundedCornerShape(ThumbnailCornerRadius))
-            )
-        }
+        )
 
 //        PlayingIndicatorBox(
 //            isActive = isActive,

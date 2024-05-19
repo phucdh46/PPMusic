@@ -54,6 +54,7 @@ import com.dhp.musicplayer.ui.LocalWindowInsets
 import com.dhp.musicplayer.ui.component.ConfirmationDialog
 import com.dhp.musicplayer.ui.component.EmptyList
 import com.dhp.musicplayer.ui.component.TextFieldDialog
+import com.dhp.musicplayer.ui.component.TextIconButton
 import com.dhp.musicplayer.ui.items.SongItem
 import com.dhp.musicplayer.ui.screens.library.playlist_detail.PlaylistDetailViewModel.PlaylistDetailUiState
 
@@ -164,23 +165,19 @@ fun PlaylistDetailScreen(
                     verticalAlignment = Alignment.CenterVertically
 
                 ) {
-
-                    Button(
+                    TextIconButton(
+                        text = "Play",
                         modifier = Modifier.align(Alignment.CenterVertically),
-                        onClick = {
-                            playerConnection?.playSongWithQueue(playlistWithSongs?.songs?.getOrNull(0), playlistWithSongs?.songs)
-                        },
+                        imageVector = IconApp.PlayArrow,
                         enabled = playlistWithSongs?.songs?.isNotEmpty() == true,
-                        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer)
-                    ) {
-                        Icon(imageVector = IconApp.PlayArrow, contentDescription = null,
-                            modifier = Modifier.size(ButtonDefaults.IconSize))
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
-                        Text(text = "Play")
-                    }
+                        onClick = {
+                            playerConnection?.playSongWithQueue(
+                                playlistWithSongs?.songs?.getOrNull(
+                                    0
+                                ), playlistWithSongs?.songs
+                            )
+                        }
+                    )
                     Text(
                         text = pluralStringResource(
                             R.plurals.n_song,

@@ -74,8 +74,7 @@ internal fun ForYouScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalAnimationApi::class
+@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class
 )
 @Composable
 internal fun ForYouScreen(
@@ -83,14 +82,7 @@ internal fun ForYouScreen(
     onItemClicked: (Song) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val playerConnection = LocalPlayerConnection.current ?: return
     val scrollState = rememberScrollState()
-    var currentSelectSong by rememberSaveable {
-        mutableStateOf(playerConnection.currentSong.value)
-    }
-    var showChoosePlaylistDialog by remember {
-        mutableStateOf(false)
-    }
 
     val menuState = LocalMenuState.current
     val quickPicksLazyGridState = rememberLazyGridState()
