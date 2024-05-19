@@ -1,6 +1,5 @@
 package com.dhp.musicplayer.ui.screens.library
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -36,7 +35,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -44,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.GridThumbnailHeight
+import com.dhp.musicplayer.constant.PlaylistViewTypeKey
 import com.dhp.musicplayer.enums.LibraryViewType
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.IconApp
@@ -55,20 +54,18 @@ import com.dhp.musicplayer.ui.component.TextFieldDialog
 import com.dhp.musicplayer.ui.items.PlaylistGridItem
 import com.dhp.musicplayer.ui.items.PlaylistListItem
 import com.dhp.musicplayer.ui.screens.library.navigation.navigateToPlaylistDetail
+import com.dhp.musicplayer.utils.rememberEnumPreference
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LibraryScreen(
     appState: AppState,
     viewModel: LibraryViewModel = hiltViewModel(),
-    ) {
-    Log.d("DHP","LibraryScreen")
-//    val playerConnection = LocalPlayerConnection.current ?: return
-
+) {
     val playlistPreview by viewModel.playlistPreview.collectAsStateWithLifecycle(emptyList())
-    var viewType by rememberSaveable {
-        mutableStateOf(LibraryViewType.LIST)
-    }
+
+    var viewType by rememberEnumPreference(PlaylistViewTypeKey, LibraryViewType.LIST)
+
     var showAddPlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
@@ -119,7 +116,11 @@ fun LibraryScreen(
 //                Text(text = "Delete", style = MaterialTheme.typography.headlineSmall)
             },
             icon = {
-                Icon(imageVector = IconApp.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                Icon(
+                    imageVector = IconApp.Delete,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
+                )
             }
         )
     }
@@ -143,7 +144,11 @@ fun LibraryScreen(
 //                }
 //            )
             Text(
-                text = pluralStringResource(R.plurals.n_playlist, playlistPreview.size, playlistPreview.size),
+                text = pluralStringResource(
+                    R.plurals.n_playlist,
+                    playlistPreview.size,
+                    playlistPreview.size
+                ),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.secondary
             )
@@ -160,11 +165,10 @@ fun LibraryScreen(
             ) {
                 Icon(
                     imageVector =
-                        when (viewType) {
-                            LibraryViewType.LIST -> IconApp.List
-                            LibraryViewType.GRID -> IconApp.GridView
-                        }
-                    ,
+                    when (viewType) {
+                        LibraryViewType.LIST -> IconApp.List
+                        LibraryViewType.GRID -> IconApp.GridView
+                    },
                     contentDescription = null
                 )
             }
@@ -172,20 +176,20 @@ fun LibraryScreen(
     }
 
     if (playlistPreview.isEmpty()) {
-       EmptyList(text = stringResource(id = R.string.empty_playlists), floatContent = {
-           FloatingActionButton(
-               modifier = Modifier
-               .windowInsetsPadding(LocalWindowInsets.current.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
-                   .padding(16.dp)
-                   .align(Alignment.BottomEnd),
-               onClick = { showAddPlaylistDialog = true }
-           ) {
-               Icon(
-                   imageVector = IconApp.Add,
-                   contentDescription = null
-               )
-           }
-       })
+        EmptyList(text = stringResource(id = R.string.empty_playlists), floatContent = {
+            FloatingActionButton(
+                modifier = Modifier
+                    .windowInsetsPadding(LocalWindowInsets.current.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
+                    .padding(16.dp)
+                    .align(Alignment.BottomEnd),
+                onClick = { showAddPlaylistDialog = true }
+            ) {
+                Icon(
+                    imageVector = IconApp.Add,
+                    contentDescription = null
+                )
+            }
+        })
     } else {
         Box(
             modifier = Modifier
@@ -223,9 +227,11 @@ fun LibraryScreen(
                                                 contentDescription = null
                                             )
                                         }
-                                        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                                        DropdownMenu(
+                                            expanded = expanded,
+                                            onDismissRequest = { expanded = false }) {
                                             DropdownMenuItem(
-                                                text = {  Text("Edit") },
+                                                text = { Text("Edit") },
                                                 onClick = {
                                                     currentSelectPlaylist = playlistPreview.playlist
                                                     isRenaming = true
@@ -289,7 +295,9 @@ fun LibraryScreen(
                                     .fillMaxWidth()
                                     .combinedClickable(
                                         onClick = {
-                                            appState.navController.navigateToPlaylistDetail(playlistId = playlistPreview.playlist.id)
+                                            appState.navController.navigateToPlaylistDetail(
+                                                playlistId = playlistPreview.playlist.id
+                                            )
                                         },
                                         onLongClick = {
 //                                        menuState.show {
