@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -20,17 +21,22 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -53,12 +59,64 @@ import com.dhp.musicplayer.ui.component.HideOnScrollFAB
 import com.dhp.musicplayer.ui.component.TextFieldDialog
 import com.dhp.musicplayer.ui.items.PlaylistGridItem
 import com.dhp.musicplayer.ui.items.PlaylistListItem
-import com.dhp.musicplayer.ui.screens.library.navigation.navigateToPlaylistDetail
+import com.dhp.musicplayer.ui.screens.library.device_songs.DeviceSongsScreen
+import com.dhp.musicplayer.ui.screens.playlist.navigation.navigateToLocalPlaylistDetail
+import com.dhp.musicplayer.utils.Logg
 import com.dhp.musicplayer.utils.rememberEnumPreference
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LibraryScreen(
+    appState: AppState,
+) {
+    val pagerState = rememberPagerState(pageCount = { 2 })
+    val coroutineScope = rememberCoroutineScope()
+    val tabTitles = listOf("Playlist", "Device songs")
+
+    Column(
+        modifier = Modifier.windowInsetsPadding(LocalWindowInsets.current)
+    ) {
+        TabRow(
+            selectedTabIndex = pagerState.currentPage,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            tabTitles.forEachIndexed { index, title ->
+                Tab(
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.scrollToPage(index)
+                        }
+                    },
+                    text = { Text(title) }
+                )
+            }
+        }
+
+        HorizontalPager(
+            state = pagerState
+        ) { page ->
+            when (page) {
+                0 -> {
+                    LocalPlaylists(
+                        modifier = Modifier,
+                        appState = appState,
+                        )
+                }
+                1 -> {
+                    DeviceSongsScreen()
+                }
+            }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun LocalPlaylists(
+    modifier: Modifier,
     appState: AppState,
     viewModel: LibraryViewModel = hiltViewModel(),
 ) {
@@ -154,8 +212,6 @@ fun LibraryScreen(
             )
 
             Spacer(Modifier.weight(1f))
-
-
 
             IconButton(
                 onClick = {
@@ -253,7 +309,8 @@ fun LibraryScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        appState.navController.navigateToPlaylistDetail(playlistId = playlistPreview.playlist.id)
+                                        Logg.d("navigateToPlaylistDetail: ${playlistPreview.playlist.id}")
+                                        appState.navController.navigateToLocalPlaylistDetail(playlistId = playlistPreview.playlist.id)
                                     }
                                     .animateItemPlacement()
                             )
@@ -273,6 +330,7 @@ fun LibraryScreen(
                     LazyVerticalGrid(
                         state = lazyGridState,
                         columns = GridCells.Adaptive(minSize = GridThumbnailHeight + 24.dp),
+//                        columns = GridCells.Fixed(3),
 //                    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
                     ) {
                         item(
@@ -295,7 +353,7 @@ fun LibraryScreen(
                                     .fillMaxWidth()
                                     .combinedClickable(
                                         onClick = {
-                                            appState.navController.navigateToPlaylistDetail(
+                                            appState.navController.navigateToLocalPlaylistDetail(
                                                 playlistId = playlistPreview.playlist.id
                                             )
                                         },
@@ -323,8 +381,6 @@ fun LibraryScreen(
                     )
                 }
             }
-
         }
     }
-
 }

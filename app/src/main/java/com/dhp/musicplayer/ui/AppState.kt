@@ -74,7 +74,7 @@ class AppState(
         when (topLevelDestination) {
             FOR_YOU -> navController.navigateToForYou(topLevelNavOptions)
             SEARCH -> navController.navigateToSearch(topLevelNavOptions)
-            LIBRARY -> navController.navigateToLibrary(null, topLevelNavOptions)
+            LIBRARY -> navController.navigateToLibrary(topLevelNavOptions)
         }
     }
 

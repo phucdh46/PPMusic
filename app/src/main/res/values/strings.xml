@@ -31,6 +31,7 @@
     <string name="permission_denied">The read file and media permission is important for this app.
  Please grant the permission.</string>
     <string name="grant_permission_button">Grant permission</string>
+    <string name="go_to_settings_button">Go to settings</string>
 
     <!-- In-App update -->
     <string name="update_was_downloaded_snack_bar">The update will be installed after restarting the application</string>

@@ -42,13 +42,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val PERMISSION_READ_AUDIO
-        get() = if (isAtLeastAndroid33) {
-            // READ_EXTERNAL_STORAGE was superseded by READ_MEDIA_AUDIO in Android 13
-            Manifest.permission.READ_MEDIA_AUDIO
-        } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        }
+
     var binder: ExoPlayerService.Binder? = null
 
     var playerConnection by mutableStateOf<PlayerConnection?>(null)
@@ -137,44 +131,8 @@ class MainActivity : ComponentActivity() {
             ComposeTheme(
                 darkTheme = darkTheme
             ) {
-
-                val readAudioPermissionState = rememberPermissionState(PERMISSION_READ_AUDIO)
-                if (readAudioPermissionState.status.isGranted) {
-                    doBindService()
-                    App(appState = appState, playerConnection)
-                } else {
-                    Column(
-                        Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.surfaceDim),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        val textToShow = if (readAudioPermissionState.status.shouldShowRationale) {
-                            stringResource(id = R.string.permission_denied)
-                        } else {
-                            stringResource(id = R.string.permission_not_available)
-                        }
-
-                        Text(
-                            textToShow,
-                            Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(16.dp),
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Button(
-                            onClick = { readAudioPermissionState.launchPermissionRequest() },
-                            Modifier.align(Alignment.CenterHorizontally)
-                        ) {
-                            Text(text = stringResource(id = R.string.grant_permission_button))
-                        }
-                    }
-                }
+                App(appState = appState, playerConnection)
             }
-
         }
     }
 

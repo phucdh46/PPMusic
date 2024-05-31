@@ -1,5 +1,6 @@
 package com.dhp.musicplayer.ui.items
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,8 +38,10 @@ import com.dhp.musicplayer.constant.ListItemHeight
 import com.dhp.musicplayer.constant.ListThumbnailSize
 import com.dhp.musicplayer.constant.PlayListItemHeight
 import com.dhp.musicplayer.constant.ThumbnailCornerRadius
+import com.dhp.musicplayer.innertube.Innertube
 import com.dhp.musicplayer.model.PlaylistPreview
 import com.dhp.musicplayer.ui.IconApp
+import com.dhp.musicplayer.ui.component.LoadingShimmerImageMaxSize
 
 @Composable
 fun PlaylistListItem(
@@ -56,46 +61,6 @@ fun PlaylistListItem(
             IconApp.PlaylistPlay, contentDescription = null,
             modifier = Modifier.size(ListThumbnailSize)
         )
-//        when (playlist.thumbnails.size) {
-//            0 ->
-//
-//                Icon(
-//                painter = painterResource(R.drawable.queue_music),
-//                contentDescription = null,
-//                modifier = Modifier.size(ListThumbnailSize)
-//            )
-//
-//            1 -> AsyncImage(
-//                model = playlist.thumbnails[0],
-//                contentDescription = null,
-//                contentScale = ContentScale.Crop,
-//                modifier = Modifier
-//                    .size(ListThumbnailSize)
-//                    .clip(RoundedCornerShape(ThumbnailCornerRadius))
-//            )
-//
-//            else -> Box(
-//                modifier = Modifier
-//                    .size(ListThumbnailSize)
-//                    .clip(RoundedCornerShape(ThumbnailCornerRadius))
-//            ) {
-//                listOf(
-//                    Alignment.TopStart,
-//                    Alignment.TopEnd,
-//                    Alignment.BottomStart,
-//                    Alignment.BottomEnd
-//                ).fastForEachIndexed { index, alignment ->
-//                    AsyncImage(
-//                        model = playlist.thumbnails.getOrNull(index),
-//                        contentDescription = null,
-//                        contentScale = ContentScale.Crop,
-//                        modifier = Modifier
-//                            .align(alignment)
-//                            .size(ListThumbnailSize / 2)
-//                    )
-//                }
-//            }
-//        }
     },
     trailingContent = trailingContent,
     listItemHeight = PlayListItemHeight,
@@ -179,6 +144,29 @@ inline fun ListItem(
 }
 
 @Composable
+fun AlbumGridItem(
+    album: Innertube.AlbumItem,
+    modifier: Modifier = Modifier,
+    badges: @Composable RowScope.() -> Unit = { },
+    fillMaxWidth: Boolean = false,
+) = GridItem(
+    title = album.info?.name.orEmpty(),
+    subtitle = album.year.orEmpty(),
+    badges = badges,
+    thumbnailContent = {
+        LoadingShimmerImageMaxSize(
+            thumbnailUrl = album.thumbnail?.url,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+        )
+    },
+    thumbnailShape = RoundedCornerShape(ThumbnailCornerRadius),
+    fillMaxWidth = fillMaxWidth,
+    modifier = modifier
+)
+
+@Composable
 fun PlaylistGridItem(
     playlistPreview: PlaylistPreview,
     modifier: Modifier = Modifier,
@@ -195,51 +183,11 @@ fun PlaylistGridItem(
     thumbnailContent = {
         val width = maxWidth
         Icon(
-            imageVector = IconApp.PlaylistPlay, contentDescription = null, modifier = Modifier
+            imageVector = IconApp.PlaylistPlay, contentDescription = null,
+            modifier = Modifier
                 .size(width / 2)
                 .align(Alignment.Center)
         )
-//        when (playlist.thumbnails.size) {
-//            0 -> Icon(
-//                painter = painterResource(R.drawable.queue_music),
-//                contentDescription = null,
-//                tint = LocalContentColor.current.copy(alpha = 0.8f),
-//                modifier = Modifier
-//                    .size(width / 2)
-//                    .align(Alignment.Center)
-//            )
-//
-//            1 -> AsyncImage(
-//                model = playlist.thumbnails[0],
-//                contentDescription = null,
-//                contentScale = ContentScale.Crop,
-//                modifier = Modifier
-//                    .size(width)
-//                    .clip(RoundedCornerShape(ThumbnailCornerRadius))
-//            )
-//
-//            else -> Box(
-//                modifier = Modifier
-//                    .size(width)
-//                    .clip(RoundedCornerShape(ThumbnailCornerRadius))
-//            ) {
-//                listOf(
-//                    Alignment.TopStart,
-//                    Alignment.TopEnd,
-//                    Alignment.BottomStart,
-//                    Alignment.BottomEnd
-//                ).fastForEachIndexed { index, alignment ->
-//                    AsyncImage(
-//                        model = playlist.thumbnails.getOrNull(index),
-//                        contentDescription = null,
-//                        contentScale = ContentScale.Crop,
-//                        modifier = Modifier
-//                            .align(alignment)
-//                            .size(width / 2)
-//                    )
-//                }
-//            }
-//        }
     },
     thumbnailShape = RoundedCornerShape(ThumbnailCornerRadius),
     fillMaxWidth = fillMaxWidth,
@@ -274,6 +222,7 @@ fun GridItem(
             } else {
                 Modifier.height(GridThumbnailHeight)
             }
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .aspectRatio(thumbnailRatio)
                 .clip(thumbnailShape)
         ) {
