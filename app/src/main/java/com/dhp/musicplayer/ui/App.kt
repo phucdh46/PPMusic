@@ -129,7 +129,6 @@ internal fun App(
         animationSpec = NavigationBarAnimationSpec,
         label = ""
     )
-
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
@@ -196,7 +195,7 @@ internal fun App(
                     title = stringResource(
                         id = destination?.titleTextId ?: getAppBarTitle(
                             navBackStackEntry?.destination?.route
-                        ) ?: R.string.app_name
+                        ) ?: R.string.default_tile_top_app_bar
                     ),
                     showBackButton = shouldBackOnTopAppBar,
                     showSearchButton = shouldSearchOnTopAppBar,

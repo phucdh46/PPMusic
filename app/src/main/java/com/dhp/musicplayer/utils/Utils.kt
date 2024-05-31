@@ -39,3 +39,11 @@ fun joinByBullet(vararg str: String?) =
 fun drawableToBitmap(context: Context, drawable: Int = R.drawable.logo) : Bitmap {
     return BitmapFactory.decodeResource(context.resources, drawable)
 }
+fun Context.getConfig(): KeyResponse {
+    return try {
+        val key = dataStore[ConfigApiKey] ?: return KeyResponse()
+        Json.decodeFromString(KeyResponse.serializer(), key)
+    } catch (e: Exception) {
+        KeyResponse()
+    }
+}

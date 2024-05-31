@@ -89,6 +89,7 @@ dependencies {
 
     implementation(libs.accompanist.permissions)
     implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.swiperefresh)
 
     implementation(libs.coil.kt)
     implementation(libs.kotlinx.serialization.json)

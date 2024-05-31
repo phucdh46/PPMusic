@@ -31,11 +31,11 @@ fun EmptyList(
             modifier = Modifier.fillMaxSize()
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher),
+                painter = painterResource(id = R.drawable.logo_grayscale),
                 contentDescription = null,
-                colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply {
-                    setToSaturation(0f)
-                })
+//                colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply {
+//                    setToSaturation(0f)
+//                })
             )
             Spacer(modifier = Modifier.padding(16.dp))
             Text(text = text, color = MaterialTheme.colorScheme.onPrimaryContainer)

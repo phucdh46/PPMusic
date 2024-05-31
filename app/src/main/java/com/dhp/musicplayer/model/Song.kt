@@ -9,8 +9,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.dhp.musicplayer.extensions.toContentUri
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 import java.io.IOException
 
+@Serializable
 @Parcelize
 @Entity
 data class Song (

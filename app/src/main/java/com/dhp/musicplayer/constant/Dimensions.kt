@@ -13,6 +13,9 @@ val MiniPlayerHeight = 64.dp
 val TopBarHeight = 56.dp
 
 val ThumbnailCornerRadius = 6.dp
+val AlbumThumbnailSizeDp = 108.dp
+val ArtistThumbnailSizeDp = 92.dp
+
 
 val PlayerHorizontalPadding = 32.dp
 
