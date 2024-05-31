@@ -13,7 +13,7 @@ import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.screens.home.navigation.FOR_YOU_ROUTE
 import com.dhp.musicplayer.ui.screens.home.navigation.forYouScreen
 import com.dhp.musicplayer.ui.screens.library.navigation.libraryScreen
-import com.dhp.musicplayer.ui.screens.library.navigation.playlistDetailScreen
+import com.dhp.musicplayer.ui.screens.playlist.navigation.onlinePlaylistDetailScreen
 import com.dhp.musicplayer.ui.screens.search.navigation.searchScreen
 import com.dhp.musicplayer.ui.screens.search.navigation.searchScreenByText
 
@@ -87,7 +87,6 @@ fun NavHost(
         searchScreen(appState = appState)
         searchScreenByText(appState = appState)
         libraryScreen (appState = appState)
-        playlistDetailScreen(appState = appState)
-
+        onlinePlaylistDetailScreen(appState = appState)
     }
 }
