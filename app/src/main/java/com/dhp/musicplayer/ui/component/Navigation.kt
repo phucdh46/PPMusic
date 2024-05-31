@@ -18,6 +18,7 @@ import com.dhp.musicplayer.ui.screens.library.navigation.libraryScreen
 import com.dhp.musicplayer.ui.screens.playlist.navigation.onlinePlaylistDetailScreen
 import com.dhp.musicplayer.ui.screens.search.navigation.searchScreen
 import com.dhp.musicplayer.ui.screens.search.navigation.searchScreenByText
+import com.dhp.musicplayer.ui.screens.song.navigation.listSongsScreen
 
 @Composable
 fun NavigationBar(
@@ -91,6 +92,7 @@ fun NavHost(
         libraryScreen (appState = appState)
         onlinePlaylistDetailScreen(appState = appState)
         artistDetailScreen(appState = appState)
+        listSongsScreen(appState = appState)
         listAlbumsScreen(appState = appState)
     }
 }
