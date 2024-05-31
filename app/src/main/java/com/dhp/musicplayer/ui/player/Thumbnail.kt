@@ -16,6 +16,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,26 +27,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import coil.compose.AsyncImage
-import com.dhp.musicplayer.ui.LocalPlayerConnection
-import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.px
 import com.dhp.musicplayer.extensions.DisposableListener
 import com.dhp.musicplayer.extensions.currentWindow
 import com.dhp.musicplayer.extensions.thumbnail
 import com.dhp.musicplayer.extensions.toSong
-import com.dhp.musicplayer.innertube.LoginRequiredException
-import com.dhp.musicplayer.innertube.PlayableFormatNotFoundException
-import com.dhp.musicplayer.innertube.UnplayableException
-import com.dhp.musicplayer.innertube.VideoIdMismatchException
+import com.dhp.musicplayer.player.LoginRequiredException
+import com.dhp.musicplayer.player.PlayableFormatNotFoundException
+import com.dhp.musicplayer.player.UnplayableException
+import com.dhp.musicplayer.player.VideoIdMismatchException
+import com.dhp.musicplayer.ui.LocalPlayerConnection
+import com.dhp.musicplayer.ui.component.LoadingShimmerImageMaxSize
 import com.dhp.musicplayer.utils.drawableToBitmap
 import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException
@@ -123,6 +121,7 @@ fun Thumbnail(
         contentAlignment = Alignment.Center
     ) {currentWindow ->
         Box(
+            contentAlignment = Alignment.Center,
             modifier = modifier
                 .aspectRatio(1f)
 //                .clip(LocalAppearance.current.thumbnailShape)
@@ -144,7 +143,18 @@ fun Thumbnail(
                         .fillMaxSize()
                 )
             } else {
-                AsyncImage(
+                LoadingShimmerImageMaxSize(
+                    thumbnailUrl = song.thumbnailUrl?.thumbnail(thumbnailSizePx),
+                    modifier = Modifier
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onTap = { onShowLyrics(true) },
+                                onLongPress = { onShowStatsForNerds(true) }
+                            )
+                        }
+                        .fillMaxWidth()
+                )
+               /* AsyncImage(
 //                model = currentWindow.mediaItem.mediaMetadata.artworkUri.thumbnail(thumbnailSizePx),
                     model =song.thumbnailUrl?.thumbnail(thumbnailSizePx),
                     contentDescription = null,
@@ -160,7 +170,7 @@ fun Thumbnail(
                         }
                         .fillMaxSize()
 
-                )
+                )*/
             }
 
 //            Lyrics(
