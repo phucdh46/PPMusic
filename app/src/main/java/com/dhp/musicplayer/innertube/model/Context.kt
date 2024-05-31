@@ -1,6 +1,5 @@
 package com.dhp.musicplayer.innertube.model
 
-import com.dhp.musicplayer.utils.Config
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,7 +13,7 @@ data class Context(
         val clientVersion: String,
         val platform: String,
         val hl: String = "en",
-        val visitorData: String = Config.visitorData,
+        val visitorData: String = "",
         val androidSdkVersion: Int? = null,
         val userAgent: String? = null
     )
@@ -25,30 +24,36 @@ data class Context(
     )
 
     companion object {
-        val DefaultWeb = Context(
-            client = Client(
+        val clientDefaultWeb = Client(
                 clientName = "WEB_REMIX",
                 clientVersion = "1.20220918",
                 platform = "DESKTOP",
             )
+
+        val DefaultWeb = Context(
+            client = clientDefaultWeb
+        )
+
+        val clientDefaultAndroid = Client(
+            clientName = "ANDROID_MUSIC",
+            clientVersion = "5.28.1",
+            platform = "MOBILE",
+            androidSdkVersion = 30,
+            userAgent = ""
         )
 
         val DefaultAndroid = Context(
-            client = Client(
-                clientName = "ANDROID_MUSIC",
-                clientVersion = "5.28.1",
-                platform = "MOBILE",
-                androidSdkVersion = 30,
-                userAgent = Config.userAgentAndroid
-            )
+            client = clientDefaultAndroid
         )
 
-        val DefaultAgeRestrictionBypass = Context(
-            client = Client(
+        val clientDefaultAgeRestrictionBypass = Client(
                 clientName = "TVHTML5_SIMPLY_EMBEDDED_PLAYER",
                 clientVersion = "2.0",
                 platform = "TV"
             )
+
+        val DefaultAgeRestrictionBypass = Context(
+            client = clientDefaultAgeRestrictionBypass
         )
     }
 }

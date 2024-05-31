@@ -10,7 +10,11 @@ data class NavigationEndpoint(
     val searchEndpoint: Endpoint.Search?,
 ) {
     val endpoint: Endpoint?
-        get() = watchEndpoint ?: browseEndpoint ?: watchPlaylistEndpoint ?: searchEndpoint
+        get() = watchEndpoint
+            ?: watchPlaylistEndpoint
+            ?: browseEndpoint
+            ?: searchEndpoint
+
 
     @Serializable
     sealed class Endpoint {
@@ -65,7 +69,17 @@ data class NavigationEndpoint(
                 @Serializable
                 data class BrowseEndpointContextMusicConfig(
                     val pageType: String
-                )
+                ) {
+                    companion object {
+                        const val MUSIC_PAGE_TYPE_ALBUM = "MUSIC_PAGE_TYPE_ALBUM"
+                        const val MUSIC_PAGE_TYPE_AUDIOBOOK = "MUSIC_PAGE_TYPE_AUDIOBOOK"
+                        const val MUSIC_PAGE_TYPE_PLAYLIST = "MUSIC_PAGE_TYPE_PLAYLIST"
+                        const val MUSIC_PAGE_TYPE_ARTIST = "MUSIC_PAGE_TYPE_ARTIST"
+                        const val MUSIC_PAGE_TYPE_USER_CHANNEL = "MUSIC_PAGE_TYPE_USER_CHANNEL"
+                        const val MUSIC_PAGE_TYPE_TRACK_LYRICS = "MUSIC_PAGE_TYPE_TRACK_LYRICS"
+                        const val MUSIC_PAGE_TYPE_TRACK_RELATED = "MUSIC_PAGE_TYPE_TRACK_RELATED"
+                    }
+                }
             }
         }
 
