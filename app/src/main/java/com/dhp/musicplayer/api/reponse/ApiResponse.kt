@@ -1,14 +1,11 @@
 package com.dhp.musicplayer.api.reponse
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
-//
+@Serializable
 data class ApiResponse<T>(
-    @SerializedName("code")
     val code: String?,
-    @SerializedName("message")
     var message: String?,
-    @SerializedName("result")
     val result: T?
 )
 
