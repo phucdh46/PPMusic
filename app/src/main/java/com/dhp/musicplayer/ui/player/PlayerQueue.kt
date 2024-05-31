@@ -1,9 +1,9 @@
 package com.dhp.musicplayer.ui.player
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import android.graphics.Bitmap
+import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,18 +34,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.Timeline
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.dhp.musicplayer.extensions.move
-import com.dhp.musicplayer.extensions.toSong
+import com.dhp.musicplayer.extensions.toOnlineAndLocalSong
 import com.dhp.musicplayer.extensions.windows
+import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.ui.component.BottomSheet
 import com.dhp.musicplayer.ui.component.BottomSheetState
 import com.dhp.musicplayer.ui.items.MediaMetadataListItem
+import com.dhp.musicplayer.utils.Logg
+import com.dhp.musicplayer.utils.toSongsWithBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.ReorderableItem
@@ -53,7 +58,7 @@ import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(UnstableApi::class)
 @Composable
 fun PlayerQueue(
     state: BottomSheetState,
@@ -65,43 +70,66 @@ fun PlayerQueue(
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isPlaying.collectAsState()
 
-    val currentWindowIndex = playerConnection.player.currentWindowIndex
+    val currentWindowIndex by playerConnection.currentMediaItemIndex.collectAsState()
 
     var windows by remember {
         mutableStateOf(playerConnection.player.currentTimeline.windows)
     }
 
-    val containerColor = MaterialTheme.colorScheme.secondaryContainer
+    val containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp)
 
-    val mutableQueueWindows = remember { mutableStateListOf<Timeline.Window>() }
+//    val mutableQueueWindows = remember { mutableStateListOf<Timeline.Window>() }
+    val songsWithBitmaps = remember { mutableStateListOf<Pair<Song, Bitmap?>>() }
+    val context = LocalContext.current
     LaunchedEffect(windows) {
-        mutableQueueWindows.apply {
-            clear()
-            addAll(windows)
+//        mutableQueueWindows.apply {
+//            clear()
+//            addAll(windows)
+//        }
+        launch(Dispatchers.IO) {
+            songsWithBitmaps.apply {
+                clear()
+                Logg.d("PlayerQueue1")
+                val temp =
+                    windows.map { it.mediaItem.toOnlineAndLocalSong(context) }.toSongsWithBitmap()
+                //.toMutableList()
+                Logg.d("PlayerQueue11")
+
+                addAll(temp)
+            }
         }
+
+
     }
-
-    val reorderLazyListState = rememberReorderableLazyListState(onMove = { from, to ->
-        mutableQueueWindows.move(from.index, to.index)
-
-    }, canDragOver = { draggedOver, _ ->
+//    val songsWithBitmaps = mutableQueueWindows.map { it.mediaItem.toOnlineAndLocalSong(LocalContext.current) }.toMutableList()//.toSongsWithBitmap()
+//    Logg.d("songsWithBitmaps: $mutableQueueWindows")
+    val reorderLazyListState = rememberReorderableLazyListState(
+        onMove = { from, to -> songsWithBitmaps.move(from.index, to.index) },
+        onDragEnd = { fromIndex, toIndex ->
+            playerConnection.player.moveMediaItem(
+                fromIndex,
+                toIndex
+            )
+        },
+        canDragOver = { draggedOver, _ ->
 //        true
-        mutableQueueWindows.any {
-            it.uid.hashCode() == draggedOver.key
+//            mutableQueueWindows.any {
+//                it.uid.hashCode() == draggedOver.key
+//            }
+            songsWithBitmaps.any {
+                it.first.id.hashCode() == draggedOver.key
+            }
         }
-    })
-
+    )
 
     BottomSheet(
         state = state,
-//        backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(NavigationBarDefaults.Elevation),
         modifier = modifier,
         collapsedContent = {
             Box(
                 modifier = Modifier
                     .drawBehind { drawRect(containerColor) }
                     .fillMaxSize()
-//                    .padding(horizontalBottomPaddingValues)
             ) {
                 Text(
                     text = "Queue",
@@ -113,10 +141,14 @@ fun PlayerQueue(
     ) {
 
         val coroutineScope = rememberCoroutineScope()
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
             Column(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .background(containerColor)
                     .padding(
                         top = WindowInsets.systemBars
                             .asPaddingValues()
@@ -137,20 +169,25 @@ fun PlayerQueue(
             LazyColumn(
                 state = reorderLazyListState.listState,
                 modifier = Modifier
-//                .reorderable(reorderLazyListState)
                     .background(MaterialTheme.colorScheme.background)
                     .nestedScroll(state.preUpPostDownNestedScrollConnection)
                     .then(Modifier.reorderable(reorderLazyListState))
-
             ) {
                 itemsIndexed(
-                    items = mutableQueueWindows,
-                    key = { _, item -> item.uid.hashCode() }
-                ) { index, window ->
-                    ReorderableItem(reorderLazyListState, window.uid.hashCode()) {
+                    items = songsWithBitmaps,
+                    key = { _, item -> item.first.id.hashCode() }
+                ) { index, songsWithBitmap ->
+                    ReorderableItem(reorderLazyListState, songsWithBitmap.first.id.hashCode()) {
                         MediaMetadataListItem(
-                            song = window.mediaItem.toSong(),
-                            isActive = index == currentWindowIndex,
+                            song = songsWithBitmap.first,
+                            bitmap = songsWithBitmap.second,
+//                    items = mutableQueueWindows,
+//                    key = { _, item -> item.uid.hashCode() }
+//                ) { index, window ->
+//                    ReorderableItem(reorderLazyListState, window.uid.hashCode()) {
+//                        MediaMetadataListItem(
+//                            song = window.mediaItem.toSong(),
+                            isShow = index == currentWindowIndex,
                             isPlaying = isPlaying,
                             trailingContent = {
                                 IconButton(
@@ -169,19 +206,11 @@ fun PlayerQueue(
                                         if (index == currentWindowIndex) {
                                             playerConnection.playOrPause()
                                         } else {
-                                            playerConnection.player.seekToDefaultPosition(window.firstPeriodIndex)
+                                            playerConnection.player.seekToDefaultPosition(index)
                                             playerConnection.player.playWhenReady = true
                                         }
                                     }
                                 }
-                                .combinedClickable(
-                                    onClick = {
-
-                                    },
-                                    onLongClick = {
-
-                                    }
-                                )
                                 .detectReorderAfterLongPress(reorderLazyListState)
                         )
                     }

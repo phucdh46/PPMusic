@@ -39,7 +39,7 @@ internal fun PlaybackPager(
     val playerConnection: PlayerConnection = LocalPlayerConnection.current ?: return
 
     val playbackQueue by playerConnection.currentQueue.collectAsStateWithLifecycle()
-    val playbackCurrentIndex = playerConnection.player.currentWindowIndex
+    val playbackCurrentIndex = playerConnection.player.currentMediaItemIndex
     var lastRequestedPage by remember(playbackQueue, song) {
         mutableStateOf<Int?>(
             playbackCurrentIndex

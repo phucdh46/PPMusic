@@ -57,6 +57,7 @@ class PlayerConnection(
     init {
         player.addListener(this)
         repeatMode.value = player.repeatMode
+        _currentMediaItemIndex.value = if (player.mediaItemCount == 0) -1 else player.currentMediaItemIndex
     }
 
     fun playSongWithQueue(song: Song? = null, songs: List<Song>?) {
@@ -96,7 +97,6 @@ class PlayerConnection(
         error.value = player.playerError
 
     }
-
     override fun onPlayWhenReadyChanged(newPlayWhenReady: Boolean, reason: Int) {
         Log.d("DHP","onPlayWhenReadyChanged: ${player.repeatMode}")
         playWhenReady.value = newPlayWhenReady

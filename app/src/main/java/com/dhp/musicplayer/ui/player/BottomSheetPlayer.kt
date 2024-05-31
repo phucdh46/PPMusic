@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.dhp.musicplayer.constant.QueuePeekHeight
+import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.extensions.isLandscape
 import com.dhp.musicplayer.extensions.positionAndDurationState
 import com.dhp.musicplayer.extensions.shouldBePlaying
@@ -34,6 +35,8 @@ import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.ui.component.BottomSheet
 import com.dhp.musicplayer.ui.component.BottomSheetState
+import com.dhp.musicplayer.ui.component.LocalMenuState
+import com.dhp.musicplayer.ui.component.MediaItemMenu
 import com.dhp.musicplayer.ui.component.rememberBottomSheetState
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -55,6 +58,7 @@ fun BottomSheetPlayer(
         dismissedBound = QueuePeekHeight + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding(),
         expandedBound = state.expandedBound,
     )
+    val menuState = LocalMenuState.current
 
     BottomSheet(
         state = state,
@@ -131,7 +135,6 @@ fun BottomSheetPlayer(
                 )
             }
         } else {
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = containerModifier
@@ -143,8 +146,15 @@ fun BottomSheetPlayer(
                         state.collapseSoft()
                     })
                     Spacer(modifier = Modifier.weight(1f))
-                    Icon(imageVector = IconApp.MoreVert, contentDescription = null)
-
+                    Icon(imageVector = IconApp.MoreVert, contentDescription = null,
+                        modifier = Modifier.clickable {
+                            menuState.show {
+                                MediaItemMenu(
+                                    onDismiss = menuState::dismiss,
+                                    mediaItem = mediaItem!!
+                                )
+                            }
+                        })
                 }
                 Box(
                     contentAlignment = Alignment.Center,
@@ -171,5 +181,4 @@ fun BottomSheetPlayer(
             navController = navController
         )
     }
-
 }
