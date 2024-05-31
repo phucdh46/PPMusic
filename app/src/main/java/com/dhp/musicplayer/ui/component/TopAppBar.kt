@@ -94,3 +94,48 @@ fun TopAppBar(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopAppBarDetailScreen(
+    title: @Composable () -> Unit = {
+        Text(
+            text = "",
+            style = MaterialTheme.typography.titleLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+        )
+    },
+    colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
+    onBackClick: () -> Unit = {},
+    onMenuClick: (() -> Unit)? = null,
+) {
+    Row(
+        modifier = Modifier
+            .padding(
+                top = WindowInsets.systemBars
+                    .asPaddingValues()
+                    .calculateTopPadding()
+            )
+            .padding(horizontal = 8.dp)
+            .height(TopBarHeight)
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        IconButton(onClick = { onBackClick() }) {
+            Icon(imageVector = IconApp.ArrowBackIosNew, contentDescription = null)
+        }
+
+        title()
+        Spacer(modifier = Modifier.weight(1f))
+        onMenuClick?.let {
+            IconButton(onClick = { onMenuClick() }) {
+                Icon(imageVector = IconApp.MoreVert, contentDescription = null)
+            }
+        }
+    }
+}
