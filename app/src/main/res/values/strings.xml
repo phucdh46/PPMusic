@@ -36,6 +36,7 @@
     <string name="update_was_downloaded_snack_bar">The update will be installed after restarting the application</string>
     <string name="restart_string">RESTART</string>
 
+    <string name="list_songs_title">Songs</string>
     <string name="default_tile_top_app_bar"> </string>
 
     <!--Error-->
