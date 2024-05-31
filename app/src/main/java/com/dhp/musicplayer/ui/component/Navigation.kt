@@ -89,7 +89,7 @@ fun NavHost(
         forYouScreen(appState = appState)
         searchScreen(appState = appState)
         searchScreenByText(appState = appState)
-        libraryScreen (appState = appState)
+        libraryScreen(appState = appState)
         onlinePlaylistDetailScreen(appState = appState)
         artistDetailScreen(appState = appState)
         listSongsScreen(appState = appState)
