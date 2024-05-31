@@ -114,6 +114,8 @@ dependencies {
     implementation(libs.app.update)
     implementation(libs.app.update.ktx)
     implementation(libs.reorderable)
+    implementation(libs.paging.compose)
+    implementation(libs.paging.runtime.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
