@@ -44,7 +44,7 @@ import com.dhp.musicplayer.constant.MiniPlayerHeight
 import com.dhp.musicplayer.constant.NavigationBarAnimationSpec
 import com.dhp.musicplayer.constant.NavigationBarHeight
 import com.dhp.musicplayer.constant.TopBarHeight
-import com.dhp.musicplayer.navigation.ScreensShowBackOnTopAppBar
+import com.dhp.musicplayer.navigation.ScreensNotShowTopAppBar
 import com.dhp.musicplayer.navigation.ScreensShowBottomNavigation
 import com.dhp.musicplayer.navigation.ScreensShowSearchOnTopAppBar
 import com.dhp.musicplayer.navigation.TopLevelDestination
@@ -59,7 +59,6 @@ import com.dhp.musicplayer.ui.component.rememberBottomSheetState
 import com.dhp.musicplayer.ui.player.BottomSheetPlayer
 import com.dhp.musicplayer.ui.screens.home.navigation.FOR_YOU_ROUTE
 import com.dhp.musicplayer.ui.screens.library.navigation.LIBRARY_ROUTE
-import com.dhp.musicplayer.ui.screens.search.navigation.SEARCH_BY_TEXT_ROUTE
 import com.dhp.musicplayer.ui.screens.search.navigation.SEARCH_ROUTE
 import com.dhp.musicplayer.ui.screens.search.navigation.navigateToSearchByText
 import com.dhp.musicplayer.ui.screens.settings.SettingsDialog
@@ -105,13 +104,16 @@ internal fun App(
         ScreensShowBottomNavigation.contains(navBackStackEntry?.destination?.route)
     }
     val shouldBackOnTopAppBar = remember(navBackStackEntry) {
-        ScreensShowBackOnTopAppBar.contains(navBackStackEntry?.destination?.route)
+//        ScreensShowBackOnTopAppBar.contains(navBackStackEntry?.destination?.route)
+        !ScreensShowBottomNavigation.contains(navBackStackEntry?.destination?.route)
     }
     val shouldSearchOnTopAppBar = remember(navBackStackEntry) {
         ScreensShowSearchOnTopAppBar.contains(navBackStackEntry?.destination?.route)
     }
     val shouldTopAppBar = remember(navBackStackEntry) {
-        navBackStackEntry?.destination?.route != SEARCH_BY_TEXT_ROUTE
+//        navBackStackEntry?.destination?.route != SEARCH_BY_TEXT_ROUTE
+        !ScreensNotShowTopAppBar.contains(navBackStackEntry?.destination?.route)
+
     }
 
     if (showSettingsDialog) {

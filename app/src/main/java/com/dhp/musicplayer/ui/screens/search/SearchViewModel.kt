@@ -1,53 +1,44 @@
 package com.dhp.musicplayer.ui.screens.search
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dhp.musicplayer.db.MusicDao
-import com.dhp.musicplayer.model.SearchHistory
-import com.dhp.musicplayer.model.Song
+import com.dhp.musicplayer.enums.UiState
+import com.dhp.musicplayer.innertube.InnertubeApiService
+import com.dhp.musicplayer.innertube.MoodAndGenres
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val musicDao: MusicDao
+    private val application: Application,
 ) : ViewModel() {
-    private val _searchHistories: MutableStateFlow<List<SearchHistory>> =
-        MutableStateFlow(emptyList())
-    val searchHistories = _searchHistories.asStateFlow()
 
-    private val _songs: MutableStateFlow<List<Song>> = MutableStateFlow(emptyList())
-    val songs = _songs.asStateFlow()
+    private val _uiStateSearchScreen: MutableStateFlow<UiState<List<MoodAndGenres>>> =
+        MutableStateFlow(UiState.Loading)
+    val uiStateSearchScreen: StateFlow<UiState<List<MoodAndGenres>>> = _uiStateSearchScreen
 
     init {
-        getSearchHistory()
-        getSongs()
+        getMoodAndGenres()
     }
 
-    private fun getSearchHistory() {
+    private fun getMoodAndGenres() {
         viewModelScope.launch(Dispatchers.IO) {
-            musicDao.getAllQueries().collect {
-                _searchHistories.value = it
+            val result = InnertubeApiService.getInstance(application).moodAndGenres()
+            val data = result.getOrNull()
+            if (result.isSuccess && data != null) {
+                _uiStateSearchScreen.value = UiState.Success(data)
+            } else {
+                _uiStateSearchScreen.value = UiState.Error
             }
         }
     }
 
-    private fun getSongs() {
-        viewModelScope.launch(Dispatchers.IO) {
-            musicDao.getAllSongs().collect {
-                _songs.value = it
-            }
-        }
+    fun refresh() {
+        getMoodAndGenres()
     }
-
-    fun deleteSearchHistory(searchHistory: SearchHistory) {
-        viewModelScope.launch(Dispatchers.IO) {
-            musicDao.delete(searchHistory)
-        }
-    }
-
 }

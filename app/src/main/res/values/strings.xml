@@ -26,6 +26,7 @@
     <string name="empty_recent_searches">There are no recent searches</string>
     <string name="empty_playlists">There are no playlists</string>
     <string name="empty_songs">There are no songs</string>
+    <string name="empty_moon_and_genres">There are moon and genres</string>
 
     <string name="permission_not_available">Read file and media permission not available</string>
     <string name="permission_denied">The read file and media permission is important for this app.
@@ -42,6 +43,16 @@
 
     <!--Error-->
     <string name="error_message">An error occurred. Please try again.</string>
+
+    <!--Search-->
+    <string name="filter_all">All</string>
+    <string name="filter_songs">Songs</string>
+    <string name="filter_videos">Videos</string>
+    <string name="filter_albums">Albums</string>
+    <string name="filter_artists">Artists</string>
+    <string name="filter_playlists">Playlists</string>
+    <string name="filter_community_playlists">Community playlists</string>
+    <string name="filter_featured_playlists">Featured playlists</string>
 
     <plurals name="n_song">
         <item quantity="one">%d song</item>
