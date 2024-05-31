@@ -1,11 +1,16 @@
 package com.dhp.musicplayer
 
+import android.app.Application
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dhp.musicplayer.constant.DarkThemeConfigKey
+import com.dhp.musicplayer.enums.DarkThemeConfig
+import com.dhp.musicplayer.extensions.toEnum
 import com.dhp.musicplayer.model.UserData
 import com.dhp.musicplayer.repository.MusicRepository
-import com.dhp.musicplayer.repository.UserDataRepository
 import com.dhp.musicplayer.utils.Logg
+import com.dhp.musicplayer.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    userDataRepository: UserDataRepository,
+    private val application: Application,
     private val musicRepository: MusicRepository,
 ) : ViewModel() {
 
@@ -37,9 +42,23 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    val uiState: StateFlow<MainActivityUiState> =
-        userDataRepository.userData.map {
-            MainActivityUiState.Success(it)
+    val uiState: StateFlow<UiState<UserData>> =
+        application.dataStore.data.distinctUntilChanged()
+            .map { dataStore -> dataStore[DarkThemeConfigKey].toEnum(DarkThemeConfig.FOLLOW_SYSTEM)}
+            .distinctUntilChanged().map { darkThemeConfig ->
+                UiState.Success(UserData(darkThemeConfig = darkThemeConfig))
+            /*val result = musicRepository.getKey()
+            if (result.isSuccess) {
+                result.getOrNull()?.result?.let { key ->
+                    Logg.d("getKey: ${key}")
+                    key.saveConfig()
+                    MainActivityUiState.Success(UserData(darkThemeConfig = darkTheme))
+                }?:
+                MainActivityUiState.Error
+            } else {
+                MainActivityUiState.Error
+            }*/
+
         }
             .stateIn(
                 scope = viewModelScope,
