@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool
-import org.gradle.configurationcache.extensions.capitalized
-
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -10,25 +7,10 @@ plugins {
     alias(libs.plugins.googleServices)
     alias(libs.plugins.crashlytics)
     alias(libs.plugins.kotlin.parcelize)
-    alias(libs.plugins.protobuf)
+
 }
 
 android {
-
-    // Issue Hilt using DataStore and Proto https://github.com/google/dagger/issues/4051
-    androidComponents {
-        onVariants(selector().all()) { variant ->
-            afterEvaluate {
-                project.tasks.getByName("ksp" + variant.name.capitalized() + "Kotlin") {
-                    val buildConfigTask = project.tasks.getByName("generate${variant.name.capitalized()}Proto")
-                            as com.google.protobuf.gradle.GenerateProtoTask
-                    dependsOn(buildConfigTask)
-                    (this as AbstractKotlinCompileTool<*>).setSource(buildConfigTask.outputBaseDir)
-                }
-            }
-        }
-    }
-
     namespace = "com.dhp.musicplayer"
     compileSdk = 34
 
@@ -83,25 +65,6 @@ android {
     }
 }
 
-// Setup protobuf configuration, generating lite Java and Kotlin classes
-protobuf {
-    protoc {
-        artifact = libs.protobuf.protoc.get().toString()
-    }
-    generateProtoTasks {
-        all().forEach { task ->
-            task.builtins {
-                register("java") {
-                    option("lite")
-                }
-                register("kotlin") {
-                    option("lite")
-                }
-            }
-        }
-    }
-}
-
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -118,7 +81,6 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.runtime.livedata)
 
-    api(libs.protobuf.kotlin.lite)
     api(libs.androidx.dataStore.core)
 
     implementation(libs.hilt.android)
