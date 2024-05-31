@@ -1,5 +1,7 @@
 package com.dhp.musicplayer.di
 
+import com.dhp.musicplayer.api.ApiService
+import com.dhp.musicplayer.api.ApiServiceImpl
 import com.dhp.musicplayer.repository.MusicRepository
 import com.dhp.musicplayer.repository.MusicRepositoryImpl
 import dagger.Binds
@@ -14,4 +16,9 @@ abstract class DataModule {
     internal abstract fun bindsMusicRepository(
         musicRepository: MusicRepositoryImpl,
     ): MusicRepository
+
+    @Binds
+    internal abstract fun bindsApiService(
+        apiService: ApiServiceImpl,
+    ): ApiService
 }

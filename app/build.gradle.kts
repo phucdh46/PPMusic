@@ -91,10 +91,6 @@ dependencies {
     implementation(libs.accompanist.pager)
 
     implementation(libs.coil.kt)
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-    implementation(libs.rxjava3.retrofit.adapter)
-    implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.media3.exoplayer)
 
