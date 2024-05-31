@@ -38,7 +38,7 @@ class HomeViewModel @Inject constructor(
             _uiState.value = UiState.Loading
             try {
                 val relatedMediaId = withContext(Dispatchers.IO) {
-                    application.dataStore[RelatedMediaIdKey] ?: "J7p4bzqLvCw"
+                    application.dataStore[RelatedMediaIdKey] ?: "xl8thVrlvjI"
                 }
                 val result = withContext(Dispatchers.IO) {
                     InnertubeApiService.getInstance(application)

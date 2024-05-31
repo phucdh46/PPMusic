@@ -71,9 +71,9 @@ fun MiniPlayer(
 //    val canSkipNext by playerConnection.canSkipNext.collectAsState()
     val positionAndDuration by playerConnection.player.positionAndDurationState()
 
-    val  song =currentMediaItem?.toSong()
+    val song = currentMediaItem?.toSong()
 
-    Logg.d("MiniPLayer")
+    Logg.d("MiniPLayer: ${song?.id}")
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -92,8 +92,7 @@ fun MiniPlayer(
             val tinyPadding = 4.dp
             val primaryColor = MaterialTheme.colorScheme.primary
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
+            Row(horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .height(MiniPlayerHeight)
@@ -121,11 +120,11 @@ fun MiniPlayer(
                             end = Offset(x = size.width * progress, y = 1.dp.toPx()),
                             strokeWidth = 2.dp.toPx()
                         )
-                    }
-            ) {
-                PlaybackNowPlaying(song = song, maxHeight = MiniPlayerHeight, coverOnly = !nowPlayingVisible)
-                if (controlsVisible)
-                    PlaybackPlayPause(playerConnection = playerConnection)
+                    }) {
+                PlaybackNowPlaying(
+                    song = song, maxHeight = MiniPlayerHeight, coverOnly = !nowPlayingVisible
+                )
+                if (controlsVisible) PlaybackPlayPause(playerConnection = playerConnection)
             }
 
         }
@@ -143,14 +142,17 @@ private fun RowScope.PlaybackNowPlaying(
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.weight(if (coverOnly) 3f else 7f).padding(horizontal = 8.dp),
+        modifier = modifier
+            .weight(if (coverOnly) 3f else 7f)
+            .padding(horizontal = 8.dp),
     ) {
         val size = maxHeight - 12.dp
         val sizeMod = if (size.isSpecified) Modifier.size(size) else Modifier
-        Log.d("DHP","minicontrol: $song")
-        if(song?.isOffline == true) {
+        Log.d("DHP", "minicontrol: $song")
+        if (song?.isOffline == true) {
             Image(
-                bitmap = (song.getBitmap(LocalContext.current) ?: drawableToBitmap(LocalContext.current)).asImageBitmap(),
+                bitmap = (song.getBitmap(LocalContext.current)
+                    ?: drawableToBitmap(LocalContext.current)).asImageBitmap(),
                 contentDescription = null,
                 modifier = Modifier.padding(8.dp)
             )
@@ -163,10 +165,9 @@ private fun RowScope.PlaybackNowPlaying(
             )
         }
 
-        if (!coverOnly && song != null)
-            PlaybackPager(song = song) { song, _, pagerMod ->
-                PlaybackNowPlaying(song, modifier = pagerMod)
-            }
+        if (!coverOnly && song != null) PlaybackPager(song = song) { song, _, pagerMod ->
+            PlaybackNowPlaying(song, modifier = pagerMod)
+        }
     }
 }
 
@@ -200,11 +201,11 @@ private fun RowScope.PlaybackPlayPause(
     modifier: Modifier = Modifier,
     size: Dp = 36.dp,
 ) {
-    Log.d("DHP","positionAndDuration: PlaybackPlayPause ")
+    Log.d("DHP", "positionAndDuration: PlaybackPlayPause ")
 
     val isPlaying by playerConnection.isPlaying.collectAsStateWithLifecycle()
     IconButton(
-        onClick = {playerConnection.playOrPause()},
+        onClick = { playerConnection.playOrPause() },
 //        colors = MaterialTheme.colorScheme.primary,
 //        rippleColor = LocalContentColor.current,
         modifier = modifier.weight(1f)

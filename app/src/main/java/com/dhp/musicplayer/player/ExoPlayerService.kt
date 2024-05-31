@@ -52,6 +52,7 @@ import androidx.media3.exoplayer.audio.SonicAudioProcessor
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
+import com.dhp.musicplayer.MainActivity
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.PersistentQueueDataKey
 import com.dhp.musicplayer.constant.RelatedMediaIdKey
@@ -186,7 +187,7 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
         player.repeatMode = dataStore.get(RepeatModeKey, Player.REPEAT_MODE_OFF)
 
         mediaSession = MediaSession(baseContext, "PlayerService")
-        mediaSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS or MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS)
+//        mediaSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS or MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS)
         mediaSession.setCallback(SessionCallback(player))
         mediaSession.setPlaybackState(stateBuilder.build())
         mediaSession.isActive = true
@@ -199,7 +200,6 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
             addAction(Action.next.value)
             addAction(Action.previous.value)
         }
-
 
         registerReceiver(notificationActionReceiver, filter)
     }
@@ -224,8 +224,6 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
     }
 
     override fun onEvents(player: Player, events: Player.Events) {
-        Log.d("DHP","onEvents: $events")
-
         if (player.duration != C.TIME_UNSET) {
             mediaSession.setMetadata(
                 metadataBuilder
@@ -255,26 +253,26 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
             if (notification == null) {
 //                isNotificationStarted = false
 //                makeInvincible(false)
-                stopForeground(false)
+                stopForeground(STOP_FOREGROUND_DETACH)
 //                sendCloseEqualizerIntent()
-                notificationManager?.cancel(NotificationId)
+                notificationManager?.cancel(NOTIFICATON_ID)
                 return
             }
 
             if (player.shouldBePlaying && !isNotificationStarted) {
                 isNotificationStarted = true
                 ContextCompat.startForegroundService(this@ExoPlayerService, intent<ExoPlayerService>())
-                startForeground(NotificationId, notification)
+                startForeground(NOTIFICATON_ID, notification)
 //                makeInvincible(false)
 //                sendOpenEqualizerIntent()
             } else {
                 if (!player.shouldBePlaying) {
                     isNotificationStarted = false
-                    stopForeground(false)
+                    stopForeground(STOP_FOREGROUND_DETACH)
 //                    makeInvincible(true)
 //                    sendCloseEqualizerIntent()
                 }
-                notificationManager?.notify(NotificationId, notification)
+                notificationManager?.notify(NOTIFICATON_ID, notification)
             }
         }
     }
@@ -342,9 +340,6 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
             Log.d("DHP","ResolvingDataSource: $isLocalSong")
             if (isLocalSong) dataSpec else {
                 val videoId = dataSpec.key ?: error("A key must be set")
-
-
-
                 Log.d("DHP","createDataSourceFactory: $videoId")
 
                 if (cache.isCached(videoId, dataSpec.position, chunkLength)) {
@@ -361,10 +356,10 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
                                 InnertubeApiService.getInstance(context).player(PlayerBody(videoId = videoId))
                             }?.mapCatching { body ->
 
-                                if (body ==  null) {
-                                    Log.d("DHP","Body null")
-                                    throw PlayableFormatNotFoundException()
-                                }
+//                                if (body ==  null) {
+//                                    Log.d("DHP","Body null")
+//                                    throw PlayableFormatNotFoundException()
+//                                }
                                 if (body.videoDetails?.videoId != videoId) {
                                     throw VideoIdMismatchException()
                                 }
@@ -458,12 +453,10 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
         val prevIntent = Action.previous.pendingIntent
 
         val mediaMetadata = player.mediaMetadata
+        val intent = Intent(this, MainActivity::class.java)
+        val pendingIntent  = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
-        val builder = if (isAtLeastAndroid8) {
-            Notification.Builder(applicationContext, NotificationChannelId)
-        } else {
-            Notification.Builder(applicationContext)
-        }
+        val builder = Notification.Builder(applicationContext, NOTIFICATION_CHANNEL_ID)
             .setContentTitle(mediaMetadata.title)
             .setContentText(mediaMetadata.artist)
             .setSubText(player.playerError?.message)
@@ -473,11 +466,7 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
             .setShowWhen(false)
             .setSmallIcon(R.drawable.ic_notification)
             .setOngoing(false)
-//            .setContentIntent(activityPendingIntent<MainActivity>(
-//                flags = PendingIntent.FLAG_UPDATE_CURRENT
-//            ) {
-//                putExtra("expandPlayerBottomSheet", true)
-//            })
+            .setContentIntent(pendingIntent)
 //            .setDeleteIntent(broadCastPendingIntent<NotificationDismissReceiver>())
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
@@ -518,10 +507,10 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
         if (!isAtLeastAndroid8) return
 
         notificationManager?.run {
-            if (getNotificationChannel(NotificationChannelId) == null) {
+            if (getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null) {
                 createNotificationChannel(
                     NotificationChannel(
-                        NotificationChannelId,
+                        NOTIFICATION_CHANNEL_ID,
                         "Now playing",
                         NotificationManager.IMPORTANCE_LOW
                     ).apply {
@@ -631,9 +620,8 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
     }
 
     private companion object {
-        const val NotificationId = 1001
-        const val NotificationChannelId = "default_channel_id"
-
+        const val NOTIFICATON_ID = 1001
+        const val NOTIFICATION_CHANNEL_ID = "default_channel_id"
     }
 
 }

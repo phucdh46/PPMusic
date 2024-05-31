@@ -22,5 +22,5 @@ object DatabaseModule {
             .build()
 
     @Provides
-    fun providesChatDao(database: MusicDatabase): MusicDao = database.musicDao
+    fun providesMusicDao(database: MusicDatabase): MusicDao = database.musicDao
 }

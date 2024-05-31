@@ -89,12 +89,8 @@ fun PlayerQueue(
         launch(Dispatchers.IO) {
             songsWithBitmaps.apply {
                 clear()
-                Logg.d("PlayerQueue1")
                 val temp =
                     windows.map { it.mediaItem.toOnlineAndLocalSong(context) }.toSongsWithBitmap()
-                //.toMutableList()
-                Logg.d("PlayerQueue11")
-
                 addAll(temp)
             }
         }
@@ -161,7 +157,7 @@ fun PlayerQueue(
                     modifier = Modifier
                         .padding(vertical = 16.dp)
                         .fillMaxWidth(),
-                    text = "QUEUE",
+                    text = "Queue",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )
