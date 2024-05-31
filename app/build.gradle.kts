@@ -88,26 +88,15 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     implementation(libs.accompanist.permissions)
-    implementation(libs.accompanist.placeholder)
     implementation(libs.accompanist.pager)
 
-    implementation(libs.bumptech.glide)
-    implementation(libs.androidx.media)
     implementation(libs.coil.kt)
-    implementation(libs.androidx.window)
-    implementation(libs.androidx.preference)
-    implementation(libs.squareup.moshi)
-    ksp(libs.squareup.moshi.kotlin.codegen)
-
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.rxjava3.retrofit.adapter)
     implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.kotlinx.serialization.json)
-
     implementation(libs.media3.exoplayer)
-    implementation(libs.media3.exoplayer.dash)
-    implementation(libs.media3.ui)
 
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
@@ -115,10 +104,8 @@ dependencies {
     implementation(libs.ktor.client.encoding)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.logging)
     implementation(libs.brotli)
 
-    implementation(libs.material)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
     implementation(libs.navigation.fragment)
