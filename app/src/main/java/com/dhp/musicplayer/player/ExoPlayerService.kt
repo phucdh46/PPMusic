@@ -458,8 +458,7 @@ class ExoPlayerService: Service(), Player.Listener{
             .setAutoCancel(false)
             .setOnlyAlertOnce(true)
             .setShowWhen(false)
-            .setSmallIcon(player.playerError?.let { R.drawable.ic_pause }
-                ?: R.drawable.ic_play)
+            .setSmallIcon(R.drawable.ic_notification)
             .setOngoing(false)
 //            .setContentIntent(activityPendingIntent<MainActivity>(
 //                flags = PendingIntent.FLAG_UPDATE_CURRENT
