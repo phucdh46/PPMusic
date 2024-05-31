@@ -1,19 +1,15 @@
 package com.dhp.musicplayer
 
-import android.Manifest
 import android.content.ComponentName
 import android.content.Context
 import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.Bundle
 import android.os.IBinder
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -26,10 +22,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,17 +48,7 @@ import com.dhp.musicplayer.player.PlayerConnection
 import com.dhp.musicplayer.ui.App
 import com.dhp.musicplayer.ui.rememberAppState
 import com.dhp.musicplayer.ui.theme.ComposeTheme
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
-import com.google.android.play.core.appupdate.AppUpdateManager
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory
-import com.google.android.play.core.appupdate.AppUpdateOptions
-import com.google.android.play.core.install.InstallStateUpdatedListener
-import com.google.android.play.core.install.model.AppUpdateType
-import com.google.android.play.core.install.model.InstallStatus
-import com.google.android.play.core.install.model.UpdateAvailability
+import com.dhp.musicplayer.utils.InAppUpdateManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -95,65 +85,13 @@ class MainActivity : ComponentActivity() {
         bindService(intent<ExoPlayerService>(), serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
-    private lateinit var appUpdateManager: AppUpdateManager
-    private val activityResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
-            // handle callback
-            if (result.resultCode != RESULT_OK) {
-                // If the update is canceled or fails,
-                // you can request to start the update again.
-                appUpdateManager.registerListener(installStateUpdatedListener)
+    private lateinit var inAppUpdateManager: InAppUpdateManager
 
-            }
-        }
-
-    private val installStateUpdatedListener = InstallStateUpdatedListener { state ->
-        if (state.installStatus() == InstallStatus.DOWNLOADED) {
-            // After the update is downloaded, show a notification
-            // and request user confirmation to restart the app.
-            popupSnackbarForCompleteUpdate()
-            unregisterListener()
-        }
-    }
-
-    private fun unregisterListener() {
-        appUpdateManager.unregisterListener(installStateUpdatedListener)
-    }
-
-    // Displays the snackbar notification and call to action.
-    private fun popupSnackbarForCompleteUpdate() {
-        Toast.makeText(this, "Complete Update",Toast.LENGTH_LONG).show()
-        appUpdateManager.completeUpdate()
-    }
-
-    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        inAppUpdateManager = InAppUpdateManager(this@MainActivity)
         enableEdgeToEdge()
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-
-        appUpdateManager = AppUpdateManagerFactory.create(this)
-        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
-        // Checks that the platform will allow the specified type of update.
-        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                // This example applies an immediate update. To apply a flexible update
-                // instead, pass in AppUpdateType.FLEXIBLE
-                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
-            ) {
-                Toast.makeText(this, "UpdateAvailability",Toast.LENGTH_LONG).show()
-                // Request the update.
-                appUpdateManager.startUpdateFlowForResult(
-                    // Pass the intent that is returned by 'getAppUpdateInfo()'.
-                    appUpdateInfo,
-                    // an activity result launcher registered via registerForActivityResult
-                    activityResultLauncher,
-                    // Or pass 'AppUpdateType.FLEXIBLE' to newBuilder() for
-                    // flexible updates.
-                    AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
-                )
-            }
-        }
 
         val viewModel: MainActivityViewModel by viewModels()
         var uiState: MainActivityUiState by mutableStateOf(MainActivityUiState.Loading)
@@ -190,6 +128,24 @@ class MainActivity : ComponentActivity() {
             }
 
             val appState = rememberAppState()
+            val scope = rememberCoroutineScope()
+
+            LaunchedEffect(Unit) {
+                inAppUpdateManager.checkForUpdate(onShowSnackBar = { onActionClick ->
+                    scope.launch {
+                        val result = appState.snackBarHostState
+                            .showSnackbar(
+                                message = this@MainActivity.getString(R.string.update_was_downloaded_snack_bar),
+                                actionLabel = this@MainActivity.getString(R.string.restart_string),
+                                // Defaults to SnackbarDuration.Short
+                                duration = SnackbarDuration.Indefinite
+                            )
+                        if (result == SnackbarResult.ActionPerformed) {
+                            onActionClick()
+                        }
+                    }
+                })
+            }
 
             ComposeTheme(
                 darkTheme = darkTheme

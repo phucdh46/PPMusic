@@ -1,5 +1,6 @@
 package com.dhp.musicplayer.ui
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavDestination
@@ -23,20 +24,23 @@ import com.dhp.musicplayer.ui.screens.search.navigation.navigateToSearch
 @Composable
 fun rememberAppState(
     navController: NavHostController = rememberNavController(),
+    snackBarHostState: SnackbarHostState =  remember { SnackbarHostState() }
 ): AppState {
     return remember(
         navController,
+        snackBarHostState
     ) {
         AppState(
             navController = navController,
+            snackBarHostState = snackBarHostState
         )
     }
 }
 
 class AppState(
     val navController: NavHostController,
+    val snackBarHostState: SnackbarHostState
 ) {
-
     val currentDestination: NavDestination?
         @Composable get() = navController
             .currentBackStackEntryAsState().value?.destination

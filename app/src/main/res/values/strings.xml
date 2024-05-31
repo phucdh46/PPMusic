@@ -32,6 +32,10 @@
  Please grant the permission.</string>
     <string name="grant_permission_button">Grant permission</string>
 
+    <!-- In-App update -->
+    <string name="update_was_downloaded_snack_bar">The update will be installed after restarting the application</string>
+    <string name="restart_string">RESTART</string>
+
     <plurals name="n_song">
         <item quantity="one">%d song</item>
         <item quantity="other">%d songs</item>
