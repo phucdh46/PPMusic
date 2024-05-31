@@ -17,8 +17,10 @@ import com.dhp.musicplayer.ui.screens.home.navigation.forYouScreen
 import com.dhp.musicplayer.ui.screens.library.navigation.libraryScreen
 import com.dhp.musicplayer.ui.screens.playlist.navigation.onlinePlaylistDetailScreen
 import com.dhp.musicplayer.ui.screens.playlist.navigation.localPlaylistDetailScreen
+import com.dhp.musicplayer.ui.screens.search.mood_genres.moodAndGenresDetailScreen
 import com.dhp.musicplayer.ui.screens.search.navigation.searchScreen
 import com.dhp.musicplayer.ui.screens.search.navigation.searchScreenByText
+import com.dhp.musicplayer.ui.screens.search.search_result.navigation.searchResultScreen
 import com.dhp.musicplayer.ui.screens.song.navigation.listSongsScreen
 
 @Composable
@@ -96,5 +98,7 @@ fun NavHost(
         artistDetailScreen(appState = appState)
         listSongsScreen(appState = appState)
         listAlbumsScreen(appState = appState)
+        searchResultScreen(appState = appState)
+        moodAndGenresDetailScreen(appState = appState)
     }
 }

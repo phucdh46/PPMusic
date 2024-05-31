@@ -28,6 +28,7 @@ val ListItemHeight = 64.dp
 val PlayListItemHeight = 84.dp
 val ListThumbnailSize = 48.dp
 val GridThumbnailHeight = 128.dp
+val MoodAndGenresButtonHeight = 48.dp
 
 
 @Suppress("ClassName")

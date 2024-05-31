@@ -11,7 +11,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Upcoming
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
-import androidx.compose.material.icons.rounded.ArrowForwardIos
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DownloadForOffline
@@ -23,11 +22,10 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.material.icons.rounded.MusicNote
-import androidx.compose.material.icons.rounded.NextPlan
+import androidx.compose.material.icons.rounded.NorthWest
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.PlaylistAdd
 import androidx.compose.material.icons.rounded.Queue
 import androidx.compose.material.icons.rounded.Reorder
 import androidx.compose.material.icons.rounded.Repeat
@@ -65,6 +63,7 @@ object IconApp {
     val Reorder = Icons.Rounded.Reorder
     val Shuffle = Icons.Rounded.Shuffle
     val Edit = Icons.Rounded.Edit
+    val NorthWest = Icons.Rounded.NorthWest
 
     val NextPlan = Icons.AutoMirrored.Rounded.NextPlan
     val ArrowForwardIos = Icons.AutoMirrored.Rounded.ArrowForwardIos
