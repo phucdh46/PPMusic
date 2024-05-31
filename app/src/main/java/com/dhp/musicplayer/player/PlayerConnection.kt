@@ -59,14 +59,14 @@ class PlayerConnection(
         repeatMode.value = player.repeatMode
     }
 
-    fun playSongWithQueue(song: Song?, musics: List<Song>?) {
-        musics ?: return
+    fun playSongWithQueue(song: Song? = null, songs: List<Song>?) {
+        songs ?: return
         player.clearMediaItems()
-        player.addMediaItems(musics.map { it.asMediaItem() })
-        _currentQueue.value = musics
-        song?:return
-        exoPlayerService.isOfflineSong = song.isOffline
-        player.playQueue(song.asMediaItem())
+        player.addMediaItems(songs.map { it.asMediaItem() })
+        _currentQueue.value = songs
+        val selectedSong = song?: songs.getOrNull(0) ?: return
+        exoPlayerService.isOfflineSong = selectedSong.isOffline
+        player.playQueue(selectedSong.asMediaItem())
     }
 
     fun skipToQueueItem(index: Int) {

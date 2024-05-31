@@ -1,4 +1,4 @@
-package com.dhp.musicplayer.innertube
+package com.dhp.musicplayer.player
 
 import androidx.media3.common.PlaybackException
 

@@ -1,6 +1,8 @@
 package com.dhp.musicplayer.ui.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -23,26 +25,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.TopBarHeight
 import com.dhp.musicplayer.ui.IconApp
-import com.dhp.musicplayer.ui.screens.search.navigation.navigateToSearchByText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar(
+    modifier: Modifier = Modifier,
     visible: Boolean,
     title: String,
     showBackButton: Boolean = true,
     showSearchButton: Boolean = false,
-    modifier: Modifier = Modifier,
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
     onBackClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
 ) {
-    AnimatedVisibility(visible = visible) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = EnterTransition.None,
+        exit = ExitTransition.None
+    ) {
         Row(
             modifier = modifier
                 .padding(
@@ -58,16 +64,22 @@ fun TopAppBar(
 
         ) {
             AnimatedVisibility(visible = showBackButton) {
-                IconButton(onClick = { onBackClick()}) {
+                IconButton(onClick = { onBackClick() }) {
                     Icon(imageVector = IconApp.ArrowBackIosNew, contentDescription = null)
                 }
             }
-            Image(painter = painterResource(id = R.drawable.ic_launcher) ,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp))
+            AnimatedVisibility(visible = !showBackButton) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_launcher),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
             Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
+                text = title.uppercase(),
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
             Spacer(modifier = Modifier.weight(1f))

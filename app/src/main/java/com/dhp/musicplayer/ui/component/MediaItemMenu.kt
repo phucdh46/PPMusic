@@ -30,6 +30,7 @@ import com.dhp.musicplayer.extensions.addNext
 import com.dhp.musicplayer.extensions.enqueue
 import com.dhp.musicplayer.extensions.thumbnail
 import com.dhp.musicplayer.extensions.toSong
+import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.ui.items.SongItem
@@ -38,17 +39,19 @@ import com.dhp.musicplayer.ui.screens.menu.AddSongToPlaylist
 @ExperimentalAnimationApi
 @Composable
 fun MediaItemMenu(
-    onDismiss: () -> Unit,
-    mediaItem: MediaItem,
     modifier: Modifier = Modifier,
+    mediaItem: MediaItem,
+    onDismiss: () -> Unit,
+    onRemoveSongFromPlaylist: ((Song: Song) -> Unit)? = null,
 ) {
     val playerConnection = LocalPlayerConnection.current
     MediaItemMenu(
+        modifier = modifier,
         mediaItem = mediaItem,
         onDismiss = onDismiss,
         onPlayNext = { playerConnection?.player?.addNext(mediaItem) },
         onEnqueue = { playerConnection?.player?.enqueue(mediaItem) },
-        modifier = modifier
+        onRemoveSongFromPlaylist = onRemoveSongFromPlaylist
     )
 }
 
@@ -60,7 +63,8 @@ fun MediaItemMenu(
     modifier: Modifier = Modifier,
     onPlayNext: (() -> Unit)? = null,
     onEnqueue: (() -> Unit)? = null,
-) {
+    onRemoveSongFromPlaylist: ((Song: Song) -> Unit)? = null,
+    ) {
     val density = LocalDensity.current
 
     var isViewingPlaylists by remember {
@@ -73,13 +77,14 @@ fun MediaItemMenu(
 
     AnimatedContent(
         targetState = isViewingPlaylists,
-        transitionSpec = {
+        label = "",
+       /* transitionSpec = {
             val animationSpec = tween<IntOffset>(400)
             val slideDirection =
                 if (targetState) AnimatedContentTransitionScope.SlideDirection.Up else AnimatedContentTransitionScope.SlideDirection.Down
             slideIntoContainer(slideDirection, animationSpec) with
                     slideOutOfContainer(slideDirection, animationSpec)
-        }
+        }*/
     ) { currentIsViewingPlaylists ->
         if (currentIsViewingPlaylists) {
             BackHandler {
@@ -114,14 +119,12 @@ fun MediaItemMenu(
 
                 }
 
-
                 HorizontalDivider()
 
                 Spacer(
                     modifier = Modifier
                         .height(8.dp)
                 )
-
 
                 onPlayNext?.let { onPlayNext ->
                     MenuEntry(
@@ -150,6 +153,16 @@ fun MediaItemMenu(
                     text = "Add to playlist",
                     onClick = { isViewingPlaylists = true },
                 )
+                onRemoveSongFromPlaylist?.let { onRemoveSongFromPlaylist ->
+                    MenuEntry(
+                        imageVector = IconApp.Queue,
+                        text = "Remove from playlist",
+                        onClick = {
+                            onDismiss()
+                            onRemoveSongFromPlaylist(mediaItem.toSong())
+                        }
+                    )
+                }
             }
         }
     }

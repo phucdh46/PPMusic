@@ -40,8 +40,18 @@ class MainActivityViewModel @Inject constructor(
             val result = musicRepository.getKey()
             if (result.isSuccess) {
                 result.getOrNull()?.result?.let { key ->
-                    Logg.d( "getKey: ${key}")
-                    key.saveConfig()
+                    Logg.d("getKey: ${key}")
+                    val keyString = try {
+                        Json.encodeToString(KeyResponse.serializer(), key)
+                    } catch (e: Exception) {
+                        null
+                    }
+                    keyString?.let { string ->
+                        application.dataStore.edit {
+                            it[ConfigApiKey] = string
+                        }
+                    }
+
                 }
             }
         }

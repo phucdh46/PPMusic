@@ -1,80 +1,77 @@
 package com.dhp.musicplayer.ui.items
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.dhp.musicplayer.constant.px
 import com.dhp.musicplayer.extensions.thumbnail
 import com.dhp.musicplayer.innertube.Innertube
 import com.dhp.musicplayer.ui.component.LoadingShimmerImage
 
 @Composable
-fun AlbumItem(
-    album: Innertube.AlbumItem,
+fun ArtistItem(
+    artist: Innertube.ArtistItem,
     thumbnailSizePx: Int,
     thumbnailSizeDp: Dp,
     modifier: Modifier = Modifier,
-    alternative: Boolean = false
+    alternative: Boolean = false,
 ) {
-    AlbumItem(
-        thumbnailUrl = album.thumbnail?.url,
-        title = album.info?.name,
-        authors = album.authors?.joinToString("") { it.name ?: "" },
-        year = album.year,
+    ArtistItem(
+        thumbnailUrl = artist.thumbnail?.url,
+        name = artist.info?.name,
+//        subscribersCount = artist.subscribersCountText,
+        subscribersCount = null,
         thumbnailSizePx = thumbnailSizePx,
         thumbnailSizeDp = thumbnailSizeDp,
-        alternative = alternative,
         modifier = modifier,
+        alternative = alternative
     )
 }
 
 @Composable
-fun AlbumItem(
-    modifier: Modifier = Modifier,
+fun ArtistItem(
     thumbnailUrl: String?,
-    title: String?,
-    authors: String?,
-    year: String? = null,
+    name: String?,
+    subscribersCount: String?,
     thumbnailSizePx: Int,
     thumbnailSizeDp: Dp,
+    modifier: Modifier = Modifier,
     alternative: Boolean = false,
 ) {
     ItemContainer(
         alternative = alternative,
         thumbnailSizeDp = thumbnailSizeDp,
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
         LoadingShimmerImage(
             thumbnailSizeDp = thumbnailSizeDp,
-            thumbnailUrl = thumbnailUrl.thumbnail(thumbnailSizePx),
+            thumbnailUrl = thumbnailUrl.thumbnail(thumbnailSizeDp.px),
+            modifier = Modifier
+                .clip(CircleShape)
         )
 
-        ItemInfoContainer {
+        ItemInfoContainer(
+            horizontalAlignment = if (alternative) Alignment.CenterHorizontally else Alignment.Start,
+        ) {
             Text(
-                text = title ?: "",
+                text = name ?: "",
                 style = typography.titleMedium,
                 maxLines = if (alternative) 1 else 2,
-                overflow = TextOverflow.Ellipsis,
+                overflow = TextOverflow.Ellipsis
             )
 
-            if (!alternative) {
-                authors?.let {
-                    Text(
-                        text = authors,
-                        style = typography.titleMedium,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
-
-            year?.let {
+            subscribersCount?.let {
                 Text(
-                    text = year,
+                    text = subscribersCount,
                     style = typography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
