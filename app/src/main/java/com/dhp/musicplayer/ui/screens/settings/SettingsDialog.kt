@@ -19,7 +19,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -34,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dhp.musicplayer.BuildConfig
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.enums.DarkThemeConfig
+import com.dhp.musicplayer.enums.UiState
 
 
 @Composable
@@ -41,24 +41,19 @@ fun SettingsDialog(
     onDismiss: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
+
     val settingsUiState by viewModel.settingsUiState.collectAsStateWithLifecycle()
     SettingsDialog(
         onDismiss = onDismiss,
         settingsUiState = settingsUiState,
-//        onChangeThemeBrand = viewModel::updateThemeBrand,
-//        onChangeDynamicColorPreference = viewModel::updateDynamicColorPreference,
         onChangeDarkThemeConfig = viewModel::updateDarkThemeConfig,
     )
 }
 
 @Composable
 fun SettingsDialog(
-    settingsUiState: SettingsUiState,
-//    supportDynamicColor: Boolean = supportsDynamicTheming(),
+    settingsUiState: UiState<UserEditableSettings>,
     onDismiss: () -> Unit,
-//    onChangeThemeBrand: (themeBrand: ThemeBrand) -> Unit,
-//    onChangeDynamicColorPreference: (useDynamicColor: Boolean) -> Unit,
-//    onChangeDarkThemeConfig: (darkThemeConfig: DarkThemeConfig) -> Unit,
     onChangeDarkThemeConfig: (darkThemeConfig: DarkThemeConfig) -> Unit,
 ) {
     val configuration = LocalConfiguration.current
@@ -75,8 +70,10 @@ fun SettingsDialog(
         modifier = Modifier.widthIn(max = configuration.screenWidthDp.dp - 80.dp),
         onDismissRequest = { onDismiss() },
         title = {
-            Row(horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically){
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = stringResource(R.string.feature_settings_title),
                     style = MaterialTheme.typography.titleLarge,
@@ -93,27 +90,24 @@ fun SettingsDialog(
             HorizontalDivider()
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 when (settingsUiState) {
-                    SettingsUiState.Loading -> {
+                    is UiState.Loading -> {
                         Text(
                             text = stringResource(R.string.feature_settings_loading),
                             modifier = Modifier.padding(vertical = 16.dp),
                         )
                     }
 
-                    is SettingsUiState.Success -> {
+                    is UiState.Success -> {
                         SettingsPanel(
-                            settings = settingsUiState.settings,
-//                            supportDynamicColor = supportDynamicColor,
-//                            onChangeThemeBrand = onChangeThemeBrand,
-//                            onChangeDynamicColorPreference = onChangeDynamicColorPreference,
+                            userEditableSettings = settingsUiState.data,
                             onChangeDarkThemeConfig = onChangeDarkThemeConfig,
                         )
                     }
+
+                    else -> {}
                 }
                 HorizontalDivider(Modifier.padding(top = 8.dp))
-//                LinksPanel()
             }
-//            TrackScreenViewEvent(screenName = "Settings")
         },
         confirmButton = {
             Text(
@@ -130,29 +124,24 @@ fun SettingsDialog(
 
 @Composable
 private fun ColumnScope.SettingsPanel(
-    settings: UserEditableSettings,
-//    supportDynamicColor: Boolean,
-//    onChangeThemeBrand: (themeBrand: ThemeBrand) -> Unit,
-//    onChangeDynamicColorPreference: (useDynamicColor: Boolean) -> Unit,
-//    onChangeDarkThemeConfig: (darkThemeConfig: DarkThemeConfig) -> Unit,
+    userEditableSettings: UserEditableSettings,
     onChangeDarkThemeConfig: (darkThemeConfig: DarkThemeConfig) -> Unit,
 ) {
-
     SettingsDialogSectionTitle(text = stringResource(R.string.feature_settings_dark_mode_preference))
     Column(Modifier.selectableGroup()) {
         SettingsDialogThemeChooserRow(
             text = stringResource(R.string.feature_settings_dark_mode_config_system_default),
-            selected = settings.darkThemeConfig == DarkThemeConfig.FOLLOW_SYSTEM,
+            selected = userEditableSettings.darkThemeConfig == DarkThemeConfig.FOLLOW_SYSTEM,
             onClick = { onChangeDarkThemeConfig(DarkThemeConfig.FOLLOW_SYSTEM) },
         )
         SettingsDialogThemeChooserRow(
             text = stringResource(R.string.feature_settings_dark_mode_config_light),
-            selected = settings.darkThemeConfig == DarkThemeConfig.LIGHT,
+            selected = userEditableSettings.darkThemeConfig == DarkThemeConfig.LIGHT,
             onClick = { onChangeDarkThemeConfig(DarkThemeConfig.LIGHT) },
         )
         SettingsDialogThemeChooserRow(
             text = stringResource(R.string.feature_settings_dark_mode_config_dark),
-            selected = settings.darkThemeConfig == DarkThemeConfig.DARK,
+            selected = userEditableSettings.darkThemeConfig == DarkThemeConfig.DARK,
             onClick = { onChangeDarkThemeConfig(DarkThemeConfig.DARK) },
         )
     }
