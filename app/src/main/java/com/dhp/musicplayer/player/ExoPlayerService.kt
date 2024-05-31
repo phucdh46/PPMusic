@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.database.SQLException
 import android.media.MediaMetadata
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
@@ -27,6 +28,7 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.DataSource
@@ -39,6 +41,9 @@ import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.RenderersFactory
+import androidx.media3.exoplayer.analytics.AnalyticsListener
+import androidx.media3.exoplayer.analytics.PlaybackStats
+import androidx.media3.exoplayer.analytics.PlaybackStatsListener
 import androidx.media3.exoplayer.audio.AudioRendererEventListener
 import androidx.media3.exoplayer.audio.DefaultAudioSink
 import androidx.media3.exoplayer.audio.MediaCodecAudioRenderer
@@ -49,6 +54,7 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.PersistentQueueDataKey
+import com.dhp.musicplayer.constant.RelatedMediaIdKey
 import com.dhp.musicplayer.constant.RepeatModeKey
 import com.dhp.musicplayer.enums.ExoPlayerDiskCacheMaxSize
 import com.dhp.musicplayer.extensions.asMediaItem
@@ -60,27 +66,25 @@ import com.dhp.musicplayer.extensions.isAtLeastAndroid8
 import com.dhp.musicplayer.extensions.mediaItems
 import com.dhp.musicplayer.extensions.shouldBePlaying
 import com.dhp.musicplayer.extensions.toSong
-import com.dhp.musicplayer.innertube.Innertube
-import com.dhp.musicplayer.innertube.LoginRequiredException
-import com.dhp.musicplayer.innertube.PlayableFormatNotFoundException
-import com.dhp.musicplayer.innertube.PlayerBody
-import com.dhp.musicplayer.innertube.UnplayableException
-import com.dhp.musicplayer.innertube.VideoIdMismatchException
+import com.dhp.musicplayer.innertube.InnertubeApiService
 import com.dhp.musicplayer.innertube.model.RingBuffer
-import com.dhp.musicplayer.innertube.player
+import com.dhp.musicplayer.innertube.model.bodies.PlayerBody
 import com.dhp.musicplayer.model.PersistQueue
+import com.dhp.musicplayer.utils.Logg
 import com.dhp.musicplayer.utils.dataStore
 import com.dhp.musicplayer.utils.get
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 
 @OptIn(UnstableApi::class)
-class ExoPlayerService: Service(), Player.Listener{
+class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callback{
 
     private val binder = Binder()
 
@@ -96,7 +100,6 @@ class ExoPlayerService: Service(), Player.Listener{
 
     private val metadataBuilder = MediaMetadata.Builder()
     var isOfflineSong = true
-    private val gson = Gson()
     private val scope = CoroutineScope(Dispatchers.Main) + Job()
 
     private val stateBuilder = PlaybackState.Builder()
@@ -131,6 +134,10 @@ class ExoPlayerService: Service(), Player.Listener{
             }
         }
     }
+
+    private val serviceScope = CoroutineScope(
+        SupervisorJob() + Dispatchers.IO
+    )
 
     override fun onBind(p0: Intent?): IBinder {
         return binder
@@ -173,6 +180,7 @@ class ExoPlayerService: Service(), Player.Listener{
             .build()
 
         player.addListener(this)
+        player.addAnalyticsListener(PlaybackStatsListener(false, this))
 
         restoreQueue()
         player.repeatMode = dataStore.get(RepeatModeKey, Player.REPEAT_MODE_OFF)
@@ -200,7 +208,11 @@ class ExoPlayerService: Service(), Player.Listener{
         runBlocking {
             try {
                 val queueJson = dataStore[PersistentQueueDataKey]
-                val persistQueue = gson.fromJson(queueJson, PersistQueue::class.java)
+                val persistQueue = queueJson?.let{
+                    Json.decodeFromString(PersistQueue.serializer(), queueJson)
+                } ?: return@runBlocking
+                Logg.d("restoreQueue: $persistQueue")
+                isOfflineSong = persistQueue.items[persistQueue.mediaItemIndex].isOffline
                 player.addMediaItems(persistQueue.items.map { it.asMediaItem() })
                 player.seekToDefaultPosition(persistQueue.mediaItemIndex)
                 player.seekTo(persistQueue.position)
@@ -345,7 +357,8 @@ class ExoPlayerService: Service(), Player.Listener{
                             Log.d("DHP","request url: $videoId")
                             val urlResult = runBlocking(Dispatchers.IO) {
 //                            repository.getPlayers(videoId)
-                                Innertube.player(PlayerBody(videoId = videoId))
+//                                Innertube.player(PlayerBody(videoId = videoId))
+                                InnertubeApiService.getInstance(context).player(PlayerBody(videoId = videoId))
                             }?.mapCatching { body ->
 
                                 if (body ==  null) {
@@ -528,8 +541,36 @@ class ExoPlayerService: Service(), Player.Listener{
                 mediaItemIndex = player.currentMediaItemIndex,
                 position = player.currentPosition
             )
+            val persistQueueString = try {
+                Json.encodeToString(PersistQueue.serializer(), queue)
+            } catch (e: Exception) {
+                return@runBlocking
+            }
+            Logg.d("saveQueue: $queue")
             dataStore.edit {
-                it[PersistentQueueDataKey] = gson.toJson(queue)
+                it[PersistentQueueDataKey] = persistQueueString
+            }
+        }
+    }
+
+    override fun onPlaybackStatsReady(
+        eventTime: AnalyticsListener.EventTime,
+        playbackStats: PlaybackStats
+    ) {
+       Logg.d("onPlaybackStatsReady: ${playbackStats.totalPlayTimeMs}")
+        val mediaItem = eventTime.timeline.getWindow(eventTime.windowIndex, Timeline.Window()).mediaItem
+        val totalPlayTimeMs = playbackStats.totalPlayTimeMs
+        if (totalPlayTimeMs > 30000) {
+            serviceScope.launch {
+                try {
+                    if (mediaItem.mediaId.toLongOrNull() == null) {
+                        Logg.d("onPlaybackStatsReady > 30000: ${mediaItem.mediaId}")
+                        dataStore.edit { dataStore ->
+                            dataStore[RelatedMediaIdKey] = mediaItem.mediaId
+                        }
+                    }
+                } catch (_: SQLException) {
+                }
             }
         }
     }
@@ -540,6 +581,7 @@ class ExoPlayerService: Service(), Player.Listener{
     }
 
     override fun onDestroy() {
+        serviceScope.cancel()
         player.stop()
         player.release()
 
