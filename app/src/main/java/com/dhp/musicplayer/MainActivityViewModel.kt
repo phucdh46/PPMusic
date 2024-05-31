@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.constant.DarkThemeConfigKey
 import com.dhp.musicplayer.enums.DarkThemeConfig
+import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.extensions.toEnum
 import com.dhp.musicplayer.model.UserData
 import com.dhp.musicplayer.repository.MusicRepository
@@ -62,12 +63,7 @@ class MainActivityViewModel @Inject constructor(
         }
             .stateIn(
                 scope = viewModelScope,
-                initialValue = MainActivityUiState.Loading,
+                initialValue = UiState.Loading,
                 started = SharingStarted.WhileSubscribed(5_000),
             )
-}
-
-sealed interface MainActivityUiState {
-    data object Loading : MainActivityUiState
-    data class Success(val userData: UserData) : MainActivityUiState
 }
