@@ -6,6 +6,9 @@ import android.graphics.BitmapFactory
 import android.text.format.DateUtils
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.ui.screens.library.navigation.PLAYLIST_DETAIL_ROUTE
+import com.dhp.musicplayer.extensions.toSong
+import com.dhp.musicplayer.innertube.Innertube
+import com.dhp.musicplayer.model.Song
 
 fun getAppBarTitle(route: String?) : Int? {
     return when(route) {
@@ -45,5 +48,32 @@ fun Context.getConfig(): KeyResponse {
         Json.decodeFromString(KeyResponse.serializer(), key)
     } catch (e: Exception) {
         KeyResponse()
+    }
+}
+
+fun getTitleTextInnertubeItem(item: Innertube.Item): String {
+    return when (item) {
+        is Innertube.SongItem -> item.info?.name.orEmpty()
+        is Innertube.AlbumItem -> item.info?.name.orEmpty()
+        is Innertube.PlaylistItem -> item.info?.name.orEmpty()
+        is Innertube.ArtistItem -> item.info?.name.orEmpty()
+    }
+}
+
+fun getSubTitleTextInnertubeItem(item: Innertube.Item): String {
+    return when (item) {
+        is Innertube.SongItem -> item.toSong().artistsText.orEmpty()
+        is Innertube.AlbumItem -> item.year.orEmpty()
+        is Innertube.PlaylistItem -> item.channel?.name.orEmpty()
+        is Innertube.ArtistItem -> item.subscribersCountText.orEmpty()
+    }
+}
+
+fun getThumbnailInnertubeItem(item: Innertube.Item): String? {
+    return when (item) {
+        is Innertube.SongItem -> item.thumbnail?.url
+        is Innertube.AlbumItem -> item.thumbnail?.url
+        is Innertube.PlaylistItem -> item.thumbnail?.url
+        is Innertube.ArtistItem -> item.thumbnail?.url
     }
 }

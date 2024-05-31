@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import com.dhp.musicplayer.ui.AppState
+import com.dhp.musicplayer.ui.screens.artist.navigation.artistDetailScreen
 import com.dhp.musicplayer.ui.screens.home.navigation.FOR_YOU_ROUTE
 import com.dhp.musicplayer.ui.screens.home.navigation.forYouScreen
 import com.dhp.musicplayer.ui.screens.library.navigation.libraryScreen
@@ -88,5 +89,6 @@ fun NavHost(
         searchScreenByText(appState = appState)
         libraryScreen (appState = appState)
         onlinePlaylistDetailScreen(appState = appState)
+        artistDetailScreen(appState = appState)
     }
 }
