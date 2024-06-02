@@ -14,6 +14,7 @@ import com.dhp.musicplayer.model.UserData
 import com.dhp.musicplayer.repository.MusicRepository
 import com.dhp.musicplayer.utils.Logg
 import com.dhp.musicplayer.utils.dataStore
+import com.dhp.musicplayer.utils.get
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -37,6 +38,7 @@ class MainActivityViewModel @Inject constructor(
 
     private fun initConfig() {
         viewModelScope.launch(Dispatchers.IO) {
+            if (application.dataStore[ConfigApiKey] != null) return@launch
             val result = musicRepository.getKey()
             if (result.isSuccess) {
                 result.getOrNull()?.result?.let { key ->

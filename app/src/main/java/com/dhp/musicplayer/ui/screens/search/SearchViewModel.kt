@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.innertube.InnertubeApiService
-import com.dhp.musicplayer.innertube.MoodAndGenres
+import com.dhp.musicplayer.innertube.model.MoodAndGenres
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

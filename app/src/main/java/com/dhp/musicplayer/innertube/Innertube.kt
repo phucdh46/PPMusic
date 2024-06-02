@@ -1,15 +1,14 @@
 package com.dhp.musicplayer.innertube
 
 import android.annotation.SuppressLint
-
 import android.util.Log
 import com.dhp.musicplayer.innertube.model.BrowseResult
 import com.dhp.musicplayer.innertube.model.Context
 import com.dhp.musicplayer.innertube.model.Context.Companion.clientDefaultAndroid
 import com.dhp.musicplayer.innertube.model.Context.Companion.clientDefaultWeb
 import com.dhp.musicplayer.innertube.model.GridRenderer
+import com.dhp.musicplayer.innertube.model.MoodAndGenres
 import com.dhp.musicplayer.innertube.model.MusicCarouselShelfRenderer
-import com.dhp.musicplayer.innertube.model.MusicNavigationButtonRenderer
 import com.dhp.musicplayer.innertube.model.MusicResponsiveListItemRenderer
 import com.dhp.musicplayer.innertube.model.MusicShelfRenderer
 import com.dhp.musicplayer.innertube.model.MusicTwoRowItemRenderer
@@ -76,9 +75,9 @@ fun ContentEncoding.Config.brotli(quality: Float? = null) {
 }
 
 class InnertubeApiService(val context: android.content.Context) {
-    var config = context.getConfig()
+    private var config = context.getConfig()
 
-    val client = HttpClient(OkHttp) {
+    private var client = HttpClient(OkHttp) {
         BrowserUserAgent()
 
         expectSuccess = true
@@ -105,12 +104,18 @@ class InnertubeApiService(val context: android.content.Context) {
         }
     }
 
-    //    internal const val player = Constants.HOST_PLAYER
     private val player = config.hostPlayer
     private val next = config.hostNext
     private val browse = config.hostBrowse
     private val search = config.hostSearch
     private val searchSuggestions = config.hostSuggestion
+
+    val filterSong: String = config.filterSong
+    val filterVideo: String = config.filterVideo
+    val filterAlbum: String = config.filterAlbum
+    val filterArtist: String = config.filterArtist
+    val filterCommunityPlaylist: String = config.filterCommunityPlaylist
+    val featuredPlaylist: String = config.featuredPlaylist
 
     private fun HttpRequestBuilder.mask(value: String = "*") =
         header(config.headerMask, value)
@@ -689,92 +694,10 @@ class InnertubeApiService(val context: android.content.Context) {
                 INSTANCE ?: InnertubeApiService(context.applicationContext).also { INSTANCE = it }
             }
         }
-
     }
 }
-
-data class MoodAndGenres(
-    val title: String,
-    val items: List<Item>?,
-) {
-    data class Item(
-        val title: String,
-        val stripeColor: Long,
-        val endpoint: NavigationEndpoint.Endpoint.Browse,
-    ) {
-        fun getColor(): Int? {
-            return try {
-                stripeColor.toInt()
-            } catch (_: Exception) {
-                null
-            }
-        }
-    }
-
-    companion object {
-        fun fromSectionListRendererContent(content: SectionListRenderer.Content): MoodAndGenres? {
-            return MoodAndGenres(
-                title = content.gridRenderer?.header?.gridHeaderRenderer?.title?.runs?.firstOrNull()?.text
-                    ?: return null,
-                items = content.gridRenderer.items
-                    ?.mapNotNull(GridRenderer.Item::musicNavigationButtonRenderer)
-                    ?.mapNotNull(::fromMusicNavigationButtonRenderer)
-            )
-        }
-
-        fun fromMusicNavigationButtonRenderer(renderer: MusicNavigationButtonRenderer): Item? {
-            return Item(
-                title = renderer.buttonText.runs?.firstOrNull()?.text ?: return null,
-                stripeColor = renderer.solid?.leftStripeColor ?: return null,
-                endpoint = renderer.clickCommand.browseEndpoint ?: return null,
-            )
-        }
-    }
-}
-
 
 object Innertube {
-
-//    val client = HttpClient(OkHttp) {
-//        BrowserUserAgent()
-//
-//        expectSuccess = true
-//
-//        install(ContentNegotiation) {
-//            @OptIn(ExperimentalSerializationApi::class)
-//            json(Json {
-//                ignoreUnknownKeys = true
-//                explicitNulls = false
-//                encodeDefaults = true
-//            })
-//        }
-//
-//        install(ContentEncoding) {
-//            brotli()
-//        }
-//
-//        defaultRequest {
-//            url(scheme = "https", host = Config.HOST) {
-//                headers.append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-//                headers.append(Config.HEADER_NAME, Config.HEADER_KEY)
-//                parameters.append("prettyPrint", "false")
-//            }
-//        }
-//    }
-
-    //    internal const val player = Constants.HOST_PLAYER
-//    internal val player = Config.HOST_PLAYER
-//    internal val next = Config.HOST_NEXT
-//    internal val browse = Config.HOST_BROWSER
-//    internal val search = Config.HOST_SEARCH
-//    internal val searchSuggestions = Config.HOST_SUGGESTION
-
-//    internal const val musicResponsiveListItemRendererMask = "musicResponsiveListItemRenderer(flexColumns,fixedColumns,thumbnail,navigationEndpoint)"
-//    internal const val musicTwoRowItemRendererMask = "musicTwoRowItemRenderer(thumbnailRenderer,title,subtitle,navigationEndpoint)"
-//    const val playlistPanelVideoRendererMask = "playlistPanelVideoRenderer(title,navigationEndpoint,longBylineText,shortBylineText,thumbnail,lengthText)"
-
-//    internal fun HttpRequestBuilder.mask(value: String = "*") =
-//        header(Config.HEADER_MASK, value)
 
     data class Info<T : NavigationEndpoint.Endpoint>(
         val name: String?,
@@ -799,66 +722,11 @@ object Innertube {
         val artists: List<ArtistItem>? = null,
     ) {
         companion object {
-            fun fromMusicTwoRowItemRenderer(renderer: MusicTwoRowItemRenderer): Innertube.Item? {
+            fun fromMusicTwoRowItemRenderer(renderer: MusicTwoRowItemRenderer): Item? {
                 return when {
-                    renderer.isAlbum -> Innertube.AlbumItem.Companion.from(renderer)
-//                        AlbumItem(
-//                        info = renderer
-//                            .title
-//                            ?.runs
-//                            ?.firstOrNull()
-//                            ?.let(Innertube::Info),
-//                        authors = null,
-//                        browseId = renderer.navigationEndpoint.browseEndpoint?.browseId ?: return null,
-//                        playlistId = renderer.thumbnailOverlay?.musicItemThumbnailOverlayRenderer
-//                            ?.content?.musicPlayButtonRenderer?.playNavigationEndpoint
-//                            ?.watchPlaylistEndpoint?.playlistId ?: return null,
-//                        title = renderer.title.runs?.firstOrNull()?.text ?: return null,
-//                        artists = null,
-//                        year = renderer.subtitle?.runs?.lastOrNull()?.text?.toIntOrNull(),
-//                        thumbnail = renderer.thumbnailRenderer.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
-//                        explicit = renderer.subtitleBadges?.find {
-//                            it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
-//                        } != null
-//                    )
-                    renderer.isPlaylist -> Innertube.PlaylistItem.Companion.from(renderer)
-                    /*PlaylistItem(
-                    id = renderer.navigationEndpoint.browseEndpoint?.browseId?.removePrefix("VL") ?: return null,
-                    title = renderer.title.runs?.firstOrNull()?.text ?: return null,
-                    author = renderer.subtitle?.runs?.getOrNull(2)?.let {
-                        Artist(
-                            name = it.text,
-                            id = it.navigationEndpoint?.browseEndpoint?.browseId
-                        )
-                    },
-                    songCountText = renderer.subtitle?.runs?.getOrNull(4)?.text,
-                    thumbnail = renderer.thumbnailRenderer.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
-                    playEndpoint = renderer.thumbnailOverlay
-                        ?.musicItemThumbnailOverlayRenderer?.content
-                        ?.musicPlayButtonRenderer?.playNavigationEndpoint
-                        ?.watchPlaylistEndpoint ?: return null,
-                    shuffleEndpoint = renderer.menu?.menuRenderer?.items?.find {
-                        it.menuNavigationItemRenderer?.icon?.iconType == "MUSIC_SHUFFLE"
-                    }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint ?: return null,
-                    radioEndpoint = renderer.menu.menuRenderer.items.find {
-                        it.menuNavigationItemRenderer?.icon?.iconType == "MIX"
-                    }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint ?: return null
-                )*/
-                    renderer.isArtist -> {
-                        Innertube.ArtistItem.Companion.from(renderer)
-                        /* ArtistItem(
-                             id = renderer.navigationEndpoint.browseEndpoint?.browseId ?: return null,
-                             title = renderer.title.runs?.firstOrNull()?.text ?: return null,
-                             thumbnail = renderer.thumbnailRenderer.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
-                             shuffleEndpoint = renderer.menu?.menuRenderer?.items?.find {
-                                 it.menuNavigationItemRenderer?.icon?.iconType == "MUSIC_SHUFFLE"
-                             }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint ?: return null,
-                             radioEndpoint = renderer.menu.menuRenderer.items.find {
-                                 it.menuNavigationItemRenderer?.icon?.iconType == "MIX"
-                             }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint ?: return null,
-                         )*/
-                    }
-
+                    renderer.isAlbum -> AlbumItem.from(renderer)
+                    renderer.isPlaylist -> PlaylistItem.from(renderer)
+                    renderer.isArtist -> ArtistItem.from(renderer)
                     else -> null
                 }
             }
