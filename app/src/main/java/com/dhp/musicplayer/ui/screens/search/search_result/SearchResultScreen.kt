@@ -24,8 +24,10 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.ResultNavigationKey
-import com.dhp.musicplayer.extensions.toSong
+import com.dhp.musicplayer.extensions.asMediaItem
+import com.dhp.musicplayer.extensions.forcePlay
 import com.dhp.musicplayer.innertube.Innertube
+import com.dhp.musicplayer.innertube.InnertubeApiService
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.ui.component.ChipsRow
@@ -34,7 +36,6 @@ import com.dhp.musicplayer.ui.items.SongItem
 import com.dhp.musicplayer.ui.screens.artist.navigation.navigateToArtistDetail
 import com.dhp.musicplayer.ui.screens.playlist.navigation.navigateToOnlinePlaylistDetail
 import com.dhp.musicplayer.ui.screens.search.search_text.SearchToolbar
-import com.dhp.musicplayer.utils.getConfig
 import com.dhp.musicplayer.utils.getSubTitleTextInnertubeItem
 import com.dhp.musicplayer.utils.getThumbnailInnertubeItem
 import com.dhp.musicplayer.utils.getTitleTextInnertubeItem
@@ -54,7 +55,8 @@ fun SearchResultScreen(
     val playerConnection = LocalPlayerConnection.current
     val searchFilter by viewModel.searchFilter.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-    val config = LocalContext.current.getConfig()
+    val musicApiService = InnertubeApiService.getInstance(LocalContext.current)
+
     BackHandler {
         appState.navController.previousBackStackEntry?.savedStateHandle?.set(
             ResultNavigationKey.SEARCH_RESULT_KEY,
@@ -90,11 +92,11 @@ fun SearchResultScreen(
         ChipsRow(
             chips = listOf(
 //                null to stringResource(R.string.filter_all),
-                config.filterSong to stringResource(R.string.filter_songs),
+                musicApiService.filterSong to stringResource(R.string.filter_songs),
 //                Config.FILTER_VIDEO to stringResource(R.string.filter_videos),
-                config.filterAlbum to stringResource(R.string.filter_albums),
-                config.filterArtist to stringResource(R.string.filter_artists),
-                config.filterCommunityPlaylist to stringResource(R.string.filter_community_playlists),
+                musicApiService.filterAlbum to stringResource(R.string.filter_albums),
+                musicApiService.filterArtist to stringResource(R.string.filter_artists),
+                musicApiService.filterCommunityPlaylist to stringResource(R.string.filter_community_playlists),
 //                Config.FILTER_FEATURED_PLAYLIST to stringResource(R.string.filter_featured_playlists)
             ),
             currentValue = searchFilter,
@@ -131,10 +133,9 @@ fun SearchResultScreen(
                                 onClick = {
                                     when (item) {
                                         is Innertube.SongItem -> {
-                                            playerConnection?.playSongWithQueue(
-                                                item.toSong(),
-                                                listOf(item.toSong())
-                                            )
+                                            playerConnection?.stopRadio()
+                                            playerConnection?.player?.forcePlay(item.asMediaItem)
+                                            playerConnection?.addRadio(item.info?.endpoint)
                                         }
 
                                         is Innertube.AlbumItem -> {

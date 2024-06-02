@@ -42,6 +42,7 @@ import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.px
 import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.extensions.asMediaItem
+import com.dhp.musicplayer.extensions.forcePlay
 import com.dhp.musicplayer.extensions.shimmer
 import com.dhp.musicplayer.extensions.thumbnail
 import com.dhp.musicplayer.extensions.toSong
@@ -73,7 +74,10 @@ fun ArtistDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
-    BoxWithConstraints(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    BoxWithConstraints(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)) {
         val maxWidth = maxWidth
         val maxHeight = maxHeight
         when (uiState) {
@@ -296,9 +300,9 @@ fun ArtistDetailScreen(
                                     }
                                 },
                                 onClick = {
-                                    playerConnection?.playSongWithQueue(
-                                        songItem.toSong(),
-                                        songItems.map { it.toSong() })
+                                    playerConnection?.stopRadio()
+                                    playerConnection?.player?.forcePlay(songItem.asMediaItem)
+                                    playerConnection?.addRadio(songItem.info?.endpoint)
                                 }
                             )
                     )

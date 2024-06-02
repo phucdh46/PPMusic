@@ -25,6 +25,7 @@ import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.px
 import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.extensions.asMediaItem
+import com.dhp.musicplayer.extensions.forcePlay
 import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.innertube.Innertube
 import com.dhp.musicplayer.ui.AppState
@@ -49,7 +50,11 @@ fun ListSongsScreen(
 
     when (uiState) {
         is UiState.Loading -> {
-            Column(modifier = Modifier.windowInsetsPadding(LocalWindowInsets.current).padding(8.dp)) {
+            Column(
+                modifier = Modifier
+                    .windowInsetsPadding(LocalWindowInsets.current)
+                    .padding(8.dp)
+            ) {
                 repeat(7) {
                     SongItemPlaceholder()
                 }
@@ -62,10 +67,9 @@ fun ListSongsScreen(
             ListSongsScreen(
                 lazyPagingItems = lazyPagingItems,
                 onItemClick = { item ->
-                    playerConnection?.playSongWithQueue(
-                        item.toSong(),
-                        listOf(item.toSong())
-                    )
+                    playerConnection?.stopRadio()
+                    playerConnection?.player?.forcePlay(item.asMediaItem)
+                    playerConnection?.addRadio(item.info?.endpoint)
                 }
             )
         }
@@ -142,7 +146,7 @@ fun ListSongsScreen(
                 }
             }
 
-            item{
+            item {
                 HandlePagingStates(lazyPagingItems = lazyPagingItems)
             }
         }

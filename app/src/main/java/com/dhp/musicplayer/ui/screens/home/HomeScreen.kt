@@ -40,9 +40,11 @@ import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.px
 import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.extensions.asMediaItem
+import com.dhp.musicplayer.extensions.forcePlay
 import com.dhp.musicplayer.extensions.isLandscape
 import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.innertube.Innertube
+import com.dhp.musicplayer.innertube.model.NavigationEndpoint
 import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.IconApp
@@ -113,8 +115,12 @@ internal fun ForYouScreen(
                 ) {
                     ForYouScreen(
                         songs = related?.songs?.map { it.toSong() } ?: emptyList(),
-                        onItemClicked = { song, songs ->
-                            playerConnection?.playSongWithQueue(song, songs)
+                        onItemClicked = { song ->
+                            playerConnection?.stopRadio()
+                            playerConnection?.player?.forcePlay(song.asMediaItem())
+                            playerConnection?.addRadio(
+                                NavigationEndpoint.Endpoint.Watch(videoId = song.id)
+                            )
                         },
                         modifier = modifier,
                         album = related?.albums,
@@ -146,7 +152,7 @@ internal fun ForYouScreen(
 @Composable
 internal fun ForYouScreen(
     songs: List<Song>,
-    onItemClicked: (Song, List<Song>) -> Unit,
+    onItemClicked: (Song) -> Unit,
     modifier: Modifier = Modifier,
     album: List<Innertube.AlbumItem>?,
     artist: List<Innertube.ArtistItem>?,
@@ -221,7 +227,7 @@ internal fun ForYouScreen(
                                     }
                                 },
                                 onClick = {
-                                    onItemClicked(song, songs)
+                                    onItemClicked(song)
                                 }
                             )
                             .animateItemPlacement()

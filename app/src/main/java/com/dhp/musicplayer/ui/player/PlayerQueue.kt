@@ -47,6 +47,7 @@ import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.ui.component.BottomSheet
 import com.dhp.musicplayer.ui.component.BottomSheetState
+import com.dhp.musicplayer.ui.component.SongItemPlaceholder
 import com.dhp.musicplayer.ui.items.MediaMetadataListItem
 import com.dhp.musicplayer.utils.Logg
 import com.dhp.musicplayer.utils.toSongsWithBitmap
@@ -72,9 +73,7 @@ fun PlayerQueue(
 
     val currentWindowIndex by playerConnection.currentMediaItemIndex.collectAsState()
 
-    var windows by remember {
-        mutableStateOf(playerConnection.player.currentTimeline.windows)
-    }
+    val windows by playerConnection.currentTimelineWindows.collectAsState()
 
     val containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp)
 
@@ -209,6 +208,15 @@ fun PlayerQueue(
                                 }
                                 .detectReorderAfterLongPress(reorderLazyListState)
                         )
+                    }
+                }
+                item {
+                    if (playerConnection.isLoadingRadio) {
+                        Column(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
+                            repeat(10) {
+                                SongItemPlaceholder()
+                            }
+                        }
                     }
                 }
             }

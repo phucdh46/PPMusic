@@ -2,6 +2,9 @@ package com.dhp.musicplayer.player
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -10,13 +13,22 @@ import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.extensions.currentMetadata
 import com.dhp.musicplayer.extensions.playQueue
 import com.dhp.musicplayer.extensions.toSong
+import com.dhp.musicplayer.extensions.windows
+import com.dhp.musicplayer.innertube.Innertube
+import com.dhp.musicplayer.innertube.InnertubeApiService
+import com.dhp.musicplayer.innertube.model.NavigationEndpoint
+import com.dhp.musicplayer.innertube.model.bodies.NextBody
 import com.dhp.musicplayer.model.Song
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 
 class PlayerConnection(
     val context: Context,
@@ -53,6 +65,9 @@ class PlayerConnection(
     }.stateIn(scope, SharingStarted.Lazily, player.playWhenReady && player.playbackState != Player.STATE_ENDED)
 
     val error = MutableStateFlow<PlaybackException?>(null)
+
+    private val _currentTimelineWindows = MutableStateFlow(player.currentTimeline.windows)
+    val currentTimelineWindows: StateFlow<List<Timeline.Window>> = _currentTimelineWindows
 
     init {
         player.addListener(this)
@@ -118,6 +133,7 @@ class PlayerConnection(
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
         super.onTimelineChanged(timeline, reason)
+        _currentTimelineWindows.value = timeline.windows
         _currentMediaItemIndex.value = if (player.mediaItemCount == 0) -1 else player.currentMediaItemIndex
     }
 
@@ -127,6 +143,38 @@ class PlayerConnection(
 
     override fun onPlayerErrorChanged(playbackError: PlaybackException?) {
         error.value = playbackError
+    }
+
+    private var radioJob: Job? = null
+    var isLoadingRadio by mutableStateOf(false)
+        private set
+    private val coroutineScope = CoroutineScope(Dispatchers.IO) + Job()
+
+    fun addRadio(endpoint: NavigationEndpoint.Endpoint.Watch?) {
+        radioJob?.cancel()
+        isLoadingRadio = true
+        radioJob = coroutineScope.launch(Dispatchers.Main) {
+            val mediaItems = InnertubeApiService.getInstance(context).nextPage(
+                NextBody(
+                    videoId = endpoint?.videoId,
+                    playlistId = endpoint?.playlistId,
+                    params = endpoint?.playlistSetVideoId,
+                    playlistSetVideoId = endpoint?.params
+                )
+            )?.getOrNull()?.itemsPage?.items?.map(Innertube.SongItem::asMediaItem) ?: emptyList()
+            val queuePage = mediaItems.take(20).toMutableList()
+            val duplicateItem = queuePage.find { it.mediaId == endpoint?.videoId }
+            duplicateItem?.let {
+                queuePage.remove(it)
+            }
+            player.addMediaItems(queuePage)
+            isLoadingRadio = false
+        }
+    }
+
+    fun stopRadio() {
+        isLoadingRadio = false
+        radioJob?.cancel()
     }
 
     fun dispose() {
