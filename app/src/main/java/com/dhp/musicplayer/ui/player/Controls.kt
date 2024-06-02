@@ -199,14 +199,7 @@ fun Controls(
                 modifier = Modifier
                     .clip(RoundedCornerShape(playPauseRoundness))
                     .clickable {
-                        if (shouldBePlaying) {
-                            playerConnection.player.pause()
-                        } else {
-                            if (playerConnection.player.playbackState == androidx.media3.common.Player.STATE_IDLE) {
-                                playerConnection.player.prepare()
-                            }
-                            playerConnection.player.play()
-                        }
+                        playerConnection.playOrPause()
                     }
                     .background(MaterialTheme.colorScheme.primary)
                     .size(64.dp)

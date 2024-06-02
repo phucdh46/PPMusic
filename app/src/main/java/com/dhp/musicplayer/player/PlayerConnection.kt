@@ -78,8 +78,15 @@ class PlayerConnection(
         if (isPlaying.value) {
             player.pause()
         } else {
-            if (player.playbackState == Player.STATE_IDLE) {
-                player.prepare()
+            when(player.playbackState) {
+                Player.STATE_IDLE -> {
+                    player.prepare()
+                }
+                Player.STATE_ENDED -> {
+                    player.seekTo(0, 0)
+                    player.prepare()
+                }
+                else -> {}
             }
             player.play()
         }
