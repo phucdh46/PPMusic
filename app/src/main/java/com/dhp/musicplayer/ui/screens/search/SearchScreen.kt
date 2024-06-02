@@ -33,7 +33,7 @@ import com.dhp.musicplayer.constant.MoodAndGenresButtonHeight
 import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.extensions.drawOneSideBorder
 import com.dhp.musicplayer.extensions.shimmer
-import com.dhp.musicplayer.innertube.MoodAndGenres
+import com.dhp.musicplayer.innertube.model.MoodAndGenres
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.LocalWindowInsets
 import com.dhp.musicplayer.ui.component.EmptyList
@@ -73,24 +73,25 @@ fun SearchScreen(
             }
 
             is UiState.Loading -> {
-                Column {
+                Column(modifier = Modifier.fillMaxSize()) {
                     TextPlaceholder()
-                    repeat(2) {
+                    repeat(4) {
                         Row {
                             Box(
                                 modifier = Modifier
+                                    .padding(6.dp)
                                     .height(MoodAndGenresButtonHeight)
                                     .weight(1f)
                                     .shimmer()
-                                    .padding(6.dp)
+
                             )
 
                             Box(
                                 modifier = Modifier
+                                    .padding(6.dp)
                                     .height(MoodAndGenresButtonHeight)
                                     .weight(1f)
                                     .shimmer()
-                                    .padding(6.dp)
                             )
                         }
                     }

@@ -85,7 +85,7 @@ fun TextPlaceholder(
 ) {
     Box(
         modifier = modifier
-            .padding(vertical = 4.dp)
+            .padding(4.dp)
             .fillMaxWidth(remember { 0.25f + Random.nextFloat() * 0.5f })
             .height(16.dp)
             .clip(RoundedCornerShape(8.dp))
