@@ -3,6 +3,7 @@ package com.dhp.musicplayer.ui.screens.home
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dhp.musicplayer.constant.ConfigApiKey
 import com.dhp.musicplayer.constant.RelatedMediaIdKey
 import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.innertube.Innertube
@@ -14,6 +15,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -34,31 +37,35 @@ class HomeViewModel @Inject constructor(
 
     private fun fetchRelatedMedia() {
         viewModelScope.launch {
-            isRefreshing.value = true
-            _uiState.value = UiState.Loading
-            try {
-                val relatedMediaId = withContext(Dispatchers.IO) {
-                    application.dataStore[RelatedMediaIdKey] ?: "xl8thVrlvjI"
-                }
-                val result = withContext(Dispatchers.IO) {
-                    InnertubeApiService.getInstance(application)
-                        .relatedPage(NextBody(videoId = relatedMediaId))
-                }
-                if (result?.isSuccess == true) {
-                    val data = result.getOrNull()
-                    if (data != null) {
-                        _uiState.value = UiState.Success(data)
+            application.dataStore.data.distinctUntilChanged()
+                .map { dataStore -> dataStore[ConfigApiKey] }
+                .distinctUntilChanged()
+                .collect { configApiKey ->
+                    if (configApiKey != null) {
+                        isRefreshing.value = true
+                        _uiState.value = UiState.Loading
+                        try {
+                            val relatedMediaId = withContext(Dispatchers.IO) {
+                                application.dataStore[RelatedMediaIdKey] ?: "xl8thVrlvjI"
+                            }
+                            val result = withContext(Dispatchers.IO) {
+                                InnertubeApiService.getInstance(application)
+                                    .relatedPage(NextBody(videoId = relatedMediaId))
+                            }?.getOrNull()
+                            if (result != null) {
+                                _uiState.value = UiState.Success(result)
+                            } else {
+                                _uiState.value = UiState.Error
+                            }
+                        } catch (e: Exception) {
+                            _uiState.value = UiState.Error
+                        } finally {
+                            isRefreshing.value = false
+                        }
                     } else {
                         _uiState.value = UiState.Error
                     }
-                } else {
-                    _uiState.value = UiState.Error
                 }
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error
-            } finally {
-                isRefreshing.value = false
-            }
         }
     }
 
