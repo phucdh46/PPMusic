@@ -18,6 +18,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,8 +33,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dhp.musicplayer.BuildConfig
 import com.dhp.musicplayer.R
+import com.dhp.musicplayer.constant.DynamicThemeKey
 import com.dhp.musicplayer.enums.DarkThemeConfig
 import com.dhp.musicplayer.enums.UiState
+import com.dhp.musicplayer.ui.component.TextPlaceholder
+import com.dhp.musicplayer.utils.rememberPreference
 
 
 @Composable
@@ -91,10 +95,13 @@ fun SettingsDialog(
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 when (settingsUiState) {
                     is UiState.Loading -> {
-                        Text(
-                            text = stringResource(R.string.feature_settings_loading),
+                        Column(
                             modifier = Modifier.padding(vertical = 16.dp),
-                        )
+                        ) {
+                            repeat(5) {
+                                TextPlaceholder()
+                            }
+                        }
                     }
 
                     is UiState.Success -> {
@@ -127,6 +134,16 @@ private fun ColumnScope.SettingsPanel(
     userEditableSettings: UserEditableSettings,
     onChangeDarkThemeConfig: (darkThemeConfig: DarkThemeConfig) -> Unit,
 ) {
+    val (dynamicTheme, onDynamicThemeChange) = rememberPreference(
+        DynamicThemeKey,
+        defaultValue = false
+    )
+    SettingsDialogSectionTitleWithSwitchButton(
+        text = stringResource(R.string.feature_settings_dynamic_theme_preference),
+        checked = dynamicTheme,
+        onCheckedChange = onDynamicThemeChange
+    )
+    HorizontalDivider(Modifier.padding(top = 8.dp))
     SettingsDialogSectionTitle(text = stringResource(R.string.feature_settings_dark_mode_preference))
     Column(Modifier.selectableGroup()) {
         SettingsDialogThemeChooserRow(
@@ -154,6 +171,26 @@ private fun SettingsDialogSectionTitle(text: String) {
         style = MaterialTheme.typography.titleMedium,
         modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
     )
+}
+
+@Composable
+private fun SettingsDialogSectionTitleWithSwitchButton(
+    text: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
+    }
 }
 
 @Composable

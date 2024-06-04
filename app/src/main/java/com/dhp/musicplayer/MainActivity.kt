@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.ServiceConnection
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.IBinder
 import androidx.activity.ComponentActivity
@@ -20,25 +21,36 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import coil.imageLoader
+import coil.request.ImageRequest
+import com.dhp.musicplayer.constant.DynamicThemeKey
 import com.dhp.musicplayer.enums.DarkThemeConfig
 import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.extensions.intent
+import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.model.UserData
 import com.dhp.musicplayer.player.ExoPlayerService
 import com.dhp.musicplayer.player.PlayerConnection
 import com.dhp.musicplayer.ui.App
 import com.dhp.musicplayer.ui.rememberAppState
+import com.dhp.musicplayer.ui.theme.ColorSaver
 import com.dhp.musicplayer.ui.theme.ComposeTheme
 import com.dhp.musicplayer.utils.InAppUpdateManager
+import com.dhp.musicplayer.utils.extractThemeColor
+import com.dhp.musicplayer.utils.rememberPreference
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -127,9 +139,38 @@ class MainActivity : ComponentActivity() {
                     }
                 })
             }
+            val isSystemInDarkTheme = isSystemInDarkTheme()
+            val enableDynamicTheme by rememberPreference(DynamicThemeKey, defaultValue = false)
+            val color = androidx.compose.ui.graphics.Color.Unspecified
+
+            var themeColor by rememberSaveable(stateSaver = ColorSaver) {
+                mutableStateOf(color)
+            }
+            LaunchedEffect(playerConnection, enableDynamicTheme, isSystemInDarkTheme) {
+                if (!enableDynamicTheme || playerConnection == null) {
+                    themeColor = color
+                    return@LaunchedEffect
+                }
+                playerConnection?.currentMediaItem?.collectLatest { mediaItem ->
+                    themeColor = if (mediaItem != null) {
+                        withContext(Dispatchers.IO) {
+                            val result = imageLoader.execute(
+                                ImageRequest.Builder(this@MainActivity)
+                                    .data(mediaItem.toSong().thumbnailUrl)
+                                    .allowHardware(false)
+                                    .build()
+                            )
+                            (result.drawable as? BitmapDrawable)?.bitmap?.extractThemeColor()
+                                ?: color
+                        }
+                    } else color
+                }
+            }
 
             ComposeTheme(
-                darkTheme = darkTheme
+                darkTheme = darkTheme,
+                themeColor = themeColor,
+                enableDynamicTheme = enableDynamicTheme,
             ) {
                 App(appState = appState, playerConnection)
             }

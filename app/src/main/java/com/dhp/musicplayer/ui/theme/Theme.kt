@@ -3,14 +3,19 @@ package com.dhp.musicplayer.ui.theme
 import android.os.Build
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import com.google.material.color.scheme.Scheme
 
 //private val DarkColorScheme = darkColorScheme(
 //    primary = Purple80,
@@ -226,10 +231,16 @@ fun ComposeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
+    themeColor: Color,
+    enableDynamicTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        themeColor != Color.Unspecified && Build.VERSION.SDK_INT < Build.VERSION_CODES.S-> {
+            if (darkTheme) Scheme.dark(themeColor.toArgb()).toColorScheme()
+            else Scheme.light(themeColor.toArgb()).toColorScheme()
+        }
+        enableDynamicTheme && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
@@ -251,4 +262,41 @@ fun ComposeTheme(
         typography = Typography,
         content = content
     )
+}
+
+fun Scheme.toColorScheme() = ColorScheme(
+    primary = Color(primary),
+    onPrimary = Color(onPrimary),
+    primaryContainer = Color(primaryContainer),
+    onPrimaryContainer = Color(onPrimaryContainer),
+    inversePrimary = Color(inversePrimary),
+    secondary = Color(secondary),
+    onSecondary = Color(onSecondary),
+    secondaryContainer = Color(secondaryContainer),
+    onSecondaryContainer = Color(onSecondaryContainer),
+    tertiary = Color(tertiary),
+    onTertiary = Color(onTertiary),
+    tertiaryContainer = Color(tertiaryContainer),
+    onTertiaryContainer = Color(onTertiaryContainer),
+    background = Color(background),
+    onBackground = Color(onBackground),
+    surface = Color(surface),
+    onSurface = Color(onSurface),
+    surfaceVariant = Color(surfaceVariant),
+    onSurfaceVariant = Color(onSurfaceVariant),
+    surfaceTint = Color(primary),
+    inverseSurface = Color(inverseSurface),
+    inverseOnSurface = Color(inverseOnSurface),
+    error = Color(error),
+    onError = Color(onError),
+    errorContainer = Color(errorContainer),
+    onErrorContainer = Color(onErrorContainer),
+    outline = Color(outline),
+    outlineVariant = Color(outlineVariant),
+    scrim = Color(scrim),
+)
+
+val ColorSaver = object : Saver<Color, Int> {
+    override fun restore(value: Int): Color = Color(value)
+    override fun SaverScope.save(value: Color): Int = value.toArgb()
 }

@@ -144,7 +144,6 @@ fun Lyrics(
                     style = typography.titleMedium.copy(color = MaterialTheme.colorScheme.errorContainer),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
                         .padding(all = 8.dp)
                         .fillMaxWidth()
                 )
@@ -159,10 +158,9 @@ fun Lyrics(
             ) {
                 Text(
                     text = "Lyrics are not available for this song",
-                    style = typography.titleMedium.copy(color = MaterialTheme.colorScheme.background),
+                    style = typography.titleMedium.copy(color = MaterialTheme.colorScheme.onBackground),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
                         .padding(all = 8.dp)
                         .fillMaxWidth()
                 )

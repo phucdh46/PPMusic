@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
@@ -75,7 +76,7 @@ fun PlayerQueue(
 
     val windows by playerConnection.currentTimelineWindows.collectAsState()
 
-    val containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp)
+    val containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp)
 
 //    val mutableQueueWindows = remember { mutableStateListOf<Timeline.Window>() }
     val songsWithBitmaps = remember { mutableStateListOf<Pair<Song, Bitmap?>>() }
@@ -120,6 +121,7 @@ fun PlayerQueue(
     BottomSheet(
         state = state,
         modifier = modifier,
+        backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(NavigationBarDefaults.Elevation),
         collapsedContent = {
             Box(
                 modifier = Modifier
@@ -139,7 +141,6 @@ fun PlayerQueue(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
         ) {
             Column(
                 modifier = Modifier
@@ -164,7 +165,6 @@ fun PlayerQueue(
             LazyColumn(
                 state = reorderLazyListState.listState,
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
                     .nestedScroll(state.preUpPostDownNestedScrollConnection)
                     .then(Modifier.reorderable(reorderLazyListState))
             ) {

@@ -1,5 +1,6 @@
 package com.dhp.musicplayer.constant
 
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -11,3 +12,4 @@ val RelatedMediaIdKey = stringPreferencesKey("relatedMediaId")
 val LastTimeUserCancelFlexibleUpdateKey = longPreferencesKey("lastTimeUserCancelFlexibleUpdate")
 val ConfigApiKey = stringPreferencesKey("configApi")
 val DarkThemeConfigKey = stringPreferencesKey("darkThemeConfig")
+val DynamicThemeKey = booleanPreferencesKey("dynamicTheme")

@@ -9,6 +9,8 @@ import android.os.Build
 import android.provider.Settings
 import android.text.format.DateUtils
 import android.util.Base64
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Color
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.api.reponse.KeyResponse
 import com.dhp.musicplayer.constant.ConfigApiKey
@@ -20,6 +22,8 @@ import com.dhp.musicplayer.ui.screens.song.navigation.LIST_SONGS_ROUTE
 import kotlinx.serialization.json.Json
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import androidx.palette.graphics.Palette
+import com.google.material.color.score.Score
 
 fun getAppBarTitle(route: String?): Int? {
     return when (route) {
@@ -135,3 +139,12 @@ fun getBitmapOfDeviceSong(context: Context, idLocal: Long): Bitmap? {
     }
 }
 
+fun Bitmap.extractThemeColor(): Color {
+    val colorsToPopulation = Palette.from(this)
+        .maximumColorCount(8)
+        .generate()
+        .swatches
+        .associate { it.rgb to it.population }
+    val rankedColors = Score.score(colorsToPopulation)
+    return Color(rankedColors.first())
+}
