@@ -1,5 +1,6 @@
 package com.dhp.musicplayer.extensions
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -10,10 +11,12 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 
 fun Modifier.shimmer(
@@ -71,3 +74,20 @@ fun Modifier.drawOneSideBorder(
             strokeWidth = widthPx
         )
     }
+
+@SuppressLint("ModifierFactoryUnreferencedReceiver")
+fun Modifier.verticalFadingEdge() =
+    graphicsLayer(alpha = 0.99f)
+        .drawWithContent {
+            drawContent()
+            drawRect(
+                brush = Brush.verticalGradient(
+                    listOf(
+                        Color.Transparent,
+                        Color.Black, Color.Black, Color.Black,
+                        Color.Transparent
+                    )
+                ),
+                blendMode = BlendMode.DstIn
+            )
+        }
