@@ -61,6 +61,7 @@ fun BottomSheet(
     state: BottomSheetState,
     modifier: Modifier = Modifier,
     onDismiss: (() -> Unit)? = null,
+    backgroundColor: Color = MaterialTheme.colorScheme.surface,
     collapsedContent: @Composable BoxScope.() -> Unit,
     content: @Composable BoxScope.() -> Unit
 ) {
@@ -92,6 +93,7 @@ fun BottomSheet(
                 )
             }
             .fillMaxSize()
+            .background(backgroundColor)
     ) {
         if (!state.isCollapsed) {
             BackHandler(onBack = state::collapseSoft)

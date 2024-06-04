@@ -102,6 +102,8 @@ reorderable = { group = "org.burnoutcrew.composereorderable", name = "reorderabl
 paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "pagingCompose" }
 paging-runtime-ktx = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "pagingCommonAndroid" }
 
+palette = { group = "androidx.palette", name = "palette", version = "1.0.0" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
