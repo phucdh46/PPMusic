@@ -1,6 +1,5 @@
 package com.dhp.musicplayer.ui.player
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
@@ -12,21 +11,16 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
@@ -52,10 +46,8 @@ import java.nio.channels.UnresolvedAddressException
 @Composable
 fun Thumbnail(
     isShowingLyrics: Boolean,
-    onShowLyrics: (Boolean) -> Unit,
-    isShowingStatsForNerds: Boolean,
-    onShowStatsForNerds: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    sliderPositionProvider: () -> Long?,
 ) {
     val binder = LocalPlayerConnection.current
     val player = binder?.player ?: return
@@ -91,10 +83,12 @@ fun Thumbnail(
     val window = nullableWindow ?: return
 
     AnimatedContent(
+        modifier = modifier.fillMaxSize(),
         targetState = window,
         transitionSpec = {
             val duration = 500
-            val slideDirection = if (targetState.firstPeriodIndex > initialState.firstPeriodIndex)  AnimatedContentTransitionScope.SlideDirection.Left else  AnimatedContentTransitionScope.SlideDirection.Right
+            val slideDirection =
+                if (targetState.firstPeriodIndex > initialState.firstPeriodIndex) AnimatedContentTransitionScope.SlideDirection.Left else AnimatedContentTransitionScope.SlideDirection.Right
 
             ContentTransform(
                 targetContentEnter = slideIntoContainer(
@@ -118,76 +112,43 @@ fun Thumbnail(
                 sizeTransform = SizeTransform(clip = false)
             )
         },
-        contentAlignment = Alignment.Center
-    ) {currentWindow ->
-        Box(
-            contentAlignment = Alignment.Center,
+//        contentAlignment = Alignment.Center
+    ) { currentWindow ->
+        BoxWithConstraints(
+//            contentAlignment = Alignment.Center,
             modifier = modifier
-                .aspectRatio(1f)
-//                .clip(LocalAppearance.current.thumbnailShape)
-                .size(thumbnailSizeDp)
+//                .aspectRatio(1f)
+//                .size(thumbnailSizeDp)
+                .fillMaxSize()
+
         ) {
-            Log.d("DHP","Thumbnail: ${currentWindow.mediaItem.mediaMetadata.artworkUri.thumbnail(thumbnailSizePx)}")
             val song = currentWindow.mediaItem.toSong()
-            if(song.isOffline) {
+            if (song.isOffline) {
                 Image(
-                    bitmap = (song.getBitmap(LocalContext.current) ?: drawableToBitmap(LocalContext.current)).asImageBitmap(),
+                    bitmap = (song.getBitmap(LocalContext.current)
+                        ?: drawableToBitmap(LocalContext.current)).asImageBitmap(),
                     contentDescription = null,
                     modifier = Modifier
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onTap = { onShowLyrics(true) },
-                                onLongPress = { onShowStatsForNerds(true) }
-                            )
-                        }
-                        .fillMaxSize()
+                        .size(thumbnailSizeDp)
                 )
             } else {
                 LoadingShimmerImageMaxSize(
                     thumbnailUrl = song.thumbnailUrl?.thumbnail(thumbnailSizePx),
                     modifier = Modifier
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onTap = { onShowLyrics(true) },
-                                onLongPress = { onShowStatsForNerds(true) }
-                            )
-                        }
-                        .fillMaxWidth()
+                        .size(thumbnailSizeDp)
+//                        .fillMaxWidth()
                 )
-               /* AsyncImage(
-//                model = currentWindow.mediaItem.mediaMetadata.artworkUri.thumbnail(thumbnailSizePx),
-                    model =song.thumbnailUrl?.thumbnail(thumbnailSizePx),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    placeholder = painterResource(id = R.drawable.logo),
-                    error = painterResource(id = R.drawable.logo),
-                    modifier = Modifier
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onTap = { onShowLyrics(true) },
-                                onLongPress = { onShowStatsForNerds(true) }
-                            )
-                        }
-                        .fillMaxSize()
-
-                )*/
             }
 
-//            Lyrics(
-//                mediaId = currentWindow.mediaItem.mediaId,
-//                isDisplayed = isShowingLyrics && error == null,
+            Lyrics(
+                mediaId = currentWindow.mediaItem.mediaId,
+                isDisplayed = isShowingLyrics && error == null,
 //                onDismiss = { onShowLyrics(false) },
-//                ensureSongInserted = { Database.insert(currentWindow.mediaItem) },
-//                size = thumbnailSizeDp,
-//                mediaMetadataProvider = currentWindow.mediaItem::mediaMetadata,
-//                durationProvider = player::getDuration,
-//            )
-
-//            StatsForNerds(
-//                mediaId = currentWindow.mediaItem.mediaId,
-//                isDisplayed = isShowingStatsForNerds && error == null,
-//                onDismiss = { onShowStatsForNerds(false) }
-//            )
+                size = maxHeight,
+                mediaMetadataProvider = currentWindow.mediaItem::mediaMetadata,
+                durationProvider = player::getDuration,
+                sliderPositionProvider = sliderPositionProvider
+            )
 
             PlaybackError(
                 isDisplayed = error != null,

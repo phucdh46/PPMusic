@@ -21,16 +21,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.dhp.musicplayer.constant.QueuePeekHeight
-import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.extensions.isLandscape
 import com.dhp.musicplayer.extensions.positionAndDurationState
-import com.dhp.musicplayer.extensions.shouldBePlaying
 import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.ui.component.BottomSheet
@@ -51,14 +52,19 @@ fun BottomSheetPlayer(
 
     val mediaItem by playerConnection.currentMediaItem.collectAsStateWithLifecycle()
     mediaItem ?: return
-    val shouldBePlaying by remember {
-        mutableStateOf(playerConnection.player.shouldBePlaying)
-    }
     val queueSheetState = rememberBottomSheetState(
-        dismissedBound = QueuePeekHeight + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding(),
+        dismissedBound = QueuePeekHeight + WindowInsets.systemBars.asPaddingValues()
+            .calculateBottomPadding(),
         expandedBound = state.expandedBound,
     )
     val menuState = LocalMenuState.current
+
+    var sliderPosition by remember {
+        mutableStateOf<Long?>(null)
+    }
+    var isShowingLyrics by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     BottomSheet(
         state = state,
@@ -84,12 +90,10 @@ fun BottomSheetPlayer(
 
         val thumbnailContent: @Composable (modifier: Modifier) -> Unit = { modifier ->
             Thumbnail(
-                isShowingLyrics = false,
-                onShowLyrics = { },
-                isShowingStatsForNerds = false,
-                onShowStatsForNerds = { },
+                isShowingLyrics = isShowingLyrics,
+                sliderPositionProvider = { sliderPosition },
                 modifier = modifier
-//                        .nestedScroll(layoutState.preUpPostDownNestedScrollConnection)
+                    .nestedScroll(state.preUpPostDownNestedScrollConnection)
             )
         }
 
@@ -99,10 +103,16 @@ fun BottomSheetPlayer(
                     mediaId = mediaItem.mediaId,
                     title = mediaItem.mediaMetadata.title?.toString(),
                     artist = mediaItem.mediaMetadata.artist?.toString(),
-                    shouldBePlaying = shouldBePlaying,
                     position = positionAndDuration.first,
                     duration = positionAndDuration.second,
-                    modifier = modifier
+                    modifier = modifier,
+                    sliderPositionProvider = {
+                        sliderPosition = it
+                    },
+                    isEnableLyric = isShowingLyrics,
+                    onLyricCLick = {
+                        isShowingLyrics = !isShowingLyrics
+                    }
                 )
             }
 
@@ -119,11 +129,12 @@ fun BottomSheetPlayer(
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .weight(0.66f)
+                        .weight(1f)
                         .padding(bottom = 16.dp)
                 ) {
-                    thumbnailContent(Modifier
-                        .padding(horizontal = 16.dp)
+                    thumbnailContent(
+                        Modifier
+                            .padding(horizontal = 16.dp)
                     )
                 }
 
@@ -141,10 +152,15 @@ fun BottomSheetPlayer(
 //                    .padding(top = 54.dp)
                     .padding(bottom = queueSheetState.collapsedBound)
             ) {
-                Row(modifier = Modifier.padding(16.dp)) {
-                    Icon(imageVector = IconApp.KeyboardArrowDown, contentDescription = null, modifier = Modifier.clickable {
-                        state.collapseSoft()
-                    })
+                Row(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Icon(
+                        imageVector = IconApp.KeyboardArrowDown,
+                        contentDescription = null,
+                        modifier = Modifier.clickable {
+                            state.collapseSoft()
+                        })
                     Spacer(modifier = Modifier.weight(1f))
                     Icon(imageVector = IconApp.MoreVert, contentDescription = null,
                         modifier = Modifier.clickable {
@@ -159,10 +175,13 @@ fun BottomSheetPlayer(
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .weight(1.25f)
+                        .weight(1.8f)
                 ) {
-                    thumbnailContent(Modifier
-                        .padding(horizontal = 32.dp, vertical = 8.dp)
+                    thumbnailContent(
+                        Modifier
+//                        .padding(horizontal = 32.dp, vertical = 8.dp)
+                            .padding(horizontal = 16.dp)
+
                     )
                 }
 
@@ -178,7 +197,7 @@ fun BottomSheetPlayer(
         PlayerQueue(
             state = queueSheetState,
             playerBottomSheetState = state,
-            navController = navController
+            navController = navController,
         )
     }
 }

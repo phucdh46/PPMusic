@@ -1,9 +1,5 @@
 package com.dhp.musicplayer.ui.player
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,17 +45,18 @@ import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.ui.component.SeekBar
 import com.dhp.musicplayer.utils.formatAsDuration
 
-
 @Composable
 fun Controls(
     mediaId: String,
     title: String?,
     artist: String?,
-    shouldBePlaying: Boolean,
     position: Long,
     duration: Long,
     modifier: Modifier = Modifier,
-    ) {
+    sliderPositionProvider: (time: Long) -> Unit,
+    isEnableLyric: Boolean = false,
+    onLyricCLick: () -> Unit
+) {
     val playerConnection = LocalPlayerConnection.current ?: return
     val shouldBePlaying by playerConnection.isPlaying.collectAsStateWithLifecycle()
 
@@ -67,13 +64,6 @@ fun Controls(
         mutableStateOf<Long?>(null)
     }
 
-    val shouldBePlayingTransition = updateTransition(shouldBePlaying, label = "shouldBePlaying")
-
-    val playPauseRoundness by shouldBePlayingTransition.animateDp(
-        transitionSpec = { tween(durationMillis = 100, easing = LinearEasing) },
-        label = "playPauseRoundness",
-        targetValueByState = { if (it) 32.dp else 16.dp }
-    )
     val repeatMode by playerConnection.repeatMode.collectAsState()
 
     Column(
@@ -122,6 +112,7 @@ fun Controls(
             },
             onDragEnd = {
                 scrubbingPosition?.let(playerConnection.player::seekTo)
+                scrubbingPosition?.let { sliderPositionProvider(it) }
                 scrubbingPosition = null
             },
             color = MaterialTheme.colorScheme.primary,
@@ -169,15 +160,17 @@ fun Controls(
         ) {
             IconButton(
                 onClick = {
+                    onLyricCLick()
                 },
                 modifier = Modifier
                     .weight(1f)
                     .size(24.dp)
-            ){
+            ) {
                 Icon(
-                    imageVector = IconApp.Queue,
+                    imageVector = IconApp.Lyrics,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.alpha(if (isEnableLyric) 1f else 0.5f)
                 )
             }
 
@@ -187,7 +180,11 @@ fun Controls(
                     .weight(1f)
                     .size(24.dp)
             ) {
-                Icon(imageVector = IconApp.SkipPrevious, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Icon(
+                    imageVector = IconApp.SkipPrevious,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
 
             Spacer(
@@ -197,7 +194,8 @@ fun Controls(
 
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(playPauseRoundness))
+//                    .clip(RoundedCornerShape(playPauseRoundness))
+                    .clip(RoundedCornerShape(200.dp))
                     .clickable {
                         playerConnection.playOrPause()
                     }
@@ -226,7 +224,11 @@ fun Controls(
                     .weight(1f)
                     .size(24.dp)
             ) {
-                Icon(imageVector = IconApp.SkipNext, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Icon(
+                    imageVector = IconApp.SkipNext,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
 
             IconButton(
@@ -234,12 +236,12 @@ fun Controls(
                 modifier = Modifier
                     .weight(1f)
                     .size(24.dp)
-            ){
+            ) {
                 Icon(
-                    imageVector = when(repeatMode) {
+                    imageVector = when (repeatMode) {
                         Player.REPEAT_MODE_ONE -> IconApp.RepeatOne
                         else -> IconApp.Repeat
-                    }  ,
+                    },
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.alpha(if (repeatMode == Player.REPEAT_MODE_OFF) 0.5f else 1f)
