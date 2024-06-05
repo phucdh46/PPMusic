@@ -30,8 +30,9 @@ data class PlayerResponse(
 
     @Serializable
     data class StreamingData(
-        val adaptiveFormats: List<AdaptiveFormat>?
-    ) {
+        val adaptiveFormats: List<AdaptiveFormat>?,
+        val expiresInSeconds: Int,
+        ) {
         val highestQualityFormat: AdaptiveFormat?
             get() = adaptiveFormats?.findLast { it.itag == 251 || it.itag == 140 }
 
@@ -40,6 +41,7 @@ data class PlayerResponse(
             val itag: Int,
             val mimeType: String,
             val bitrate: Long?,
+            val width: Int?,
             val averageBitrate: Long?,
             val contentLength: Long?,
             val audioQuality: String?,
@@ -48,7 +50,10 @@ data class PlayerResponse(
             val loudnessDb: Double?,
             val audioSampleRate: Int?,
             val url: String?,
-        )
+        ) {
+            val isAudio: Boolean
+                get() = width == null
+        }
     }
 
     @Serializable

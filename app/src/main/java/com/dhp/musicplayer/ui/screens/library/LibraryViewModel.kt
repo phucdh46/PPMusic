@@ -17,6 +17,12 @@ class LibraryViewModel @Inject constructor(
 ) : ViewModel() {
     val playlistPreview = musicDao.playlistPreviews()
 
+    fun insertSong(song: Song) {
+        viewModelScope.launch(Dispatchers.IO) {
+            musicDao.insert(song)
+        }
+    }
+
     fun createPlaylist(playlistName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             musicDao.insert(Playlist(name = playlistName))

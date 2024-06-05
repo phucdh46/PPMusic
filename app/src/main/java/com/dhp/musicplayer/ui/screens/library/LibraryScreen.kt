@@ -60,6 +60,7 @@ import com.dhp.musicplayer.ui.component.TextFieldDialog
 import com.dhp.musicplayer.ui.items.PlaylistGridItem
 import com.dhp.musicplayer.ui.items.PlaylistListItem
 import com.dhp.musicplayer.ui.screens.library.device_songs.DeviceSongsScreen
+import com.dhp.musicplayer.ui.screens.library.downloaded.DownloadSongsScreen
 import com.dhp.musicplayer.ui.screens.playlist.navigation.navigateToLocalPlaylistDetail
 import com.dhp.musicplayer.utils.Logg
 import com.dhp.musicplayer.utils.rememberEnumPreference
@@ -70,9 +71,9 @@ import kotlinx.coroutines.launch
 fun LibraryScreen(
     appState: AppState,
 ) {
-    val pagerState = rememberPagerState(pageCount = { 2 })
+    val tabTitles = listOf("Playlist", "Downloaded", "Device songs")
+    val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
-    val tabTitles = listOf("Playlist", "Device songs")
 
     Column(
         modifier = Modifier.windowInsetsPadding(LocalWindowInsets.current)
@@ -102,9 +103,14 @@ fun LibraryScreen(
                     LocalPlaylists(
                         modifier = Modifier,
                         appState = appState,
-                        )
+                    )
                 }
+
                 1 -> {
+                    DownloadSongsScreen()
+                }
+
+                2 -> {
                     DeviceSongsScreen()
                 }
             }
@@ -310,7 +316,9 @@ fun LocalPlaylists(
                                     .fillMaxWidth()
                                     .clickable {
                                         Logg.d("navigateToPlaylistDetail: ${playlistPreview.playlist.id}")
-                                        appState.navController.navigateToLocalPlaylistDetail(playlistId = playlistPreview.playlist.id)
+                                        appState.navController.navigateToLocalPlaylistDetail(
+                                            playlistId = playlistPreview.playlist.id
+                                        )
                                     }
                                     .animateItemPlacement()
                             )

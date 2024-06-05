@@ -44,6 +44,8 @@
     <!--Error-->
     <string name="error_message">An error occurred. Please try again.</string>
 
+    <string name="download">Download</string>
+
     <!--Search-->
     <string name="filter_all">All</string>
     <string name="filter_songs">Songs</string>

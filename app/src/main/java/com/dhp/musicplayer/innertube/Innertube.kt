@@ -201,7 +201,7 @@ class InnertubeApiService(val context: android.content.Context) {
                     )
                 )
             )
-            mask("playabilityStatus.status,playerConfig.audioConfig,streamingData.adaptiveFormats,videoDetails.videoId")
+            mask("playabilityStatus.status,playerConfig.audioConfig,streamingData.adaptiveFormats,streamingData.expiresInSeconds,videoDetails.videoId")
         }.body<PlayerResponse>()
 
         if (response.playabilityStatus?.status == "OK") {
