@@ -62,6 +62,7 @@ import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.extensions.forceSeekToNext
 import com.dhp.musicplayer.extensions.forceSeekToPrevious
 import com.dhp.musicplayer.extensions.intent
+import com.dhp.musicplayer.extensions.isAtLeastAndroid33
 import com.dhp.musicplayer.extensions.isAtLeastAndroid6
 import com.dhp.musicplayer.extensions.isAtLeastAndroid8
 import com.dhp.musicplayer.extensions.mediaItems
@@ -201,7 +202,11 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
             addAction(Action.previous.value)
         }
 
-        registerReceiver(notificationActionReceiver, filter)
+        if (isAtLeastAndroid33) {
+            registerReceiver(notificationActionReceiver, filter, RECEIVER_EXPORTED)
+        } else {
+            registerReceiver(notificationActionReceiver, filter)
+        }
     }
 
     private fun restoreQueue() {
@@ -454,7 +459,7 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
 
         val mediaMetadata = player.mediaMetadata
         val intent = Intent(this, MainActivity::class.java)
-        val pendingIntent  = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent  = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         val builder = Notification.Builder(applicationContext, NOTIFICATION_CHANNEL_ID)
             .setContentTitle(mediaMetadata.title)
@@ -608,8 +613,7 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
                 this@Context,
                 100,
                 Intent(value).setPackage(packageName),
-                PendingIntent.FLAG_UPDATE_CURRENT.or(if (isAtLeastAndroid6) PendingIntent.FLAG_IMMUTABLE else 0)
-            )
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         companion object {
             val pause = Action("com.dhp.musicplayer.pause")
