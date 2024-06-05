@@ -30,7 +30,6 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
@@ -57,13 +56,13 @@ import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.PersistentQueueDataKey
 import com.dhp.musicplayer.constant.RelatedMediaIdKey
 import com.dhp.musicplayer.constant.RepeatModeKey
+import com.dhp.musicplayer.di.PlayerCache
 import com.dhp.musicplayer.enums.ExoPlayerDiskCacheMaxSize
 import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.extensions.forceSeekToNext
 import com.dhp.musicplayer.extensions.forceSeekToPrevious
 import com.dhp.musicplayer.extensions.intent
 import com.dhp.musicplayer.extensions.isAtLeastAndroid33
-import com.dhp.musicplayer.extensions.isAtLeastAndroid6
 import com.dhp.musicplayer.extensions.isAtLeastAndroid8
 import com.dhp.musicplayer.extensions.mediaItems
 import com.dhp.musicplayer.extensions.shouldBePlaying
@@ -75,6 +74,7 @@ import com.dhp.musicplayer.model.PersistQueue
 import com.dhp.musicplayer.utils.Logg
 import com.dhp.musicplayer.utils.dataStore
 import com.dhp.musicplayer.utils.get
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -84,18 +84,24 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
 @OptIn(UnstableApi::class)
-class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callback{
+@AndroidEntryPoint
+class ExoPlayerService : Service(), Player.Listener, PlaybackStatsListener.Callback {
 
+    @Inject
+    @PlayerCache
+    lateinit var cache: SimpleCache
     private val binder = Binder()
 
     private var notificationManager: NotificationManager? = null
     private var isNotificationStarted = false
 
     private lateinit var player: ExoPlayer
-    @UnstableApi
-    private lateinit var cache: SimpleCache
+
+    //    @UnstableApi
+//    private lateinit var cache: SimpleCache
     private lateinit var mediaSession: MediaSession
 
     private lateinit var notificationActionReceiver: NotificationActionReceiver
@@ -167,7 +173,7 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
 
             filesDir.resolve("coil").deleteRecursively()
         }
-        cache = SimpleCache(directory, cacheEvictor, StandaloneDatabaseProvider(this))
+//        cache = SimpleCache(directory, cacheEvictor, StandaloneDatabaseProvider(this))
         player = ExoPlayer.Builder(this, createRendersFactory(), createMediaSourceFactory(this))
             .setHandleAudioBecomingNoisy(true)
             .setWakeMode(C.WAKE_MODE_LOCAL)
@@ -213,7 +219,7 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
         runBlocking {
             try {
                 val queueJson = dataStore[PersistentQueueDataKey]
-                val persistQueue = queueJson?.let{
+                val persistQueue = queueJson?.let {
                     Json.decodeFromString(PersistQueue.serializer(), queueJson)
                 } ?: return@runBlocking
                 Logg.d("restoreQueue: $persistQueue")
@@ -222,7 +228,7 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
                 player.seekToDefaultPosition(persistQueue.mediaItemIndex)
                 player.seekTo(persistQueue.position)
                 player.prepare()
-            } catch (_: Exception){
+            } catch (_: Exception) {
 
             }
         }
@@ -266,7 +272,10 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
 
             if (player.shouldBePlaying && !isNotificationStarted) {
                 isNotificationStarted = true
-                ContextCompat.startForegroundService(this@ExoPlayerService, intent<ExoPlayerService>())
+                ContextCompat.startForegroundService(
+                    this@ExoPlayerService,
+                    intent<ExoPlayerService>()
+                )
                 startForeground(NOTIFICATON_ID, notification)
 //                makeInvincible(false)
 //                sendOpenEqualizerIntent()
@@ -324,29 +333,21 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
     private fun createDataSourceFactory(context: Context): DataSource.Factory {
         val chunkLength = 512 * 1024L
         val ringBuffer = RingBuffer<Pair<String, Uri>?>(2) { null }
-        return ResolvingDataSource.Factory(DataSource.Factory {
-            Log.d("DHP","createDataSourceFactory return")
+        return ResolvingDataSource.Factory({
             try {
-//                val a = player.currentMediaItem?.localConfiguration?.uri?.scheme?.startsWith("content")
-                Log.d("DHP","try catch: $isOfflineSong")
                 if (isOfflineSong) {
                     DefaultDataSource.Factory(context).createDataSource()
                 } else {
                     createCacheDataSource().createDataSource()
                 }
-            }catch(e: java.lang.Exception)  {
+            } catch (e: java.lang.Exception) {
                 createCacheDataSource().createDataSource()
             }
         })
-//        return ResolvingDataSource.Factory(createCacheDataSource())
         { dataSpec ->
-//        return ResolvingDataSource.Factory(DefaultDataSource.Factory(context)) { dataSpec ->
             val isLocalSong = (dataSpec.uri.scheme?.startsWith("content") == true)
-            Log.d("DHP","ResolvingDataSource: $isLocalSong")
             if (isLocalSong) dataSpec else {
                 val videoId = dataSpec.key ?: error("A key must be set")
-                Log.d("DHP","createDataSourceFactory: $videoId")
-
                 if (cache.isCached(videoId, dataSpec.position, chunkLength)) {
                     dataSpec
                 } else {
@@ -354,55 +355,17 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
                         ringBuffer.getOrNull(0)?.first -> dataSpec.withUri(ringBuffer.getOrNull(0)!!.second)
                         ringBuffer.getOrNull(1)?.first -> dataSpec.withUri(ringBuffer.getOrNull(1)!!.second)
                         else -> {
-                            Log.d("DHP","request url: $videoId")
                             val urlResult = runBlocking(Dispatchers.IO) {
-//                            repository.getPlayers(videoId)
-//                                Innertube.player(PlayerBody(videoId = videoId))
-                                InnertubeApiService.getInstance(context).player(PlayerBody(videoId = videoId))
+                                InnertubeApiService.getInstance(context)
+                                    .player(PlayerBody(videoId = videoId))
                             }?.mapCatching { body ->
-
-//                                if (body ==  null) {
-//                                    Log.d("DHP","Body null")
-//                                    throw PlayableFormatNotFoundException()
-//                                }
                                 if (body.videoDetails?.videoId != videoId) {
                                     throw VideoIdMismatchException()
                                 }
 
                                 when (val status = body.playabilityStatus?.status) {
                                     "OK" -> body.streamingData?.highestQualityFormat?.let { format ->
-//                                    val mediaItem = runBlocking(Dispatchers.Main) {
-//                                        player.findNextMediaItemById(videoId)
-//                                    }
 //
-//                                    if (mediaItem?.mediaMetadata?.extras?.getString("durationText") == null) {
-//                                        format.approxDurationMs?.div(1000)
-//                                            ?.let(DateUtils::formatElapsedTime)?.removePrefix("0")
-//                                            ?.let { durationText ->
-//                                                mediaItem?.mediaMetadata?.extras?.putString(
-//                                                    "durationText",
-//                                                    durationText
-//                                                )
-//                                                Database.updateDurationText(videoId, durationText)
-//                                            }
-//                                    }
-
-//                                    query {
-//                                        mediaItem?.let(Database::insert)
-//
-//                                        Database.insert(
-//                                            it.vfsfitvnm.vimusic.models.Format(
-//                                                songId = videoId,
-//                                                itag = format.itag,
-//                                                mimeType = format.mimeType,
-//                                                bitrate = format.bitrate,
-//                                                loudnessDb = body.playerConfig?.audioConfig?.normalizedLoudnessDb,
-//                                                contentLength = format.contentLength,
-//                                                lastModified = format.lastModified
-//                                            )
-//                                        )
-//                                    }
-
                                         format.url
                                     } ?: throw PlayableFormatNotFoundException()
 
@@ -415,11 +378,7 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
                                     )
                                 }
                             }
-
-                            Log.d("DHP","url result $urlResult")
-
                             urlResult?.getOrThrow()?.let { url ->
-                                Log.d("DHP","url: $url")
                                 ringBuffer.append(videoId to url.toUri())
                                 dataSpec.withUri(url.toUri())
                                     .subrange(dataSpec.uriPositionOffset, chunkLength)
@@ -437,9 +396,7 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
     }
 
     private fun createCacheDataSource(): DataSource.Factory {
-        Log.d("DHP","createCacheDataSource ")
         return CacheDataSource.Factory().setCache(cache).apply {
-
             setUpstreamDataSourceFactory(
                 DefaultHttpDataSource.Factory()
                     .setConnectTimeoutMs(16000)
@@ -459,7 +416,12 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
 
         val mediaMetadata = player.mediaMetadata
         val intent = Intent(this, MainActivity::class.java)
-        val pendingIntent  = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         val builder = Notification.Builder(applicationContext, NOTIFICATION_CHANNEL_ID)
             .setContentTitle(mediaMetadata.title)
@@ -487,7 +449,6 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
                 if (player.shouldBePlaying) pauseIntent else playIntent
             )
             .addAction(R.drawable.ic_skip_next, "Skip forward", nextIntent)
-
 
 
 //            .addAction(R.drawable.play_skip_back, "Skip back", prevIntent)
@@ -530,7 +491,7 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
 
     private fun saveQueue() {
         runBlocking {
-        val queue = PersistQueue(
+            val queue = PersistQueue(
                 items = player.mediaItems.map { it.toSong() },
                 mediaItemIndex = player.currentMediaItemIndex,
                 position = player.currentPosition
@@ -551,8 +512,9 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
         eventTime: AnalyticsListener.EventTime,
         playbackStats: PlaybackStats
     ) {
-       Logg.d("onPlaybackStatsReady: ${playbackStats.totalPlayTimeMs}")
-        val mediaItem = eventTime.timeline.getWindow(eventTime.windowIndex, Timeline.Window()).mediaItem
+        Logg.d("onPlaybackStatsReady: ${playbackStats.totalPlayTimeMs}")
+        val mediaItem =
+            eventTime.timeline.getWindow(eventTime.windowIndex, Timeline.Window()).mediaItem
         val totalPlayTimeMs = playbackStats.totalPlayTimeMs
         if (totalPlayTimeMs > 30000) {
             serviceScope.launch {
@@ -595,7 +557,8 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
         override fun onSeekTo(pos: Long) = player.seekTo(pos)
         override fun onStop() = player.pause()
         override fun onRewind() = player.seekToDefaultPosition()
-        override fun onSkipToQueueItem(id: Long) = runCatching { player.seekToDefaultPosition(id.toInt()) }.let { }
+        override fun onSkipToQueueItem(id: Long) =
+            runCatching { player.seekToDefaultPosition(id.toInt()) }.let { }
     }
 
     inner class Binder : android.os.Binder() {
@@ -613,7 +576,8 @@ class ExoPlayerService: Service(), Player.Listener, PlaybackStatsListener.Callba
                 this@Context,
                 100,
                 Intent(value).setPackage(packageName),
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
 
         companion object {
             val pause = Action("com.dhp.musicplayer.pause")

@@ -1,17 +1,18 @@
 package com.dhp.musicplayer.ui.component
 
 import androidx.activity.compose.BackHandler
+import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,19 +22,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.offline.Download
+import androidx.media3.exoplayer.offline.DownloadRequest
+import androidx.media3.exoplayer.offline.DownloadService
 import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.px
+import com.dhp.musicplayer.download.ExoDownloadService
 import com.dhp.musicplayer.extensions.thumbnail
 import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.ui.IconApp
+import com.dhp.musicplayer.ui.LocalDownloadUtil
 import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.ui.items.SongItem
+import com.dhp.musicplayer.ui.screens.library.LibraryViewModel
 import com.dhp.musicplayer.ui.screens.menu.AddSongToPlaylist
 
+@OptIn(UnstableApi::class)
 @ExperimentalAnimationApi
 @Composable
 fun MediaItemMenu(
@@ -41,18 +51,46 @@ fun MediaItemMenu(
     mediaItem: MediaItem,
     onDismiss: () -> Unit,
     onRemoveSongFromPlaylist: ((Song: Song) -> Unit)? = null,
+    libraryViewModel: LibraryViewModel = hiltViewModel(),
 ) {
     val playerConnection = LocalPlayerConnection.current
+    val context = LocalContext.current
+    val download by LocalDownloadUtil.current.getDownload(mediaItem.mediaId)
+        .collectAsState(initial = null)
+    val song = mediaItem.toSong()
     MediaItemMenu(
         modifier = modifier,
         mediaItem = mediaItem,
         onDismiss = onDismiss,
-        onRemoveSongFromPlaylist = onRemoveSongFromPlaylist
         onPlayNext = { playerConnection?.addNext(mediaItem) },
         onEnqueue = { playerConnection?.enqueue(mediaItem) },
+        onRemoveSongFromPlaylist = onRemoveSongFromPlaylist,
+        state = download?.state,
+        onDownload = {
+            libraryViewModel.insertSong(mediaItem.toSong())
+            val downloadRequest = DownloadRequest.Builder(song.id, song.id.toUri())
+                .setCustomCacheKey(song.id)
+                .setData(song.title.toByteArray())
+                .build()
+            DownloadService.sendAddDownload(
+                context,
+                ExoDownloadService::class.java,
+                downloadRequest,
+                false
+            )
+        },
+        onRemoveDownload = {
+            DownloadService.sendRemoveDownload(
+                context,
+                ExoDownloadService::class.java,
+                song.id,
+                false
+            )
+        }
     )
 }
 
+@OptIn(UnstableApi::class)
 @ExperimentalAnimationApi
 @Composable
 fun MediaItemMenu(
@@ -61,8 +99,11 @@ fun MediaItemMenu(
     modifier: Modifier = Modifier,
     onPlayNext: (() -> Unit)? = null,
     onEnqueue: (() -> Unit)? = null,
-    onRemoveSongFromPlaylist: ((Song: Song) -> Unit)? = null,
-    ) {
+    onRemoveSongFromPlaylist: ((song: Song) -> Unit)? = null,
+    @Download.State state: Int?,
+    onRemoveDownload: () -> Unit,
+    onDownload: () -> Unit,
+) {
     val density = LocalDensity.current
 
     var isViewingPlaylists by remember {
@@ -76,13 +117,6 @@ fun MediaItemMenu(
     AnimatedContent(
         targetState = isViewingPlaylists,
         label = "",
-       /* transitionSpec = {
-            val animationSpec = tween<IntOffset>(400)
-            val slideDirection =
-                if (targetState) AnimatedContentTransitionScope.SlideDirection.Up else AnimatedContentTransitionScope.SlideDirection.Down
-            slideIntoContainer(slideDirection, animationSpec) with
-                    slideOutOfContainer(slideDirection, animationSpec)
-        }*/
     ) { currentIsViewingPlaylists ->
         if (currentIsViewingPlaylists) {
             BackHandler {
@@ -103,10 +137,11 @@ fun MediaItemMenu(
                 ) {
 
                     SongItem(
+                        id = mediaItem.mediaId,
                         thumbnailUrl = mediaItem.mediaMetadata.artworkUri.thumbnail(thumbnailSizePx)
                             ?.toString(),
                         title = mediaItem.mediaMetadata.title.toString(),
-                        authors = mediaItem.mediaMetadata.artist.toString(),
+                        subtitle = mediaItem.mediaMetadata.artist.toString(),
                         duration = null,
                         isOffline = mediaItem.toSong().isOffline,
                         bitmap = mediaItem.toSong().getBitmap(LocalContext.current),
@@ -114,7 +149,6 @@ fun MediaItemMenu(
                         modifier = Modifier
                             .weight(1f)
                     )
-
                 }
 
                 HorizontalDivider()
@@ -160,6 +194,40 @@ fun MediaItemMenu(
                             onRemoveSongFromPlaylist(mediaItem.toSong())
                         }
                     )
+                }
+
+                if (!mediaItem.toSong().isOffline) {
+                    when (state) {
+                        Download.STATE_COMPLETED -> {
+                            MenuEntry(
+                                imageVector = IconApp.DownloadForOffline,
+                                text = "Remove Download",
+                                onClick = onRemoveDownload
+                            )
+                        }
+
+                        Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
+                            MenuEntry(
+                                imageVector = IconApp.DownloadForOffline,
+                                text = "Downloading",
+                                onClick = onRemoveDownload,
+                                icon = {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        strokeWidth = 2.dp
+                                    )
+                                }
+                            )
+                        }
+
+                        else -> {
+                            MenuEntry(
+                                imageVector = IconApp.DownloadForOffline,
+                                text = "Download",
+                                onClick = onDownload
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -27,9 +27,11 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.media3.common.util.UnstableApi
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.dhp.musicplayer.constant.DynamicThemeKey
+import com.dhp.musicplayer.download.DownloadUtil
 import com.dhp.musicplayer.enums.DarkThemeConfig
 import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.extensions.intent
@@ -51,9 +53,14 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
+@UnstableApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var downloadUtil: DownloadUtil
 
     var binder: ExoPlayerService.Binder? = null
 
@@ -172,7 +179,7 @@ class MainActivity : ComponentActivity() {
                 themeColor = themeColor,
                 enableDynamicTheme = enableDynamicTheme,
             ) {
-                App(appState = appState, playerConnection)
+                App(appState = appState, playerConnection, downloadUtil)
             }
         }
     }

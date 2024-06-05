@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -44,6 +45,7 @@ import com.dhp.musicplayer.constant.MiniPlayerHeight
 import com.dhp.musicplayer.constant.NavigationBarAnimationSpec
 import com.dhp.musicplayer.constant.NavigationBarHeight
 import com.dhp.musicplayer.constant.TopBarHeight
+import com.dhp.musicplayer.download.DownloadUtil
 import com.dhp.musicplayer.navigation.ScreensNotShowTopAppBar
 import com.dhp.musicplayer.navigation.ScreensShowBottomNavigation
 import com.dhp.musicplayer.navigation.ScreensShowSearchOnTopAppBar
@@ -64,8 +66,9 @@ import com.dhp.musicplayer.ui.screens.search.navigation.navigateToSearchByText
 import com.dhp.musicplayer.ui.screens.settings.SettingsDialog
 import com.dhp.musicplayer.utils.getAppBarTitle
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
-fun App(appState: AppState, playerConnection: PlayerConnection?) {
+fun App(appState: AppState, playerConnection: PlayerConnection?, downloadUtil: DownloadUtil) {
     var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
     App(
         appState = appState,
@@ -73,15 +76,18 @@ fun App(appState: AppState, playerConnection: PlayerConnection?) {
         showSettingsDialog = showSettingsDialog,
         onSettingsDismissed = { showSettingsDialog = false },
         onTopAppBarActionClick = { showSettingsDialog = true },
+        downloadUtil = downloadUtil,
     )
 }
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun App(
     appState: AppState,
     playerConnection: PlayerConnection?,
     showSettingsDialog: Boolean,
+    downloadUtil: DownloadUtil,
     onSettingsDismissed: () -> Unit,
     onTopAppBarActionClick: () -> Unit,
 ) {
@@ -135,10 +141,10 @@ internal fun App(
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        snackbarHost =  {
+        snackbarHost = {
             SnackbarHost(hostState = appState.snackBarHostState)
         }
-    ){
+    ) {
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
@@ -150,14 +156,15 @@ internal fun App(
                 collapsedBound = bottomInset + (if (shouldShowNavigationBar) NavigationBarHeight else 0.dp) + MiniPlayerHeight,
                 expandedBound = maxHeight,
             )
-            val localWindowInsets = remember(bottomInset, shouldShowNavigationBar, playerBottomSheetState.isDismissed) {
-                var bottom = bottomInset
-                if (shouldShowNavigationBar) bottom += NavigationBarHeight
-                if (!playerBottomSheetState.isDismissed) bottom += MiniPlayerHeight
-                windowsInsets
-                    .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                    .add(WindowInsets(top = TopBarHeight, bottom = bottom))
-            }
+            val localWindowInsets =
+                remember(bottomInset, shouldShowNavigationBar, playerBottomSheetState.isDismissed) {
+                    var bottom = bottomInset
+                    if (shouldShowNavigationBar) bottom += NavigationBarHeight
+                    if (!playerBottomSheetState.isDismissed) bottom += MiniPlayerHeight
+                    windowsInsets
+                        .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                        .add(WindowInsets(top = TopBarHeight, bottom = bottom))
+                }
             LaunchedEffect(playerConnection) {
                 val player = playerConnection?.player ?: return@LaunchedEffect
                 if (player.currentMediaItem == null) {
@@ -191,6 +198,7 @@ internal fun App(
             CompositionLocalProvider(
                 LocalPlayerConnection provides playerConnection,
                 LocalWindowInsets provides localWindowInsets,
+                LocalDownloadUtil provides downloadUtil,
             ) {
                 TopAppBar(
                     visible = shouldTopAppBar,
@@ -222,7 +230,10 @@ internal fun App(
                     .align(Alignment.BottomCenter)
                     .offset {
                         if (navigationBarHeight == 0.dp) {
-                            IntOffset(x = 0, y = (bottomInset + NavigationBarHeight).roundToPx())
+                            IntOffset(
+                                x = 0,
+                                y = (bottomInset + NavigationBarHeight).roundToPx()
+                            )
                         } else {
                             val slideOffset =
                                 (bottomInset + NavigationBarHeight) * playerBottomSheetState.progress.coerceIn(
@@ -274,4 +285,6 @@ private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLev
     } ?: false
 
 val LocalWindowInsets = compositionLocalOf<WindowInsets> { error("No WindowInsets provided") }
-val LocalPlayerConnection = staticCompositionLocalOf<PlayerConnection?> { error("No PlayerConnection provided") }
+val LocalPlayerConnection =
+    staticCompositionLocalOf<PlayerConnection?> { error("No PlayerConnection provided") }
+val LocalDownloadUtil = staticCompositionLocalOf<DownloadUtil> { error("No DownloadUtil provided") }
