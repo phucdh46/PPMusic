@@ -11,6 +11,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.extensions.currentMetadata
+import com.dhp.musicplayer.extensions.forcePlay
 import com.dhp.musicplayer.extensions.playQueue
 import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.extensions.windows
@@ -32,7 +33,7 @@ import kotlinx.coroutines.plus
 
 class PlayerConnection(
     val context: Context,
-    binder:  ExoPlayerService.Binder,
+    binder: ExoPlayerService.Binder,
     scope: CoroutineScope,
 ) : Player.Listener {
 
@@ -50,7 +51,6 @@ class PlayerConnection(
     val currentSong: StateFlow<Song?> = _currentSong
 
     private val _currentQueue = MutableStateFlow<List<Song>?>(emptyList())
-    val currentQueue: StateFlow<List<Song>?> = _currentQueue
 
     val mediaMetadata = MutableStateFlow(player.currentMetadata)
 
@@ -61,8 +61,12 @@ class PlayerConnection(
     val repeatMode = MutableStateFlow(Player.REPEAT_MODE_OFF)
 
     val isPlaying = combine(playbackState, playWhenReady) { playbackState, playWhenReady ->
-        playWhenReady  && playbackState != Player.STATE_ENDED
-    }.stateIn(scope, SharingStarted.Lazily, player.playWhenReady && player.playbackState != Player.STATE_ENDED)
+        playWhenReady && playbackState != Player.STATE_ENDED
+    }.stateIn(
+        scope,
+        SharingStarted.Lazily,
+        player.playWhenReady && player.playbackState != Player.STATE_ENDED
+    )
 
     val error = MutableStateFlow<PlaybackException?>(null)
 
@@ -72,16 +76,16 @@ class PlayerConnection(
     init {
         player.addListener(this)
         repeatMode.value = player.repeatMode
-        _currentMediaItemIndex.value = if (player.mediaItemCount == 0) -1 else player.currentMediaItemIndex
+        _currentMediaItemIndex.value =
+            if (player.mediaItemCount == 0) -1 else player.currentMediaItemIndex
     }
 
     fun playSongWithQueue(song: Song? = null, songs: List<Song>?) {
         songs ?: return
+        val selectedSong = song ?: songs.getOrNull(0) ?: return
         player.clearMediaItems()
-        player.addMediaItems(songs.map { it.asMediaItem() })
-        _currentQueue.value = songs
-        val selectedSong = song?: songs.getOrNull(0) ?: return
         exoPlayerService.isOfflineSong = selectedSong.isOffline
+        player.addMediaItems(songs.map { it.asMediaItem() })
         player.playQueue(selectedSong.asMediaItem())
     }
 
@@ -93,14 +97,16 @@ class PlayerConnection(
         if (isPlaying.value) {
             player.pause()
         } else {
-            when(player.playbackState) {
+            when (player.playbackState) {
                 Player.STATE_IDLE -> {
                     player.prepare()
                 }
+
                 Player.STATE_ENDED -> {
                     player.seekTo(0, 0)
                     player.prepare()
                 }
+
                 else -> {}
             }
             player.play()
@@ -108,10 +114,10 @@ class PlayerConnection(
     }
 
     override fun onPlaybackStateChanged(state: Int) {
-        Log.d("DHP","onPlaybackStateChanged")
+        Log.d("DHP", "onPlaybackStateChanged")
         playbackState.value = state
         if (state == Player.STATE_READY) {
-            Log.d("DHP","onPlaybackStateChanged STATE_READY")
+            Log.d("DHP", "onPlaybackStateChanged STATE_READY")
             _currentMediaItem.value = player.currentMediaItem
             _currentSong.value = player.currentMediaItem?.toSong()
 //            mediaPlayerInterface.onPlayerReady()
@@ -119,8 +125,9 @@ class PlayerConnection(
         error.value = player.playerError
 
     }
+
     override fun onPlayWhenReadyChanged(newPlayWhenReady: Boolean, reason: Int) {
-        Log.d("DHP","onPlayWhenReadyChanged: ${player.repeatMode}")
+        Log.d("DHP", "onPlayWhenReadyChanged: ${player.repeatMode}")
         playWhenReady.value = newPlayWhenReady
     }
 
@@ -128,13 +135,15 @@ class PlayerConnection(
         super.onMediaItemTransition(mediaItem, reason)
         _currentMediaItem.value = mediaItem
         _currentSong.value = mediaItem?.toSong()
-        _currentMediaItemIndex.value = if (player.mediaItemCount == 0) -1 else player.currentMediaItemIndex
+        _currentMediaItemIndex.value =
+            if (player.mediaItemCount == 0) -1 else player.currentMediaItemIndex
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
         super.onTimelineChanged(timeline, reason)
         _currentTimelineWindows.value = timeline.windows
-        _currentMediaItemIndex.value = if (player.mediaItemCount == 0) -1 else player.currentMediaItemIndex
+        _currentMediaItemIndex.value =
+            if (player.mediaItemCount == 0) -1 else player.currentMediaItemIndex
     }
 
     override fun onRepeatModeChanged(mode: Int) {
@@ -169,6 +178,33 @@ class PlayerConnection(
             }
             player.addMediaItems(queuePage)
             isLoadingRadio = false
+        }
+    }
+
+    fun forcePlay(song: Song) {
+        exoPlayerService.isOfflineSong = song.isOffline
+        player.forcePlay(song.asMediaItem())
+    }
+
+    fun addNext(mediaItem: MediaItem) {
+        player.apply {
+            if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
+                exoPlayerService.isOfflineSong = mediaItem.toSong().isOffline
+                forcePlay(mediaItem)
+            } else {
+                addMediaItem(currentMediaItemIndex + 1, mediaItem)
+            }
+        }
+    }
+
+    fun enqueue(mediaItem: MediaItem) {
+        player.apply {
+            if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
+                exoPlayerService.isOfflineSong = mediaItem.toSong().isOffline
+                forcePlay(mediaItem)
+            } else {
+                addMediaItem(mediaItemCount, mediaItem)
+            }
         }
     }
 

@@ -25,7 +25,6 @@ import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.ResultNavigationKey
 import com.dhp.musicplayer.extensions.asMediaItem
-import com.dhp.musicplayer.extensions.forcePlay
 import com.dhp.musicplayer.innertube.Innertube
 import com.dhp.musicplayer.innertube.InnertubeApiService
 import com.dhp.musicplayer.ui.AppState
@@ -134,7 +133,7 @@ fun SearchResultScreen(
                                     when (item) {
                                         is Innertube.SongItem -> {
                                             playerConnection?.stopRadio()
-                                            playerConnection?.player?.forcePlay(item.asMediaItem)
+                                            playerConnection?.forcePlay(item.toSong())
                                             playerConnection?.addRadio(item.info?.endpoint)
                                         }
 
