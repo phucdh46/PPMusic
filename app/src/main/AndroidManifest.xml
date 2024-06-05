@@ -39,6 +39,7 @@
             android:name="com.dhp.musicplayer.player.ExoPlayerService"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback">
+            android:exported="true"
         </service>
     </application>
 
