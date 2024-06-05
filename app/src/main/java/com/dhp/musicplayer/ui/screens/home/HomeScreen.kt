@@ -40,7 +40,6 @@ import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.px
 import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.extensions.asMediaItem
-import com.dhp.musicplayer.extensions.forcePlay
 import com.dhp.musicplayer.extensions.isLandscape
 import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.innertube.Innertube
@@ -117,7 +116,7 @@ internal fun ForYouScreen(
                         songs = related?.songs?.map { it.toSong() } ?: emptyList(),
                         onItemClicked = { song ->
                             playerConnection?.stopRadio()
-                            playerConnection?.player?.forcePlay(song.asMediaItem())
+                            playerConnection?.forcePlay(song)
                             playerConnection?.addRadio(
                                 NavigationEndpoint.Endpoint.Watch(videoId = song.id)
                             )
@@ -182,7 +181,7 @@ internal fun ForYouScreen(
                 .verticalScroll(scrollState)
         ) {
 
-            TextTitle(text = "Songs".uppercase())
+            TextTitle(text = "You might also like".uppercase())
             LazyHorizontalGrid(
                 state = quickPicksLazyGridState,
                 rows = GridCells.Fixed(4),
@@ -237,7 +236,7 @@ internal fun ForYouScreen(
             }
 
             album?.let { album ->
-                TextTitle(text = "Albums".uppercase())
+                TextTitle(text = "Recommended albums".uppercase())
                 LazyRow() {
                     items(
                         items = album,
@@ -259,7 +258,7 @@ internal fun ForYouScreen(
             }
 
             artist?.let { artists ->
-                TextTitle(text = "Artists".uppercase())
+                TextTitle(text = "Similar Artists".uppercase())
                 LazyRow {
                     items(
                         items = artists,
@@ -281,7 +280,7 @@ internal fun ForYouScreen(
 
             playlist?.let { playlists ->
                 TextTitle(
-                    text = "Playlists you might like".uppercase(),
+                    text = "Recommended Playlists".uppercase(),
                     modifier = Modifier
                         .padding(top = 24.dp, bottom = 8.dp)
                 )

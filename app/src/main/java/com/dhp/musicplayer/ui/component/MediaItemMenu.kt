@@ -26,8 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.px
-import com.dhp.musicplayer.extensions.addNext
-import com.dhp.musicplayer.extensions.enqueue
 import com.dhp.musicplayer.extensions.thumbnail
 import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.model.Song
@@ -49,9 +47,9 @@ fun MediaItemMenu(
         modifier = modifier,
         mediaItem = mediaItem,
         onDismiss = onDismiss,
-        onPlayNext = { playerConnection?.player?.addNext(mediaItem) },
-        onEnqueue = { playerConnection?.player?.enqueue(mediaItem) },
         onRemoveSongFromPlaylist = onRemoveSongFromPlaylist
+        onPlayNext = { playerConnection?.addNext(mediaItem) },
+        onEnqueue = { playerConnection?.enqueue(mediaItem) },
     )
 }
 

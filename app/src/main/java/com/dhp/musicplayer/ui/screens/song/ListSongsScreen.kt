@@ -25,7 +25,6 @@ import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.px
 import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.extensions.asMediaItem
-import com.dhp.musicplayer.extensions.forcePlay
 import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.innertube.Innertube
 import com.dhp.musicplayer.ui.AppState
@@ -68,7 +67,7 @@ fun ListSongsScreen(
                 lazyPagingItems = lazyPagingItems,
                 onItemClick = { item ->
                     playerConnection?.stopRadio()
-                    playerConnection?.player?.forcePlay(item.asMediaItem)
+                    playerConnection?.forcePlay(item.toSong())
                     playerConnection?.addRadio(item.info?.endpoint)
                 }
             )

@@ -42,7 +42,6 @@ import com.dhp.musicplayer.constant.Dimensions
 import com.dhp.musicplayer.constant.px
 import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.extensions.asMediaItem
-import com.dhp.musicplayer.extensions.forcePlay
 import com.dhp.musicplayer.extensions.shimmer
 import com.dhp.musicplayer.extensions.thumbnail
 import com.dhp.musicplayer.extensions.toSong
@@ -301,7 +300,7 @@ fun ArtistDetailScreen(
                                 },
                                 onClick = {
                                     playerConnection?.stopRadio()
-                                    playerConnection?.player?.forcePlay(songItem.asMediaItem)
+                                    playerConnection?.forcePlay(songItem.toSong())
                                     playerConnection?.addRadio(songItem.info?.endpoint)
                                 }
                             )
