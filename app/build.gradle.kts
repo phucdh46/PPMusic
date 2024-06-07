@@ -96,6 +96,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.okhttp)
+    implementation(libs.media3.session)
 
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
