@@ -5,6 +5,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -78,10 +80,10 @@ internal fun ForYouScreen(
         modifier = modifier
             .windowInsetsPadding(LocalWindowInsets.current)
             .background(MaterialTheme.colorScheme.background)
-    ){
+    ) {
         when (uiState) {
             is UiState.Loading -> {
-                Column{
+                Column {
                     TextPlaceholder(modifier = Modifier.padding(8.dp))
                     repeat(4) {
                         SongItemPlaceholder()
@@ -165,7 +167,7 @@ internal fun ForYouScreen(
     val menuState = LocalMenuState.current
     val quickPicksLazyGridState = rememberLazyGridState()
 
-    BoxWithConstraints{
+    BoxWithConstraints {
         val quickPicksLazyGridItemWidthFactor = if (isLandscape && maxWidth * 0.475f >= 320.dp) {
             0.475f
         } else {
@@ -185,7 +187,7 @@ internal fun ForYouScreen(
             LazyHorizontalGrid(
                 state = quickPicksLazyGridState,
                 rows = GridCells.Fixed(4),
-//                flingBehavior = rememberSnapFlingBehavior(snapLayoutInfoProvider),
+                flingBehavior = rememberSnapFlingBehavior(SnapLayoutInfoProvider(lazyGridState = quickPicksLazyGridState)),
 //                contentPadding = endPaddingValues,
                 modifier = Modifier
                     .fillMaxWidth()
