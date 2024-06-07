@@ -4,25 +4,30 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.Service
 import android.content.BroadcastReceiver
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.database.SQLException
+import android.media.MediaDescription
 import android.media.MediaMetadata
+import android.media.browse.MediaBrowser
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
 import android.net.Uri
+import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
-import android.util.Log
+import android.os.Process
+import android.service.media.MediaBrowserService
+import androidx.annotation.DrawableRes
 import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
-import androidx.core.text.isDigitsOnly
+import androidx.core.os.bundleOf
 import androidx.datastore.preferences.core.edit
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
@@ -35,8 +40,6 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.cache.CacheDataSource
-import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
-import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.RenderersFactory
@@ -49,6 +52,7 @@ import androidx.media3.exoplayer.audio.MediaCodecAudioRenderer
 import androidx.media3.exoplayer.audio.SilenceSkippingAudioProcessor
 import androidx.media3.exoplayer.audio.SonicAudioProcessor
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
+import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
 import com.dhp.musicplayer.MainActivity
@@ -56,8 +60,9 @@ import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.PersistentQueueDataKey
 import com.dhp.musicplayer.constant.RelatedMediaIdKey
 import com.dhp.musicplayer.constant.RepeatModeKey
+import com.dhp.musicplayer.db.MusicDao
 import com.dhp.musicplayer.di.PlayerCache
-import com.dhp.musicplayer.enums.ExoPlayerDiskCacheMaxSize
+import com.dhp.musicplayer.download.DownloadUtil
 import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.extensions.forceSeekToNext
 import com.dhp.musicplayer.extensions.forceSeekToPrevious
@@ -71,28 +76,41 @@ import com.dhp.musicplayer.innertube.InnertubeApiService
 import com.dhp.musicplayer.innertube.model.RingBuffer
 import com.dhp.musicplayer.innertube.model.bodies.PlayerBody
 import com.dhp.musicplayer.model.PersistQueue
+import com.dhp.musicplayer.model.PlaylistPreview
+import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.utils.Logg
 import com.dhp.musicplayer.utils.dataStore
 import com.dhp.musicplayer.utils.get
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @OptIn(UnstableApi::class)
 @AndroidEntryPoint
-class ExoPlayerService : Service(), Player.Listener, PlaybackStatsListener.Callback {
+class ExoPlayerService : MediaBrowserService(), Player.Listener, PlaybackStatsListener.Callback {
 
     @Inject
     @PlayerCache
     lateinit var cache: SimpleCache
+
+    @Inject
+    lateinit var musicDao: MusicDao
+
+    @Inject
+    lateinit var downloadUtil: DownloadUtil
+
     private val binder = Binder()
 
     private var notificationManager: NotificationManager? = null
@@ -109,6 +127,7 @@ class ExoPlayerService : Service(), Player.Listener, PlaybackStatsListener.Callb
     private val metadataBuilder = MediaMetadata.Builder()
     var isOfflineSong = true
     private val scope = CoroutineScope(Dispatchers.Main) + Job()
+    private var lastSongs = emptyList<Song>()
 
     private val stateBuilder = PlaybackState.Builder()
         .setActions(
@@ -146,34 +165,18 @@ class ExoPlayerService : Service(), Player.Listener, PlaybackStatsListener.Callb
     private val serviceScope = CoroutineScope(
         SupervisorJob() + Dispatchers.IO
     )
+    private val scopeIO = CoroutineScope(Dispatchers.IO)
 
-    override fun onBind(p0: Intent?): IBinder {
+    override fun onBind(intent: Intent?): IBinder {
+        if (SERVICE_INTERFACE == intent?.action) {
+            return super.onBind(intent) ?: binder
+        }
         return binder
     }
 
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        val cacheEvictor = when (val size = ExoPlayerDiskCacheMaxSize.`2GB`) {
-            ExoPlayerDiskCacheMaxSize.Unlimited -> NoOpCacheEvictor()
-            else -> LeastRecentlyUsedCacheEvictor(size.bytes)
-        }
-        val directory = cacheDir.resolve("exoplayer").also { directory ->
-            if (directory.exists()) return@also
-
-            directory.mkdir()
-
-            cacheDir.listFiles()?.forEach { file ->
-                if (file.isDirectory && file.name.length == 1 && file.name.isDigitsOnly() || file.extension == "uid") {
-                    if (!file.renameTo(directory.resolve(file.name))) {
-                        file.deleteRecursively()
-                    }
-                }
-            }
-
-            filesDir.resolve("coil").deleteRecursively()
-        }
-//        cache = SimpleCache(directory, cacheEvictor, StandaloneDatabaseProvider(this))
         player = ExoPlayer.Builder(this, createRendersFactory(), createMediaSourceFactory(this))
             .setHandleAudioBecomingNoisy(true)
             .setWakeMode(C.WAKE_MODE_LOCAL)
@@ -198,7 +201,7 @@ class ExoPlayerService : Service(), Player.Listener, PlaybackStatsListener.Callb
         mediaSession.setCallback(SessionCallback(player))
         mediaSession.setPlaybackState(stateBuilder.build())
         mediaSession.isActive = true
-
+        sessionToken = mediaSession.sessionToken
         notificationActionReceiver = NotificationActionReceiver(player)
 
         val filter = IntentFilter().apply {
@@ -266,7 +269,7 @@ class ExoPlayerService : Service(), Player.Listener, PlaybackStatsListener.Callb
 //                makeInvincible(false)
                 stopForeground(STOP_FOREGROUND_DETACH)
 //                sendCloseEqualizerIntent()
-                notificationManager?.cancel(NOTIFICATON_ID)
+                notificationManager?.cancel(NOTIFICATION_ID)
                 return
             }
 
@@ -276,7 +279,7 @@ class ExoPlayerService : Service(), Player.Listener, PlaybackStatsListener.Callb
                     this@ExoPlayerService,
                     intent<ExoPlayerService>()
                 )
-                startForeground(NOTIFICATON_ID, notification)
+                startForeground(NOTIFICATION_ID, notification)
 //                makeInvincible(false)
 //                sendOpenEqualizerIntent()
             } else {
@@ -286,7 +289,7 @@ class ExoPlayerService : Service(), Player.Listener, PlaybackStatsListener.Callb
 //                    makeInvincible(true)
 //                    sendCloseEqualizerIntent()
                 }
-                notificationManager?.notify(NOTIFICATON_ID, notification)
+                notificationManager?.notify(NOTIFICATION_ID, notification)
             }
         }
     }
@@ -536,10 +539,119 @@ class ExoPlayerService : Service(), Player.Listener, PlaybackStatsListener.Callb
         return super.onUnbind(intent)
     }
 
+    override fun onGetRoot(
+        clientPackageName: String,
+        clientUid: Int,
+        rootHints: Bundle?
+    ): BrowserRoot? {
+        return if (clientUid == Process.myUid()
+            || clientUid == Process.SYSTEM_UID
+            || clientPackageName == "com.google.android.projection.gearhead"
+        ) {
+            BrowserRoot(
+                MediaId.root,
+                bundleOf("android.media.browse.CONTENT_STYLE_BROWSABLE_HINT" to 1)
+            )
+        } else {
+            null
+        }
+    }
+
+    override fun onLoadChildren(
+        parentId: String,
+        result: Result<MutableList<MediaBrowser.MediaItem>>
+    ) {
+        runBlocking(Dispatchers.IO) {
+            result.sendResult(
+                when (parentId) {
+                    MediaId.root -> mutableListOf(
+                        songsBrowserMediaItem,
+                        playlistsBrowserMediaItem,
+                    )
+
+                    MediaId.songs -> musicDao
+                        .getAllSongs()
+                        .first()
+                        .take(30)
+                        .also { lastSongs = it }
+                        .map { it.asBrowserMediaItem }
+                        .toMutableList()
+
+                    MediaId.playlists -> musicDao
+                        .playlistPreviewsByDateAddedDesc()
+                        .first()
+                        .map { it.asBrowserMediaItem }
+                        .toMutableList()
+                        .apply {
+                            add(0, offlineBrowserMediaItem)
+                        }
+
+                    else -> mutableListOf()
+                }
+            )
+        }
+    }
+
+    private fun uriFor(@DrawableRes id: Int) = Uri.Builder()
+        .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+        .authority(resources.getResourcePackageName(id))
+        .appendPath(resources.getResourceTypeName(id))
+        .appendPath(resources.getResourceEntryName(id))
+        .build()
+
+    private val songsBrowserMediaItem
+        inline get() = MediaBrowser.MediaItem(
+            MediaDescription.Builder()
+                .setMediaId(MediaId.songs)
+                .setTitle("Songs")
+                .setIconUri(uriFor(R.drawable.music_note))
+                .build(),
+            MediaBrowser.MediaItem.FLAG_BROWSABLE
+        )
+
+    private val offlineBrowserMediaItem
+        inline get() = MediaBrowser.MediaItem(
+            MediaDescription.Builder()
+                .setMediaId(MediaId.offline)
+                .setTitle("Downloaded")
+                .setIconUri(uriFor(R.drawable.download))
+                .build(),
+            MediaBrowser.MediaItem.FLAG_PLAYABLE
+        )
+
+    private val PlaylistPreview.asBrowserMediaItem
+        inline get() = MediaBrowser.MediaItem(
+            MediaDescription.Builder()
+                .setMediaId(MediaId.forPlaylist(playlist.id))
+                .setTitle(playlist.name)
+                .setSubtitle("$songCount songs")
+                .setIconUri(uriFor(R.drawable.playlist))
+                .build(),
+            MediaBrowser.MediaItem.FLAG_PLAYABLE
+        )
+
+    private val playlistsBrowserMediaItem
+        inline get() = MediaBrowser.MediaItem(
+            MediaDescription.Builder()
+                .setMediaId(MediaId.playlists)
+                .setTitle("Playlists")
+                .setIconUri(uriFor(R.drawable.playlist))
+                .build(),
+            MediaBrowser.MediaItem.FLAG_BROWSABLE
+        )
+
+    private val Song.asBrowserMediaItem
+        inline get() = MediaBrowser.MediaItem(
+            MediaDescription.Builder()
+                .setMediaId(MediaId.forSong(id))
+                .setTitle(title)
+                .setSubtitle(artistsText.orEmpty())
+                .setIconUri(thumbnailUrl?.toUri())
+                .build(),
+            MediaBrowser.MediaItem.FLAG_PLAYABLE
+        )
+
     override fun onDestroy() {
-        serviceScope.cancel()
-        player.stop()
-        player.release()
 
         unregisterReceiver(notificationActionReceiver)
 
@@ -549,7 +661,8 @@ class ExoPlayerService : Service(), Player.Listener, PlaybackStatsListener.Callb
         super.onDestroy()
     }
 
-    private class SessionCallback(private val player: Player) : MediaSession.Callback() {
+    private inner class SessionCallback(private val player: Player) : MediaSession.Callback() {
+
         override fun onPlay() = player.play()
         override fun onPause() = player.pause()
         override fun onSkipToPrevious() = runCatching(player::forceSeekToPrevious).let { }
@@ -559,6 +672,54 @@ class ExoPlayerService : Service(), Player.Listener, PlaybackStatsListener.Callb
         override fun onRewind() = player.seekToDefaultPosition()
         override fun onSkipToQueueItem(id: Long) =
             runCatching { player.seekToDefaultPosition(id.toInt()) }.let { }
+
+        @kotlin.OptIn(ExperimentalCoroutinesApi::class)
+        override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
+            val data = mediaId?.split('/') ?: return
+            var index = 0
+
+            scopeIO.launch {
+                val mediaItems = when (data.getOrNull(0)) {
+                    MediaId.songs -> data
+                        .getOrNull(1)
+                        ?.let { songId ->
+                            index = lastSongs.indexOfFirst { it.id == songId }
+                            Logg.d("setIndex: $index")
+                            lastSongs
+                        }
+
+                    MediaId.offline ->
+                        downloadUtil.downloads.flatMapLatest { downloads ->
+                            musicDao.getAllSongs().map { songs ->
+                                songs.filter {
+                                    downloads[it.id]?.state == Download.STATE_COMPLETED
+                                }
+                            }
+                        }.first()
+
+                    MediaId.playlists -> data
+                        .getOrNull(1)
+                        ?.toLongOrNull()
+                        ?.let(musicDao::playlistWithSongs)
+                        ?.first()
+                        ?.songs
+
+                    else -> emptyList()
+                }?.map(Song::asMediaItem) ?: return@launch
+
+                withContext(Dispatchers.Main) {
+                    player.apply {
+                        if (mediaItems.isNotEmpty()) {
+                            val i = index.coerceIn(0, mediaItems.size)
+                            isOfflineSong = mediaItems[i].toSong().isOffline
+                            setMediaItems(mediaItems, i, C.TIME_UNSET)
+                            playWhenReady = true
+                            prepare()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     inner class Binder : android.os.Binder() {
@@ -587,9 +748,17 @@ class ExoPlayerService : Service(), Player.Listener, PlaybackStatsListener.Callb
         }
     }
 
-    private companion object {
-        const val NOTIFICATON_ID = 1001
+    companion object {
+        const val NOTIFICATION_ID = 1001
         const val NOTIFICATION_CHANNEL_ID = "default_channel_id"
     }
 
+    private object MediaId {
+        const val root = "root"
+        const val songs = "songs"
+        const val playlists = "playlists"
+        const val offline = "offline"
+        fun forSong(id: String) = "songs/$id"
+        fun forPlaylist(id: Long) = "playlists/$id"
+    }
 }

@@ -3,14 +3,15 @@ package com.dhp.musicplayer.extensions
 import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.annotation.OptIn
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.util.UnstableApi
 import com.dhp.musicplayer.innertube.Innertube
 import com.dhp.musicplayer.model.Album
 import com.dhp.musicplayer.model.Artist
-import com.dhp.musicplayer.model.Playlist
 import com.dhp.musicplayer.model.Song
 
 
@@ -23,6 +24,7 @@ fun Uri?.thumbnail(size: Int): Uri? {
     return toString().thumbnail(size)?.toUri()
 }
 
+@OptIn(UnstableApi::class)
 fun Song.asMediaItem(): MediaItem {
     val builder = MediaItem.Builder()
         .setMediaId(id)

@@ -90,6 +90,10 @@ interface MusicDao {
     @Query("DELETE FROM SongPlaylistMap WHERE playlistId = :id")
     fun clearPlaylist(id: Long)
 
+    @Transaction
+    @Query("SELECT * FROM song WHERE id = :songId")
+    fun song(songId: String?): Flow<Song?>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(song: Song): Long
 
