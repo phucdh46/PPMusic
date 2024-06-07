@@ -26,6 +26,10 @@ interface MusicDao {
 
     @Transaction
     @Query("SELECT * FROM Playlist")
+    fun getAllPlaylistWithSongs(): Flow<List<PlaylistWithSongs>>
+
+    @Transaction
+    @Query("SELECT * FROM Playlist")
     fun playlists(): Flow<List<Playlist>?>
 
     @Transaction

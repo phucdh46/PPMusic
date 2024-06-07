@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,7 +52,7 @@ fun MediaItemMenu(
     modifier: Modifier = Modifier,
     mediaItem: MediaItem,
     onDismiss: () -> Unit,
-    onRemoveSongFromPlaylist: ((Song: Song) -> Unit)? = null,
+    onRemoveSongFromPlaylist: ((song: Song) -> Unit)? = null,
     libraryViewModel: LibraryViewModel = hiltViewModel(),
 ) {
     val playerConnection = LocalPlayerConnection.current
@@ -115,6 +117,7 @@ fun MediaItemMenu(
     }
 
     AnimatedContent(
+        modifier = Modifier.background(MaterialTheme.colorScheme.surface),
         targetState = isViewingPlaylists,
         label = "",
     ) { currentIsViewingPlaylists ->
