@@ -13,10 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,32 +33,27 @@ import androidx.compose.ui.unit.sp
 import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.GridThumbnailHeight
 import com.dhp.musicplayer.constant.ListItemHeight
-import com.dhp.musicplayer.constant.ListThumbnailSize
 import com.dhp.musicplayer.constant.PlayListItemHeight
 import com.dhp.musicplayer.constant.ThumbnailCornerRadius
 import com.dhp.musicplayer.innertube.Innertube
-import com.dhp.musicplayer.model.PlaylistPreview
-import com.dhp.musicplayer.ui.IconApp
+import com.dhp.musicplayer.model.PlaylistWithSongs
 import com.dhp.musicplayer.ui.component.LoadingShimmerImageMaxSize
+import com.dhp.musicplayer.utils.CoverImagePlaylist
 
 @Composable
 fun PlaylistListItem(
-    playlistPreview: PlaylistPreview,
+    playlistWithSongs: PlaylistWithSongs,
     modifier: Modifier = Modifier,
     trailingContent: @Composable RowScope.() -> Unit = {},
 ) = ListItem(
-    title = playlistPreview.playlist.name,
+    title = playlistWithSongs.playlist.name,
     subtitle = pluralStringResource(
         R.plurals.n_song,
-        playlistPreview.songCount,
-        playlistPreview.songCount
+        playlistWithSongs.songs.size,
+        playlistWithSongs.songs.size
     ),
     thumbnailContent = {
-        Icon(
-            imageVector =
-            IconApp.PlaylistPlay, contentDescription = null,
-            modifier = Modifier.size(ListThumbnailSize)
-        )
+        CoverImagePlaylist(playlistWithSongs = playlistWithSongs)
     },
     trailingContent = trailingContent,
     listItemHeight = PlayListItemHeight,
@@ -168,26 +161,20 @@ fun AlbumGridItem(
 
 @Composable
 fun PlaylistGridItem(
-    playlistPreview: PlaylistPreview,
+    playlistWithSongs: PlaylistWithSongs,
     modifier: Modifier = Modifier,
     badges: @Composable RowScope.() -> Unit = { },
     fillMaxWidth: Boolean = false,
 ) = GridItem(
-    title = playlistPreview.playlist.name,
+    title = playlistWithSongs.playlist.name,
     subtitle = pluralStringResource(
         R.plurals.n_song,
-        playlistPreview.songCount,
-        playlistPreview.songCount
+        playlistWithSongs.songs.size,
+        playlistWithSongs.songs.size
     ),
     badges = badges,
     thumbnailContent = {
-        val width = maxWidth
-        Icon(
-            imageVector = IconApp.PlaylistPlay, contentDescription = null,
-            modifier = Modifier
-                .size(width / 2)
-                .align(Alignment.Center)
-        )
+        CoverImagePlaylist(playlistWithSongs = playlistWithSongs, size = maxWidth)
     },
     thumbnailShape = RoundedCornerShape(ThumbnailCornerRadius),
     fillMaxWidth = fillMaxWidth,

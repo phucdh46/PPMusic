@@ -15,7 +15,7 @@ import javax.inject.Inject
 class LibraryViewModel @Inject constructor(
     private val musicDao: MusicDao
 ) : ViewModel() {
-    val playlistPreview = musicDao.playlistPreviews()
+    val playlistWithSongs = musicDao.getAllPlaylistWithSongs()
 
     fun insertSong(song: Song) {
         viewModelScope.launch(Dispatchers.IO) {

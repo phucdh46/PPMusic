@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,6 +41,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -70,6 +72,7 @@ import com.dhp.musicplayer.ui.component.TextPlaceholder
 import com.dhp.musicplayer.ui.component.TopAppBarDetailScreen
 import com.dhp.musicplayer.ui.items.SongItem
 import com.dhp.musicplayer.ui.screens.common.ErrorScreen
+import com.dhp.musicplayer.utils.CoverImagePlaylist
 import com.dhp.musicplayer.utils.toSongsWithBitmap
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,13 +86,14 @@ fun LocalPlaylistDetailScreen(
         TopAppBarDetailScreen(
             onBackClick = { appState.navController.navigateUp() },
         )
+        val thumbnailSizeDp = if (isLandscape) (maxHeight - 128.dp) else (maxWidth / 3 * 2)
         when (uiState) {
             is UiState.Loading -> {
-                val thumbnailSizeDp = if (isLandscape) (maxHeight - 128.dp) else (maxWidth / 3 * 2)
                 Column(
                     modifier = Modifier
                         .windowInsetsPadding(LocalWindowInsets.current)
-                        .padding(horizontal = 4.dp).fillMaxWidth()
+                        .padding(horizontal = 4.dp)
+                        .fillMaxWidth()
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
@@ -112,6 +116,7 @@ fun LocalPlaylistDetailScreen(
 
             is UiState.Success -> {
                 LocalPlaylistDetailScreen(
+                    thumbnailSizeDp = thumbnailSizeDp,
                     playlistWithSongs = (uiState as UiState.Success).data,
                     navController = appState.navController,
                     onEditPlaylist = { name ->
@@ -141,7 +146,8 @@ fun LocalPlaylistDetailScreen(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun LocalPlaylistDetailScreen(
-    playlistWithSongs: PlaylistWithSongs?,
+    thumbnailSizeDp: Dp,
+    playlistWithSongs: PlaylistWithSongs,
     navController: NavController,
     onEditPlaylist: (name: String) -> Unit,
     onDeletePlaylist: () -> Unit,
@@ -189,8 +195,8 @@ fun LocalPlaylistDetailScreen(
     }
 
     SongListDetailScreen(
-        title = playlistWithSongs?.playlist?.name.orEmpty(),
-        songs = playlistWithSongs?.songs ?: emptyList(),
+        title = playlistWithSongs.playlist.name,
+        songs = playlistWithSongs.songs,
         onBackButton = { navController.navigateUp() },
         onMenuClick = {
             menuState.show {
@@ -229,6 +235,9 @@ fun LocalPlaylistDetailScreen(
                     )
                 }
             }
+        },
+        imageCover = {
+            CoverImagePlaylist(playlistWithSongs = playlistWithSongs, size = thumbnailSizeDp)
         }
     )
 }
@@ -244,6 +253,7 @@ fun SongListDetailScreen(
     onMenuClick: (() -> Unit)? = null,
     onLongClick: (index: Int, song: Song) -> Unit,
     trailingContent: @Composable() ((index: Int, song: Song) -> Unit)? = null,
+    imageCover: @Composable (ColumnScope.() -> Unit)? = null
 ) {
     val playerConnection = LocalPlayerConnection.current
     val lazyListState = rememberLazyListState()
@@ -293,7 +303,7 @@ fun SongListDetailScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    LoadingShimmerImage(
+                    imageCover?.invoke(this) ?: LoadingShimmerImage(
                         thumbnailSizeDp = thumbnailSizeDp,
                         thumbnailUrl = thumbnailUrl.thumbnail(thumbnailSizeDp.px),
                     )

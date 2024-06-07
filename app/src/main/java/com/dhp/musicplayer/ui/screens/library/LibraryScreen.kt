@@ -126,7 +126,7 @@ fun LocalPlaylists(
     appState: AppState,
     viewModel: LibraryViewModel = hiltViewModel(),
 ) {
-    val playlistPreview by viewModel.playlistPreview.collectAsStateWithLifecycle(emptyList())
+    val playlistWithSongs by viewModel.playlistWithSongs.collectAsStateWithLifecycle(emptyList())
 
     var viewType by rememberEnumPreference(PlaylistViewTypeKey, LibraryViewType.LIST)
 
@@ -148,7 +148,7 @@ fun LocalPlaylists(
         )
     }
     var currentSelectPlaylist by rememberSaveable {
-        mutableStateOf(if (playlistPreview.isEmpty()) null else playlistPreview[0].playlist)
+        mutableStateOf(if (playlistWithSongs.isEmpty()) null else playlistWithSongs[0].playlist)
     }
     var isRenaming by rememberSaveable {
         mutableStateOf(false)
@@ -210,8 +210,8 @@ fun LocalPlaylists(
             Text(
                 text = pluralStringResource(
                     R.plurals.n_playlist,
-                    playlistPreview.size,
-                    playlistPreview.size
+                    playlistWithSongs.size,
+                    playlistWithSongs.size
                 ),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.secondary
@@ -237,7 +237,7 @@ fun LocalPlaylists(
         }
     }
 
-    if (playlistPreview.isEmpty()) {
+    if (playlistWithSongs.isEmpty()) {
         EmptyList(text = stringResource(id = R.string.empty_playlists), floatContent = {
             FloatingActionButton(
                 modifier = Modifier
@@ -272,13 +272,13 @@ fun LocalPlaylists(
                         }
 
                         items(
-                            playlistPreview,
+                            playlistWithSongs,
                             key = { it.playlist.id },
 //                        contentType = { CONTENT_TYPE_PLAYLIST }
                         ) { playlistPreview ->
                             var expanded by remember { mutableStateOf(false) }
                             PlaylistListItem(
-                                playlistPreview = playlistPreview,
+                                playlistWithSongs = playlistPreview,
                                 trailingContent = {
                                     Box {
                                         IconButton(
@@ -350,12 +350,12 @@ fun LocalPlaylists(
                         }
 
                         items(
-                            playlistPreview,
+                            playlistWithSongs,
                             key = { it.playlist },
 //                        contentType = { CONTENT_TYPE_PLAYLIST }
                         ) { playlistPreview ->
                             PlaylistGridItem(
-                                playlistPreview = playlistPreview,
+                                playlistWithSongs = playlistPreview,
                                 fillMaxWidth = true,
                                 modifier = Modifier
                                     .fillMaxWidth()

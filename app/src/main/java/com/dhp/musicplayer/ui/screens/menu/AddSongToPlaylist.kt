@@ -1,6 +1,7 @@
 package com.dhp.musicplayer.ui.screens.menu
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,7 +47,7 @@ fun AddSongToPlaylist(
     viewModel: LibraryViewModel = hiltViewModel(),
 ) {
     val lazyListState = rememberLazyListState()
-    val playlistPreview by viewModel.playlistPreview.collectAsStateWithLifecycle(emptyList())
+    val playlistWithSongs by viewModel.playlistWithSongs.collectAsStateWithLifecycle(emptyList())
     var showAddPlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
@@ -66,7 +67,7 @@ fun AddSongToPlaylist(
             state = lazyListState,
         ) {
             stickyHeader {
-                Column {
+                Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
                     Text(
                         text = buildAnnotatedString {
                             append("Add ")
@@ -79,46 +80,40 @@ fun AddSongToPlaylist(
                         modifier = Modifier.padding(20.dp)
                     )
                     HorizontalDivider()
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "All playlist", style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        TextIconButton(
+                            text = "Add",
+                            imageVector = IconApp.Add,
+                            onClick = {
+                                showAddPlaylistDialog = true
+                            }
+                        )
+                    }
+                    HorizontalDivider()
+
                 }
             }
-            item(
-                key = "header",
-                contentType = "CONTENT_TYPE_HEADER"
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "All playlist", style = MaterialTheme.typography.bodyMedium,
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    TextIconButton(
-                        text = "Add",
-                        imageVector = IconApp.Add,
-                        onClick = {
-                            showAddPlaylistDialog = true
-                        }
-                    )
-                }
-                HorizontalDivider()
-
-            }
-
             items(
-                playlistPreview,
+                playlistWithSongs,
                 key = { it.playlist.id },
 //                        contentType = { CONTENT_TYPE_PLAYLIST }
             ) { playlistPreview ->
                 PlaylistListItem(
-                    playlistPreview = playlistPreview,
+                    playlistWithSongs = playlistPreview,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
                             viewModel.addToPlaylist(
                                 playlistPreview.playlist,
                                 mediaItem.toSong(),
-                                playlistPreview.songCount
+                                playlistPreview.songs.size
                             )
                             onDismiss()
                         }
