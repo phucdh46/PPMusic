@@ -194,12 +194,12 @@ class BottomSheetState(
         if (velocity > 250) {
             expand()
         } else if (velocity < -250) {
-            if (value < collapsedBound && onDismiss != null) {
-                dismiss()
-                onDismiss.invoke()
-            } else {
+//            if (value < collapsedBound && onDismiss != null) {
+//                dismiss()
+//                onDismiss.invoke()
+//            } else {
                 collapse()
-            }
+//            }
         } else {
             val l0 = dismissedBound
             val l1 = (collapsedBound - dismissedBound) / 2
@@ -208,12 +208,12 @@ class BottomSheetState(
 
             when (value) {
                 in l0..l1 -> {
-                    if (onDismiss != null) {
-                        dismiss()
-                        onDismiss.invoke()
-                    } else {
+//                    if (onDismiss != null) {
+//                        dismiss()
+//                        onDismiss.invoke()
+//                    } else {
                         collapse()
-                    }
+//                    }
                 }
                 in l1..l2 -> collapse()
                 in l2..l3 -> expand()

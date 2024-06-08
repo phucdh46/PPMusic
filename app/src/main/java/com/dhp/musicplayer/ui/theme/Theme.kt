@@ -230,7 +230,6 @@ private val BlueLightColorScheme = lightColorScheme(
 fun ComposeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     themeColor: Color,
     enableDynamicTheme: Boolean = false,
     content: @Composable () -> Unit

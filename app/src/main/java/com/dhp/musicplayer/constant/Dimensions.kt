@@ -16,13 +16,8 @@ val ThumbnailCornerRadius = 6.dp
 val AlbumThumbnailSizeDp = 108.dp
 val ArtistThumbnailSizeDp = 92.dp
 
-
-val PlayerHorizontalPadding = 32.dp
-
 val NavigationBarAnimationSpec = spring<Dp>(stiffness = Spring.StiffnessMediumLow)
 val QueuePeekHeight = 64.dp
-
-val collapsedPlayer = 64.dp
 
 val ListItemHeight = 64.dp
 val PlayListItemHeight = 84.dp
@@ -34,11 +29,6 @@ val MoodAndGenresButtonHeight = 48.dp
 @Suppress("ClassName")
 object Dimensions {
     val itemsVerticalPadding = 8.dp
-
-    val navigationRailWidth = 64.dp
-    val navigationRailWidthLandscape = 128.dp
-    val navigationRailIconOffset = 6.dp
-    val headerHeight = 140.dp
 
     object thumbnails {
         val album = 128.dp
@@ -54,8 +44,6 @@ object Dimensions {
                 }.dp
         }
     }
-
-    val collapsedPlayer = 64.dp
 }
 
 inline val Dp.px: Int

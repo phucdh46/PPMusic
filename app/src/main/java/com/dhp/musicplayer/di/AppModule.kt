@@ -44,7 +44,7 @@ object AppModule {
     ): SimpleCache {
         val constructor = {
             SimpleCache(
-                context.filesDir.resolve("exoplayer"),
+                context.filesDir.resolve("exoplayercache"),
                 LeastRecentlyUsedCacheEvictor(1024 * 1024 * 1024L),
                 databaseProvider
             )

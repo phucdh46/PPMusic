@@ -79,17 +79,17 @@ fun SearchScreen(
                         Row {
                             Box(
                                 modifier = Modifier
-                                    .padding(6.dp)
                                     .height(MoodAndGenresButtonHeight)
                                     .weight(1f)
+                                    .padding(8.dp)
                                     .shimmer()
 
                             )
 
                             Box(
                                 modifier = Modifier
-                                    .padding(6.dp)
                                     .height(MoodAndGenresButtonHeight)
+                                    .padding(8.dp)
                                     .weight(1f)
                                     .shimmer()
                             )

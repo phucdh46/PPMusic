@@ -205,6 +205,7 @@ fun SearchToolbar(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
+            .padding(horizontal = 8.dp)
             .fillMaxWidth()
             .height(TopBarHeight),
     ) {
