@@ -125,6 +125,7 @@ fun TextFieldDialog(
 @Composable
 fun TextFieldDialog(
     hintText: String,
+    title: (@Composable () -> Unit)? = null,
     onDismiss: () -> Unit,
     onDone: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -152,6 +153,7 @@ fun TextFieldDialog(
 
     DefaultDialog(
         onDismiss = onDismiss,
+        title = title,
         modifier = modifier
     ) {
         BasicTextField(
@@ -315,10 +317,10 @@ fun DefaultDialog(
                 }
                 if (title != null) {
                     CompositionLocalProvider(LocalContentColor provides AlertDialogDefaults.titleContentColor) {
-                        ProvideTextStyle(MaterialTheme.typography.headlineSmall) {
+                        ProvideTextStyle(typography.headlineSmall) {
                             Box(
                                 // Align the title to the center when an icon is present.
-                                Modifier.align(if (icon == null) Alignment.Start else Alignment.CenterHorizontally)
+                                Modifier.align(Alignment.CenterHorizontally)
                             ) {
                                 title()
                             }

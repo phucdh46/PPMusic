@@ -129,7 +129,7 @@ fun PlayerQueue(
                     .fillMaxSize()
             ) {
                 Text(
-                    text = "Queue",
+                    text = "Next",
                     modifier = Modifier
                         .align(Alignment.Center)
                 )
@@ -157,7 +157,7 @@ fun PlayerQueue(
                     modifier = Modifier
                         .padding(vertical = 16.dp)
                         .fillMaxWidth(),
-                    text = "Queue",
+                    text = "Next",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )

@@ -139,7 +139,7 @@ fun LocalPlaylists(
 
     if (showAddPlaylistDialog) {
         TextFieldDialog(
-            icon = { Icon(imageVector = IconApp.PlaylistAdd, contentDescription = null) },
+//            icon = { Icon(imageVector = IconApp.PlaylistAdd, contentDescription = null) },
             title = { Text(text = stringResource(R.string.create_playlist)) },
             onDismiss = { showAddPlaylistDialog = false },
             onDone = { playlistName ->
@@ -157,6 +157,9 @@ fun LocalPlaylists(
     if (isRenaming) {
         TextFieldDialog(
             hintText = "Enter the playlist name",
+            title = {
+                Text(text = "Rename".uppercase(), style = MaterialTheme.typography.titleMedium)
+            },
             initialTextInput = currentSelectPlaylist?.name ?: "",
             onDismiss = { isRenaming = false },
             onDone = { text ->
@@ -177,15 +180,15 @@ fun LocalPlaylists(
                 currentSelectPlaylist?.let { viewModel.deletePlaylist(it) }
             },
             title = {
-//                Text(text = "Delete", style = MaterialTheme.typography.headlineSmall)
+                Text(text = "Delete".uppercase(), style = MaterialTheme.typography.titleMedium)
             },
-            icon = {
-                Icon(
-                    imageVector = IconApp.Delete,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
+//            icon = {
+//                Icon(
+//                    imageVector = IconApp.Delete,
+//                    contentDescription = null,
+//                    tint = MaterialTheme.colorScheme.error
+//                )
+//            }
         )
     }
 

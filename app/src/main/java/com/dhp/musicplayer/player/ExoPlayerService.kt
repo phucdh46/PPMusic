@@ -651,6 +651,11 @@ class ExoPlayerService : MediaBrowserService(), Player.Listener, PlaybackStatsLi
             MediaBrowser.MediaItem.FLAG_PLAYABLE
         )
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        stopSelf()
+    }
+
     override fun onDestroy() {
 
         unregisterReceiver(notificationActionReceiver)
@@ -684,7 +689,6 @@ class ExoPlayerService : MediaBrowserService(), Player.Listener, PlaybackStatsLi
                         .getOrNull(1)
                         ?.let { songId ->
                             index = lastSongs.indexOfFirst { it.id == songId }
-                            Logg.d("setIndex: $index")
                             lastSongs
                         }
 
