@@ -24,10 +24,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dhp.musicplayer.constant.MiniPlayerHeight
 import com.dhp.musicplayer.constant.px
@@ -51,16 +54,20 @@ import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.player.PlayerConnection
 import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.ui.LocalPlayerConnection
+import com.dhp.musicplayer.ui.component.DebouncedIconButton
 import com.dhp.musicplayer.ui.component.LoadingShimmerImage
+import com.dhp.musicplayer.ui.screens.library.LibraryViewModel
 import com.dhp.musicplayer.utils.Logg
 import com.dhp.musicplayer.utils.drawableToBitmap
 import com.google.accompanist.pager.ExperimentalPagerApi
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlin.math.absoluteValue
 
 
 @Composable
 fun MiniPlayer(
     modifier: Modifier = Modifier,
+    viewModel: LibraryViewModel = hiltViewModel()
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isPlaying.collectAsState()
@@ -70,6 +77,14 @@ fun MiniPlayer(
     val currentMediaItem by playerConnection.currentMediaItem.collectAsState()
 //    val canSkipNext by playerConnection.canSkipNext.collectAsState()
     val positionAndDuration by playerConnection.player.positionAndDurationState()
+
+    var likedAt by rememberSaveable {
+        mutableStateOf<Long?>(null)
+    }
+
+    LaunchedEffect(currentMediaItem) {
+        viewModel.likeAt(currentMediaItem?.mediaId).distinctUntilChanged().collect { likedAt = it }
+    }
 
     val song = currentMediaItem?.toSong()
 
@@ -121,10 +136,16 @@ fun MiniPlayer(
                             strokeWidth = 2.dp.toPx()
                         )
                     }) {
-                PlaybackNowPlaying(
+                MiniPlayerContent(
                     song = song, maxHeight = MiniPlayerHeight, coverOnly = !nowPlayingVisible
                 )
-                if (controlsVisible) PlaybackPlayPause(playerConnection = playerConnection)
+                if (controlsVisible) MiniPlayerControl(
+                    isFavourite = likedAt != null,
+                    onFavouriteClick = {
+                        currentMediaItem?.let { viewModel.favourite(it) }
+                    },
+                    playerConnection = playerConnection
+                )
             }
 
         }
@@ -133,7 +154,7 @@ fun MiniPlayer(
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun RowScope.PlaybackNowPlaying(
+private fun RowScope.MiniPlayerContent(
     song: Song?,
     maxHeight: Dp,
     modifier: Modifier = Modifier,
@@ -165,14 +186,14 @@ private fun RowScope.PlaybackNowPlaying(
             )
         }
 
-        if (!coverOnly && song != null) PlaybackPager(song = song) { song, _, pagerMod ->
-            PlaybackNowPlaying(song, modifier = pagerMod)
+        if (!coverOnly && song != null) MiniPlayerPager(song = song) { song, _, pagerMod ->
+            MiniPlayerTextContent(song, modifier = pagerMod)
         }
     }
 }
 
 @Composable
-private fun PlaybackNowPlaying(audio: Song, modifier: Modifier = Modifier) {
+private fun MiniPlayerTextContent(audio: Song, modifier: Modifier = Modifier) {
     Column(
         modifier = Modifier
             .padding(vertical = 8.dp)
@@ -196,14 +217,30 @@ private fun PlaybackNowPlaying(audio: Song, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun RowScope.PlaybackPlayPause(
-    playerConnection: PlayerConnection,
+private fun RowScope.MiniPlayerControl(
     modifier: Modifier = Modifier,
+    isFavourite: Boolean,
+    onFavouriteClick: () -> Unit = {},
+    playerConnection: PlayerConnection,
     size: Dp = 36.dp,
 ) {
-    Log.d("DHP", "positionAndDuration: PlaybackPlayPause ")
-
     val isPlaying by playerConnection.isPlaying.collectAsStateWithLifecycle()
+    DebouncedIconButton(
+        onClick = {
+            onFavouriteClick()
+        },
+        modifier = modifier.weight(1f)
+    ) {
+        Icon(
+            imageVector = if (isFavourite) IconApp.Favorite else IconApp.FavoriteBorder,
+            modifier = Modifier
+                .size(size)
+                .padding(4.dp),
+            contentDescription = null,
+            tint = if (isFavourite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer
+        )
+    }
+
     IconButton(
         onClick = { playerConnection.playOrPause() },
 //        colors = MaterialTheme.colorScheme.primary,

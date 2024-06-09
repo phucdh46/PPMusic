@@ -30,7 +30,7 @@ import kotlin.math.absoluteValue
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-internal fun PlaybackPager(
+internal fun MiniPlayerPager(
     song: Song,
     modifier: Modifier = Modifier,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,

@@ -29,7 +29,6 @@ fun PlaybackError(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-//    val (_, typography) = LocalAppearance.current
 
     Box {
         AnimatedVisibility(
@@ -47,7 +46,7 @@ fun PlaybackError(
                         )
                     }
                     .fillMaxSize()
-                    .background(Color.Black.copy(0.8f))
+                    .background(Color.Black)
             )
         }
 

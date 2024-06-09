@@ -2,7 +2,9 @@ package com.dhp.musicplayer.ui.screens.library
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import com.dhp.musicplayer.db.MusicDao
+import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.model.Playlist
 import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.model.SongPlaylistMap
@@ -16,6 +18,21 @@ class LibraryViewModel @Inject constructor(
     private val musicDao: MusicDao
 ) : ViewModel() {
     val playlistWithSongs = musicDao.getAllPlaylistWithSongs()
+
+    fun likeAt(songId: String?) = musicDao.likedAt(songId)
+
+    fun favourite(mediaItem: MediaItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val likedAt = musicDao.isFavorite(mediaItem.mediaId) != null
+            if (musicDao.favorite(
+                    mediaItem.mediaId,
+                    if (!likedAt) System.currentTimeMillis() else null
+                ) == 0
+            ) {
+                musicDao.insert(mediaItem.toSong().toggleLike())
+            }
+        }
+    }
 
     fun insertSong(song: Song) {
         viewModelScope.launch(Dispatchers.IO) {
