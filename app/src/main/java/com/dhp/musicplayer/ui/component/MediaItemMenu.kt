@@ -4,15 +4,23 @@ import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,6 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,6 +55,8 @@ import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.ui.items.SongItem
 import com.dhp.musicplayer.ui.screens.library.LibraryViewModel
 import com.dhp.musicplayer.ui.screens.menu.AddSongToPlaylist
+import com.dhp.musicplayer.utils.formatAsDuration
+import kotlinx.coroutines.flow.flowOf
 
 @OptIn(UnstableApi::class)
 @ExperimentalAnimationApi
@@ -53,6 +66,7 @@ fun MediaItemMenu(
     mediaItem: MediaItem,
     onDismiss: () -> Unit,
     onRemoveSongFromPlaylist: ((song: Song) -> Unit)? = null,
+    onShowSleepTimer: (() -> Unit)? = null,
     libraryViewModel: LibraryViewModel = hiltViewModel(),
 ) {
     val playerConnection = LocalPlayerConnection.current
@@ -88,7 +102,8 @@ fun MediaItemMenu(
                 song.id,
                 false
             )
-        }
+        },
+        onShowSleepTimer = onShowSleepTimer
     )
 }
 
@@ -105,11 +120,13 @@ fun MediaItemMenu(
     @Download.State state: Int?,
     onRemoveDownload: () -> Unit,
     onDownload: () -> Unit,
+    onShowSleepTimer: (() -> Unit)? = null,
 ) {
     val density = LocalDensity.current
+    val playerConnection = LocalPlayerConnection.current
 
-    var isViewingPlaylists by remember {
-        mutableStateOf(false)
+    var menuMediaState by remember {
+        mutableStateOf(MenuMediaState.DEFAULT)
     }
 
     var height by remember {
@@ -118,121 +135,326 @@ fun MediaItemMenu(
 
     AnimatedContent(
         modifier = Modifier.background(MaterialTheme.colorScheme.surface),
-        targetState = isViewingPlaylists,
+        targetState = menuMediaState,
         label = "",
-    ) { currentIsViewingPlaylists ->
-        if (currentIsViewingPlaylists) {
-            BackHandler {
-                isViewingPlaylists = false
+    ) { menuState ->
+        when (menuState) {
+            MenuMediaState.ADD_PLAYLIST -> {
+                BackHandler {
+                    menuMediaState = MenuMediaState.DEFAULT
+                }
+                AddSongToPlaylist(mediaItem, onDismiss)
             }
-            AddSongToPlaylist(mediaItem, onDismiss)
-        } else {
-            Menu(
-                modifier = modifier
-                    .padding(bottom = 16.dp)
-                    .onPlaced { height = with(density) { it.size.height.toDp() } }
-            ) {
-                val thumbnailSizeDp = Dimensions.thumbnails.song
-                val thumbnailSizePx = thumbnailSizeDp.px
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-
-                    SongItem(
-                        id = mediaItem.mediaId,
-                        thumbnailUrl = mediaItem.mediaMetadata.artworkUri.thumbnail(thumbnailSizePx)
-                            ?.toString(),
-                        title = mediaItem.mediaMetadata.title.toString(),
-                        subtitle = mediaItem.mediaMetadata.artist.toString(),
-                        duration = null,
-                        isOffline = mediaItem.toSong().isOffline,
-                        bitmap = mediaItem.toSong().getBitmap(LocalContext.current),
-                        thumbnailSizeDp = thumbnailSizeDp,
-                        modifier = Modifier
-                            .weight(1f)
-                    )
-                }
-
-                HorizontalDivider()
-
-                Spacer(
-                    modifier = Modifier
-                        .height(8.dp)
+            MenuMediaState.SLEEP_TIMER -> {
+                val timers = listOf(
+                    "5 minutest" to 5,
+                    "10 minutest" to 10,
+                    "30 minutest" to 30,
+                    "1 hours" to 60,
+                    "End of song" to null,
                 )
 
-                onPlayNext?.let { onPlayNext ->
-                    MenuEntry(
-                        imageVector = IconApp.NextPlan,
-                        text = "Play next",
-                        onClick = {
-                            onDismiss()
-                            onPlayNext()
-                        }
-                    )
+                val sleepTimerMillisLeft by (playerConnection?.timerJob?.millisLeft
+                    ?: flowOf(null))
+                    .collectAsState(initial = null)
+                var isShowingTurnOffSleepTimerDialog by remember {
+                    mutableStateOf(false)
                 }
 
-                onEnqueue?.let { onEnqueue ->
-                    MenuEntry(
-                        imageVector = IconApp.Queue,
-                        text = "Enqueue",
-                        onClick = {
-                            onDismiss()
-                            onEnqueue()
-                        }
-                    )
+                var isShowingSleepTimerDialog by remember {
+                    mutableStateOf(false)
+                }
+                if (isShowingTurnOffSleepTimerDialog) {
+                    if (sleepTimerMillisLeft != null) {
+                        ConfirmationDialog(
+                            text = "Do you want to stop the sleep timer?",
+                            cancelText = "No",
+                            confirmText = "Stop",
+                            onDismiss = { isShowingTurnOffSleepTimerDialog = false },
+                            onConfirm = {
+                                playerConnection?.cancelSleepTimer()
+                                menuMediaState = MenuMediaState.DEFAULT
+                            }
+                        )
+                    }
                 }
 
-                MenuEntry(
-                    imageVector = IconApp.PlaylistAdd,
-                    text = "Add to playlist",
-                    onClick = { isViewingPlaylists = true },
-                )
-                onRemoveSongFromPlaylist?.let { onRemoveSongFromPlaylist ->
-                    MenuEntry(
-                        imageVector = IconApp.Queue,
-                        text = "Remove from playlist",
-                        onClick = {
-                            onDismiss()
-                            onRemoveSongFromPlaylist(mediaItem.toSong())
-                        }
-                    )
-                }
+                if (isShowingSleepTimerDialog) {
+                    DefaultDialog(
+                        onDismiss = { isShowingSleepTimerDialog = false }
+                    ) {
+                        var hoursText by remember { mutableStateOf(TextFieldValue()) }
+                        var minutesText by remember { mutableStateOf(TextFieldValue()) }
+                        BasicText(
+                            text = "Set sleep timer",
+                            style = typography.titleMedium,
+                            modifier = Modifier
+                                .padding(vertical = 8.dp, horizontal = 24.dp)
+                        )
 
-                if (!mediaItem.toSong().isOffline) {
-                    when (state) {
-                        Download.STATE_COMPLETED -> {
-                            MenuEntry(
-                                imageVector = IconApp.DownloadForOffline,
-                                text = "Remove Download",
-                                onClick = onRemoveDownload
+                        fun filterValidInput(input: String, max: Int): String {
+                            val number = input.toIntOrNull()
+                            return when {
+                                number == null -> ""
+                                number < 0 -> "0"
+                                number > max -> max.toString()
+                                else -> input
+                            }
+                        }
+                        OutlinedTextField(
+                            value = hoursText,
+                            onValueChange = {
+                                val filteredHoursText = filterValidInput(it.text, 23)
+                                hoursText = TextFieldValue(
+                                    text = filteredHoursText,
+                                    selection = TextRange(filteredHoursText.length)
+                                )
+                            },
+                            label = { Text("Enter hours") },
+                            placeholder = { Text("Invalid hour (0-23)") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            singleLine = true
+                        )
+
+                        OutlinedTextField(
+                            value = minutesText,
+                            onValueChange = {
+                                val filteredMinutesText = filterValidInput(it.text, 59)
+                                minutesText = TextFieldValue(
+                                    text = filteredMinutesText,
+                                    selection = TextRange(filteredMinutesText.length)
+                                )
+                            },
+                            label = { Text("Enter minutes") },
+                            placeholder = { Text("Invalid minute (0-59)") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            singleLine = true
+                        )
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp)
+                        ) {
+                            DialogTextButton(
+                                text = "Cancel",
+                                onClick = { isShowingSleepTimerDialog = false }
                             )
-                        }
+                            val timeSleep = (hoursText.text.toIntOrNull()
+                                ?: 0) * 60 + (minutesText.text.toIntOrNull() ?: 0)
 
-                        Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
-                            MenuEntry(
-                                imageVector = IconApp.DownloadForOffline,
-                                text = "Downloading",
-                                onClick = onRemoveDownload,
-                                icon = {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(24.dp),
-                                        strokeWidth = 2.dp
+                            DialogTextButton(
+                                text = "Set",
+                                enabled = timeSleep > 0,
+                                primary = true,
+                                onClick = {
+                                    playerConnection?.startSleepTimer(
+                                        (timeSleep) * 60 * 1000L
                                     )
+                                    isShowingSleepTimerDialog = false
+                                    menuMediaState = MenuMediaState.DEFAULT
                                 }
                             )
                         }
+                    }
+                }
 
-                        else -> {
-                            MenuEntry(
-                                imageVector = IconApp.DownloadForOffline,
-                                text = "Download",
-                                onClick = onDownload
-                            )
+                Menu {
+                    MenuEntry(
+                        imageVector = IconApp.Bedtime,
+                        text = "Sleep timer",
+                        onClick = { },
+                        trailingContent = sleepTimerMillisLeft?.let {
+                            {
+                                BasicText(
+                                    text = formatAsDuration(it),
+                                    style = typography.bodyMedium,
+                                    modifier = modifier
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                        .animateContentSize()
+                                )
+                            }
                         }
+                    )
+                    HorizontalDivider()
+                    timers.forEach { (text, time) ->
+                        MenuEntry(
+                            icon = {},
+                            text = text,
+                            onClick = {
+                                playerConnection?.startSleepTimer(time?.let { it * 60 * 1000L }
+                                    ?: playerConnection.player.duration)
+                                menuMediaState = MenuMediaState.DEFAULT
+                            }
+                        )
+                    }
+
+                    MenuEntry(
+                        icon = {},
+                        text = "Set sleep timer",
+                        onClick = {
+                            isShowingSleepTimerDialog = true
+                        }
+                    )
+
+                    sleepTimerMillisLeft?.let {
+                        MenuEntry(
+                            icon = {},
+                            text = "Turn off sleep timer",
+                            onClick = {
+                                isShowingTurnOffSleepTimerDialog = true
+                            }
+                        )
+                    }
+
+                }
+            }
+
+            else -> {
+                Menu(
+                    modifier = modifier
+                        .padding(bottom = 16.dp)
+                        .onPlaced { height = with(density) { it.size.height.toDp() } }
+                ) {
+                    val thumbnailSizeDp = Dimensions.thumbnails.song
+                    val thumbnailSizePx = thumbnailSizeDp.px
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+
+                        SongItem(
+                            id = mediaItem.mediaId,
+                            thumbnailUrl = mediaItem.mediaMetadata.artworkUri.thumbnail(
+                                thumbnailSizePx
+                            )
+                                ?.toString(),
+                            title = mediaItem.mediaMetadata.title.toString(),
+                            subtitle = mediaItem.mediaMetadata.artist.toString(),
+                            duration = null,
+                            isOffline = mediaItem.toSong().isOffline,
+                            bitmap = mediaItem.toSong().getBitmap(LocalContext.current),
+                            thumbnailSizeDp = thumbnailSizeDp,
+                            modifier = Modifier
+                                .weight(1f)
+                        )
+                    }
+
+                    HorizontalDivider()
+
+                    Spacer(
+                        modifier = Modifier
+                            .height(8.dp)
+                    )
+
+                    onPlayNext?.let { onPlayNext ->
+                        MenuEntry(
+                            imageVector = IconApp.NextPlan,
+                            text = "Play next",
+                            onClick = {
+                                onDismiss()
+                                onPlayNext()
+                            }
+                        )
+                    }
+
+                    onEnqueue?.let { onEnqueue ->
+                        MenuEntry(
+                            imageVector = IconApp.Queue,
+                            text = "Enqueue",
+                            onClick = {
+                                onDismiss()
+                                onEnqueue()
+                            }
+                        )
+                    }
+
+                    MenuEntry(
+                        imageVector = IconApp.PlaylistAdd,
+                        text = "Add to playlist",
+                        onClick = { menuMediaState = MenuMediaState.ADD_PLAYLIST },
+                    )
+                    onRemoveSongFromPlaylist?.let { onRemoveSongFromPlaylist ->
+                        MenuEntry(
+                            imageVector = IconApp.Queue,
+                            text = "Remove from playlist",
+                            onClick = {
+                                onDismiss()
+                                onRemoveSongFromPlaylist(mediaItem.toSong())
+                            }
+                        )
+                    }
+
+                    if (!mediaItem.toSong().isOffline) {
+                        when (state) {
+                            Download.STATE_COMPLETED -> {
+                                MenuEntry(
+                                    imageVector = IconApp.DownloadForOffline,
+                                    text = "Remove Download",
+                                    onClick = onRemoveDownload
+                                )
+                            }
+
+                            Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
+                                MenuEntry(
+                                    imageVector = IconApp.DownloadForOffline,
+                                    text = "Downloading",
+                                    onClick = onRemoveDownload,
+                                    icon = {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(24.dp),
+                                            strokeWidth = 2.dp
+                                        )
+                                    }
+                                )
+                            }
+
+                            else -> {
+                                MenuEntry(
+                                    imageVector = IconApp.DownloadForOffline,
+                                    text = "Download",
+                                    onClick = onDownload
+                                )
+                            }
+                        }
+                    }
+
+                    onShowSleepTimer?.let {
+
+                        val sleepTimerMillisLeft by (playerConnection?.timerJob?.millisLeft
+                            ?: flowOf(null))
+                            .collectAsState(initial = null)
+
+                        MenuEntry(
+                            imageVector = IconApp.Bedtime,
+                            text = "Sleep timer",
+                            onClick = {
+                                menuMediaState = MenuMediaState.SLEEP_TIMER
+
+                            },
+                            trailingContent = sleepTimerMillisLeft?.let {
+                                {
+                                    BasicText(
+                                        text = formatAsDuration(it),
+                                        style = typography.bodyMedium,
+                                        modifier = modifier
+                                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                                            .animateContentSize()
+                                    )
+                                }
+                            }
+                        )
                     }
                 }
             }
         }
     }
+}
+
+enum class MenuMediaState {
+    DEFAULT,
+    ADD_PLAYLIST,
+    SLEEP_TIMER
 }

@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.dhp.musicplayer.ui.IconApp
 
 @Composable
 inline fun Menu(
@@ -41,7 +42,7 @@ inline fun Menu(
 
 @Composable
 fun MenuEntry(
-    imageVector: ImageVector,
+    imageVector: ImageVector = IconApp.Home,
     text: String,
     onClick: () -> Unit,
     secondaryText: String? = null,

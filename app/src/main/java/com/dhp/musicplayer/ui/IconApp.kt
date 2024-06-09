@@ -8,6 +8,7 @@ import androidx.compose.material.icons.automirrored.rounded.PlaylistPlay
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
+import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DownloadForOffline
@@ -52,6 +53,7 @@ object IconApp {
     val Edit = Icons.Rounded.Edit
     val NorthWest = Icons.Rounded.NorthWest
     val Lyrics = Icons.Rounded.Lyrics
+    val Bedtime = Icons.Rounded.Bedtime
 
     val NextPlan = Icons.AutoMirrored.Rounded.NextPlan
     val PlaylistAdd = Icons.AutoMirrored.Rounded.PlaylistAdd
