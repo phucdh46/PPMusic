@@ -23,6 +23,7 @@ import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.material.icons.rounded.Lyrics
 import androidx.compose.material.icons.rounded.NorthWest
 import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Queue
 import androidx.compose.material.icons.rounded.Reorder
@@ -58,6 +59,7 @@ object IconApp {
     val Bedtime = Icons.Rounded.Bedtime
     val Favorite = Icons.Rounded.Favorite
     val FavoriteBorder = Icons.Rounded.FavoriteBorder
+    val PhoneAndroid = Icons.Rounded.PhoneAndroid
 
     val NextPlan = Icons.AutoMirrored.Rounded.NextPlan
     val PlaylistAdd = Icons.AutoMirrored.Rounded.PlaylistAdd

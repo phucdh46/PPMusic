@@ -88,7 +88,7 @@ fun LibrarySongsScreen(
             subtitle = "Song storage on device",
             thumbnailContent = {
                 Icon(
-                    imageVector = IconApp.DownloadForOffline,
+                    imageVector = IconApp.PhoneAndroid,
                     contentDescription = null,
                     modifier = Modifier.size(ListThumbnailSize)
                 )
