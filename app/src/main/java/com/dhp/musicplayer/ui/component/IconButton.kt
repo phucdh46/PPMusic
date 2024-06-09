@@ -8,7 +8,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -16,14 +15,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ResizableIconButton(
@@ -99,5 +103,33 @@ fun TextIconButton(
             Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
             Text(text = text)
         }
+    }
+}
+
+@Composable
+fun DebouncedIconButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    debounceDuration: Long = 500L, // Duration in milliseconds
+    content: @Composable () -> Unit
+) {
+    var isClickable by remember { mutableStateOf(true) }
+    val coroutineScope = rememberCoroutineScope()
+
+    androidx.compose.material3.IconButton(
+        modifier = modifier,
+        onClick = {
+            if (isClickable) {
+                onClick()
+                isClickable = false
+                coroutineScope.launch {
+                    delay(debounceDuration)
+                    isClickable = true
+                }
+            }
+        },
+        enabled = isClickable // Disable the button if not clickable
+    ) {
+        content()
     }
 }

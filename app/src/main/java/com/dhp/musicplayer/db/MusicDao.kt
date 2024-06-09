@@ -69,10 +69,12 @@ interface MusicDao {
                 SortOrder.Ascending -> playlistPreviewsByNameAsc()
                 SortOrder.Descending -> playlistPreviewsByNameDesc()
             }
+
             PlaylistSortBy.SongCount -> when (sortOrder) {
                 SortOrder.Ascending -> playlistPreviewsByDateSongCountAsc()
                 SortOrder.Descending -> playlistPreviewsByDateSongCountDesc()
             }
+
             PlaylistSortBy.DateAdded -> when (sortOrder) {
                 SortOrder.Ascending -> playlistPreviewsByDateAddedAsc()
                 SortOrder.Descending -> playlistPreviewsByDateAddedDesc()
@@ -80,7 +82,8 @@ interface MusicDao {
         }
     }
 
-    @Query("""
+    @Query(
+        """
         UPDATE SongPlaylistMap SET position = 
           CASE 
             WHEN position < :fromPosition THEN position + 1
@@ -88,11 +91,26 @@ interface MusicDao {
             ELSE :toPosition
           END 
         WHERE playlistId = :playlistId AND position BETWEEN MIN(:fromPosition,:toPosition) and MAX(:fromPosition,:toPosition)
-    """)
+    """
+    )
     fun move(playlistId: Long, fromPosition: Int, toPosition: Int)
 
     @Query("DELETE FROM SongPlaylistMap WHERE playlistId = :id")
     fun clearPlaylist(id: Long)
+
+    @Transaction
+    @Query("SELECT * FROM Song WHERE likedAt IS NOT NULL ORDER BY likedAt DESC")
+    fun favorites(): Flow<List<Song>>
+
+    @Transaction
+    @Query("SELECT * FROM Song WHERE likedAt IS NOT NULL AND id = :songId")
+    fun isFavorite(songId: String?): Song?
+
+    @Query("SELECT likedAt FROM Song WHERE id = :songId")
+    fun likedAt(songId: String?): Flow<Long?>
+
+    @Query("UPDATE Song SET likedAt = :likedAt WHERE id = :songId")
+    fun favorite(songId: String, likedAt: Long?): Int
 
     @Transaction
     @Query("SELECT * FROM song WHERE id = :songId")

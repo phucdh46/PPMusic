@@ -13,6 +13,8 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DownloadForOffline
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Home
@@ -54,6 +56,8 @@ object IconApp {
     val NorthWest = Icons.Rounded.NorthWest
     val Lyrics = Icons.Rounded.Lyrics
     val Bedtime = Icons.Rounded.Bedtime
+    val Favorite = Icons.Rounded.Favorite
+    val FavoriteBorder = Icons.Rounded.FavoriteBorder
 
     val NextPlan = Icons.AutoMirrored.Rounded.NextPlan
     val PlaylistAdd = Icons.AutoMirrored.Rounded.PlaylistAdd

@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
@@ -74,6 +75,7 @@ fun MediaItemMenu(
     val download by LocalDownloadUtil.current.getDownload(mediaItem.mediaId)
         .collectAsState(initial = null)
     val song = mediaItem.toSong()
+    val likeAt by libraryViewModel.likeAt(mediaItem.mediaId).collectAsState(initial = null)
     MediaItemMenu(
         modifier = modifier,
         mediaItem = mediaItem,
@@ -103,7 +105,11 @@ fun MediaItemMenu(
                 false
             )
         },
-        onShowSleepTimer = onShowSleepTimer
+        onShowSleepTimer = onShowSleepTimer,
+        isFavourite = likeAt != null,
+        onFavouriteClick = {
+            libraryViewModel.favourite(mediaItem)
+        }
     )
 }
 
@@ -121,6 +127,8 @@ fun MediaItemMenu(
     onRemoveDownload: () -> Unit,
     onDownload: () -> Unit,
     onShowSleepTimer: (() -> Unit)? = null,
+    isFavourite: Boolean,
+    onFavouriteClick: () -> Unit = {},
 ) {
     val density = LocalDensity.current
     val playerConnection = LocalPlayerConnection.current
@@ -329,14 +337,26 @@ fun MediaItemMenu(
                             id = mediaItem.mediaId,
                             thumbnailUrl = mediaItem.mediaMetadata.artworkUri.thumbnail(
                                 thumbnailSizePx
-                            )
-                                ?.toString(),
+                            )?.toString(),
                             title = mediaItem.mediaMetadata.title.toString(),
                             subtitle = mediaItem.mediaMetadata.artist.toString(),
                             duration = null,
                             isOffline = mediaItem.toSong().isOffline,
                             bitmap = mediaItem.toSong().getBitmap(LocalContext.current),
                             thumbnailSizeDp = thumbnailSizeDp,
+                            trailingContent = {
+                                DebouncedIconButton(
+                                    onClick = {
+                                        onFavouriteClick()
+                                    },
+                                ) {
+                                    Icon(
+                                        imageVector = if (isFavourite) IconApp.Favorite else IconApp.FavoriteBorder,
+                                        contentDescription = null,
+                                        tint = if (isFavourite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                }
+                            },
                             modifier = Modifier
                                 .weight(1f)
                         )

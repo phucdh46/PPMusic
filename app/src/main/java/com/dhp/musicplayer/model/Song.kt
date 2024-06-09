@@ -39,4 +39,9 @@ data class Song (
             null
         }
     }
+    fun toggleLike(): Song {
+        return copy(
+            likedAt = if (likedAt == null) System.currentTimeMillis() else null
+        )
+    }
 }
