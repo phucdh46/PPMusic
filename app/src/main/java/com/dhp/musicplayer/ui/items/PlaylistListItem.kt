@@ -41,6 +41,22 @@ import com.dhp.musicplayer.ui.component.LoadingShimmerImageMaxSize
 import com.dhp.musicplayer.utils.CoverImagePlaylist
 
 @Composable
+fun DefaultListItem(
+    title: String,
+    subtitle: String,
+    modifier: Modifier = Modifier,
+    trailingContent: @Composable RowScope.() -> Unit = {},
+    thumbnailContent: @Composable () -> Unit,
+    ) = ListItem(
+    title = title,
+    subtitle = subtitle,
+    thumbnailContent =thumbnailContent,
+    trailingContent = trailingContent,
+    listItemHeight = PlayListItemHeight,
+    modifier = modifier
+)
+
+@Composable
 fun PlaylistListItem(
     playlistWithSongs: PlaylistWithSongs,
     modifier: Modifier = Modifier,

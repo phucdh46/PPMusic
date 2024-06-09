@@ -60,7 +60,7 @@ import com.dhp.musicplayer.ui.component.TopAppBar
 import com.dhp.musicplayer.ui.component.rememberBottomSheetState
 import com.dhp.musicplayer.ui.player.BottomSheetPlayer
 import com.dhp.musicplayer.ui.screens.home.navigation.FOR_YOU_ROUTE
-import com.dhp.musicplayer.ui.screens.library.navigation.LIBRARY_ROUTE
+import com.dhp.musicplayer.ui.screens.library.LIBRARY_ROUTE
 import com.dhp.musicplayer.ui.screens.search.navigation.SEARCH_ROUTE
 import com.dhp.musicplayer.ui.screens.search.navigation.navigateToSearchByText
 import com.dhp.musicplayer.ui.screens.settings.SettingsDialog

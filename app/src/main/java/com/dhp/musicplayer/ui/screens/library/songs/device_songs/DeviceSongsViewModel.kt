@@ -1,4 +1,4 @@
-package com.dhp.musicplayer.ui.screens.library.device_songs
+package com.dhp.musicplayer.ui.screens.library.songs.device_songs
 
 import android.app.Application
 import android.content.ContentUris
@@ -23,12 +23,11 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
-@HiltViewModel
 
+@HiltViewModel
 class DeviceSongsViewModel @Inject constructor(
     private val application: Application
-): ViewModel()
-{
+) : ViewModel() {
     private val _uiState = MutableLiveData<UiState<List<Song>>>(UiState.Loading)
     val uiState: LiveData<UiState<List<Song>>> get() = _uiState
 
@@ -72,7 +71,13 @@ class DeviceSongsViewModel @Inject constructor(
             val selection = "${MediaStore.Audio.AudioColumns.IS_MUSIC} = 1"
             val sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER
 
-            val musicCursor = application.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null, sortOrder)
+            val musicCursor = application.contentResolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                selection,
+                null,
+                sortOrder
+            )
 
             // Query the storage for music files
             musicCursor?.use { cursor ->
@@ -120,8 +125,9 @@ class DeviceSongsViewModel @Inject constructor(
                     val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         try {
                             application.contentResolver.loadThumbnail(
-                                audioId.toContentUri(), Size(640, 480), null)
-                        } catch(e: IOException) {
+                                audioId.toContentUri(), Size(640, 480), null
+                            )
+                        } catch (e: IOException) {
                             null
                         }
                     } else {
@@ -147,7 +153,7 @@ class DeviceSongsViewModel @Inject constructor(
                             id = audioId.toString(),
                             idLocal = audioId,
                             title = audioTitle,
-                            artistsText =  audioArtist,
+                            artistsText = audioArtist,
                             durationText = audioDuration.toString(),
                             thumbnailUrl = thumbnailUrl,
                             isOffline = true
@@ -155,7 +161,7 @@ class DeviceSongsViewModel @Inject constructor(
                     )
                 }
             }
-            Log.d("DHP","mDeviceMusicList: $mDeviceMusicList")
+            Log.d("DHP", "mDeviceMusicList: $mDeviceMusicList")
             mDeviceMusicList
         } catch (e: Exception) {
 //            e.printStackTrace()

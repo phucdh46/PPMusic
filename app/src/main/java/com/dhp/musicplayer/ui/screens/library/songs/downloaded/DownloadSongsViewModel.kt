@@ -1,4 +1,4 @@
-package com.dhp.musicplayer.ui.screens.library.downloaded
+package com.dhp.musicplayer.ui.screens.library.songs.downloaded
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
