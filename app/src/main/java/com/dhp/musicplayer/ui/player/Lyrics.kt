@@ -36,6 +36,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
+import com.dhp.musicplayer.R
 import com.dhp.musicplayer.extensions.verticalFadingEdge
 import com.dhp.musicplayer.kugou.KuGou
 import com.dhp.musicplayer.kugou.findCurrentLineIndex
@@ -140,7 +142,7 @@ fun Lyrics(
                     .align(Alignment.Center)
             ) {
                 Text(
-                    text = "An error has occurred while fetching the synchronized lyrics",
+                    text = stringResource(R.string.lyric_get_data_error),
                     style = typography.titleMedium.copy(color = MaterialTheme.colorScheme.errorContainer),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
@@ -157,7 +159,7 @@ fun Lyrics(
                     .align(Alignment.Center)
             ) {
                 Text(
-                    text = "Lyrics are not available for this song",
+                    text = stringResource(R.string.lyric_get_data_not_available),
                     style = typography.titleMedium.copy(color = MaterialTheme.colorScheme.onBackground),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
@@ -290,7 +292,7 @@ fun Lyrics(
                             }
                         }
                     ) {
-                        Text(text = "Auto", style = typography.labelMedium)
+                        Text(text = stringResource(R.string.lyric_text_auto_mode), style = typography.labelMedium)
                     }
                 }
 

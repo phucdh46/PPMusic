@@ -9,6 +9,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.ListThumbnailSize
 import com.dhp.musicplayer.enums.LibrarySongsDetailType
 import com.dhp.musicplayer.ui.AppState
@@ -49,8 +51,8 @@ fun LibrarySongsScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         DefaultListItem(
-            title = "Favourite",
-            subtitle = "My favorite songs",
+            title = stringResource(id = R.string.title_library_favourites),
+            subtitle = stringResource(id = R.string.subtitle_library_favourites),
             thumbnailContent = {
                 Icon(
                     imageVector = IconApp.Favorite,
@@ -67,8 +69,8 @@ fun LibrarySongsScreen(
         )
 
         DefaultListItem(
-            title = "Downloaded",
-            subtitle = "The songs you downloaded recently",
+            title = stringResource(id = R.string.title_library_downloaded),
+            subtitle = stringResource(id = R.string.subtitle_library_downloaded),
             thumbnailContent = {
                 Icon(
                     imageVector = IconApp.DownloadForOffline,
@@ -84,8 +86,8 @@ fun LibrarySongsScreen(
         )
 
         DefaultListItem(
-            title = "Device songs",
-            subtitle = "Song storage on device",
+            title = stringResource(id = R.string.title_library_device_songs),
+            subtitle = stringResource(id = R.string.subtitle_library_device_songs),
             thumbnailContent = {
                 Icon(
                     imageVector = IconApp.PhoneAndroid,

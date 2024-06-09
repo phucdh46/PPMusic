@@ -86,10 +86,7 @@ fun PlaylistItem(
 //                .background(color = colorPalette.background1)
                 .requiredSize(thumbnailSizeDp)
         ) {
-            thumbnailContent(
-                modifier = Modifier
-                    .fillMaxSize()
-            )
+            thumbnailContent(Modifier.fillMaxSize())
 
 //            songCount?.let {
 //                Text(

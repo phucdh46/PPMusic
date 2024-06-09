@@ -75,11 +75,11 @@ fun AddSongToPlaylist(
                 Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
                     Text(
                         text = buildAnnotatedString {
-                            append("Add ")
+                            append(stringResource(R.string.create_playlist_add))
                             withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                                 append(mediaItem.toSong().title)
                             }
-                            append(" to playlist")
+                            append(stringResource(R.string.create_playlist_to_playlist))
                         },
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(20.dp)

@@ -12,6 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.dhp.musicplayer.R
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.LocalWindowInsets
 import com.dhp.musicplayer.ui.screens.library.playlists.LibraryPlaylistsScreen
@@ -23,7 +25,7 @@ import kotlinx.coroutines.launch
 fun LibraryScreen(
     appState: AppState,
 ) {
-    val tabTitles = listOf("Songs", "Playlists")
+    val tabTitles = listOf(stringResource(R.string.title_tabs_songs), stringResource(R.string.title_tabs_playlists))
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
 

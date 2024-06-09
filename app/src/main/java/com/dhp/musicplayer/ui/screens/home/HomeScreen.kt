@@ -34,8 +34,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.dhp.musicplayer.R
 import com.dhp.musicplayer.constant.AlbumThumbnailSizeDp
 import com.dhp.musicplayer.constant.ArtistThumbnailSizeDp
 import com.dhp.musicplayer.constant.Dimensions
@@ -183,7 +185,7 @@ internal fun ForYouScreen(
                 .verticalScroll(scrollState)
         ) {
 
-            TextTitle(text = "You might also like".uppercase())
+            TextTitle(text = stringResource(R.string.home_songs_title).uppercase())
             LazyHorizontalGrid(
                 state = quickPicksLazyGridState,
                 rows = GridCells.Fixed(4),
@@ -238,13 +240,12 @@ internal fun ForYouScreen(
             }
 
             album?.let { album ->
-                TextTitle(text = "Recommended albums".uppercase())
+                TextTitle(text = stringResource(R.string.home_albums_title).uppercase())
                 LazyRow() {
                     items(
                         items = album,
                         key = { it.key }
                     ) { album ->
-                        Logg.d("LazyRow")
                         AlbumItem(
                             album = album,
                             thumbnailSizePx = AlbumThumbnailSizeDp.px,
@@ -260,7 +261,7 @@ internal fun ForYouScreen(
             }
 
             artist?.let { artists ->
-                TextTitle(text = "Similar Artists".uppercase())
+                TextTitle(text = stringResource(R.string.home_artists_title).uppercase())
                 LazyRow {
                     items(
                         items = artists,
@@ -282,7 +283,7 @@ internal fun ForYouScreen(
 
             playlist?.let { playlists ->
                 TextTitle(
-                    text = "Recommended Playlists".uppercase(),
+                    text = stringResource(R.string.home_playlists_title).uppercase(),
                     modifier = Modifier
                         .padding(top = 24.dp, bottom = 8.dp)
                 )

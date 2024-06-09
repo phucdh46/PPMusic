@@ -69,13 +69,13 @@ internal fun MiniPlayerPager(
             }
     }
     HorizontalPager(
-        count = playbackQueue?.size ?: 0,
+        count = playbackQueue.size ?: 0,
         modifier = modifier,
         state = pagerState,
-        key = { playbackQueue?.getOrNull(it) ?: it },
+        key = { playbackQueue.getOrNull(it) ?: it },
         verticalAlignment = verticalAlignment,
     ) { page ->
-        val currentAudio = playbackQueue?.getOrNull(page)
+        val currentAudio = playbackQueue.getOrNull(page)
 
         val pagerMod = Modifier.graphicsLayer {
             val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue

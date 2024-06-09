@@ -124,13 +124,13 @@ fun TextFieldDialog(
 
 @Composable
 fun TextFieldDialog(
+    modifier: Modifier = Modifier,
     hintText: String,
     title: (@Composable () -> Unit)? = null,
     onDismiss: () -> Unit,
     onDone: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    cancelText: String = "Cancel",
-    doneText: String = "Done",
+    cancelText: String = stringResource(com.dhp.musicplayer.R.string.cancel_button_dialog),
+    doneText: String = stringResource(com.dhp.musicplayer.R.string.done_button_dialog),
     initialTextInput: String = "",
     singleLine: Boolean = true,
     maxLines: Int = 1,
@@ -235,8 +235,8 @@ fun ConfirmationDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
-    cancelText: String = "Cancel",
-    confirmText: String = "Confirm",
+    cancelText: String = stringResource(com.dhp.musicplayer.R.string.cancel_button_dialog),
+    confirmText: String = stringResource(com.dhp.musicplayer.R.string.confirm_button_dialog),
     onCancel: () -> Unit = onDismiss,
     title: (@Composable () -> Unit)? = null,
     icon: (@Composable () -> Unit)? = null,
