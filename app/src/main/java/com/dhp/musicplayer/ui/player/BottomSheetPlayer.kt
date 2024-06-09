@@ -168,7 +168,8 @@ fun BottomSheetPlayer(
                             menuState.show {
                                 MediaItemMenu(
                                     onDismiss = menuState::dismiss,
-                                    mediaItem = mediaItem!!
+                                    mediaItem = mediaItem!!,
+                                    onShowSleepTimer = {}
                                 )
                             }
                         })

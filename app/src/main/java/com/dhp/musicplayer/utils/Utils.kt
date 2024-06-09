@@ -233,3 +233,14 @@ fun CoverImageSongOnOrOffline(
         )
     }
 }
+
+fun isValidHour(input: String): Boolean {
+    val hourInt = input.toIntOrNull()
+    return hourInt != null && hourInt in 0..23
+}
+
+fun isValidMinute(input: String): Boolean {
+    val minuteInt = input.toIntOrNull()
+    return minuteInt != null && minuteInt in 0..59
+}
+

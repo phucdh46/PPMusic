@@ -20,6 +20,8 @@ import com.dhp.musicplayer.innertube.InnertubeApiService
 import com.dhp.musicplayer.innertube.model.NavigationEndpoint
 import com.dhp.musicplayer.innertube.model.bodies.NextBody
 import com.dhp.musicplayer.model.Song
+import com.dhp.musicplayer.utils.TimerJob
+import com.dhp.musicplayer.utils.timer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -72,6 +74,8 @@ class PlayerConnection(
 
     private val _currentTimelineWindows = MutableStateFlow(player.currentTimeline.windows)
     val currentTimelineWindows: StateFlow<List<Timeline.Window>> = _currentTimelineWindows
+
+    var timerJob: TimerJob? = null
 
     init {
         player.addListener(this)
@@ -211,6 +215,20 @@ class PlayerConnection(
     fun stopRadio() {
         isLoadingRadio = false
         radioJob?.cancel()
+    }
+
+    fun startSleepTimer(delayMillis: Long) {
+        timerJob?.cancel()
+        timerJob = coroutineScope.timer(delayMillis) {
+            coroutineScope.launch(Dispatchers.Main) {
+                player.pause()
+            }
+        }
+    }
+
+    fun cancelSleepTimer() {
+        timerJob?.cancel()
+        timerJob = null
     }
 
     fun dispose() {
