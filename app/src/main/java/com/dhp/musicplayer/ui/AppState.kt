@@ -15,8 +15,8 @@ import com.dhp.musicplayer.navigation.TopLevelDestination.LIBRARY
 import com.dhp.musicplayer.navigation.TopLevelDestination.SEARCH
 import com.dhp.musicplayer.ui.screens.home.navigation.FOR_YOU_ROUTE
 import com.dhp.musicplayer.ui.screens.home.navigation.navigateToForYou
-import com.dhp.musicplayer.ui.screens.library.navigation.LIBRARY_ROUTE
-import com.dhp.musicplayer.ui.screens.library.navigation.navigateToLibrary
+import com.dhp.musicplayer.ui.screens.library.LIBRARY_ROUTE
+import com.dhp.musicplayer.ui.screens.library.navigateToLibrary
 import com.dhp.musicplayer.ui.screens.search.navigation.SEARCH_ROUTE
 import com.dhp.musicplayer.ui.screens.search.navigation.navigateToSearch
 

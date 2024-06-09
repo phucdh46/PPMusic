@@ -8,7 +8,8 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.dhp.musicplayer.ui.screens.home.navigation.FOR_YOU_ROUTE
-import com.dhp.musicplayer.ui.screens.library.navigation.LIBRARY_ROUTE
+import com.dhp.musicplayer.ui.screens.library.LIBRARY_ROUTE
+import com.dhp.musicplayer.ui.screens.library.songs.LIBRARY_SONGS_DETAIL_ROUTE
 import com.dhp.musicplayer.ui.screens.playlist.navigation.LOCAL_PLAYLIST_DETAIL_ROUTE
 import com.dhp.musicplayer.ui.screens.playlist.navigation.ONLINE_PLAYLIST_DETAIL_ROUTE
 import com.dhp.musicplayer.ui.screens.search.mood_genres.MOOD_AND_GENRES_ROUTE
@@ -70,5 +71,5 @@ fun NavGraphBuilder.composableWithoutAnimation(
 val ScreensShowBottomNavigation = listOf(FOR_YOU_ROUTE, SEARCH_ROUTE, LIBRARY_ROUTE)
 val ScreensShowBackOnTopAppBar = listOf(SEARCH_BY_TEXT_ROUTE, LOCAL_PLAYLIST_DETAIL_ROUTE)
 val ScreensShowSearchOnTopAppBar = listOf(FOR_YOU_ROUTE, SEARCH_ROUTE, LIBRARY_ROUTE)
-val ScreensNotShowTopAppBar = listOf(SEARCH_BY_TEXT_ROUTE, LOCAL_PLAYLIST_DETAIL_ROUTE, ONLINE_PLAYLIST_DETAIL_ROUTE, SEARCH_RESULT_ROUTE, MOOD_AND_GENRES_ROUTE)
+val ScreensNotShowTopAppBar = listOf(SEARCH_BY_TEXT_ROUTE, LOCAL_PLAYLIST_DETAIL_ROUTE, ONLINE_PLAYLIST_DETAIL_ROUTE, SEARCH_RESULT_ROUTE, MOOD_AND_GENRES_ROUTE, LIBRARY_SONGS_DETAIL_ROUTE)
 

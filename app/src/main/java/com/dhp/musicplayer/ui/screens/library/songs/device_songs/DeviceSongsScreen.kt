@@ -1,4 +1,4 @@
-package com.dhp.musicplayer.ui.screens.library.device_songs
+package com.dhp.musicplayer.ui.screens.library.songs.device_songs
 
 import android.Manifest
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -29,6 +29,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -165,6 +166,23 @@ fun DeviceSongsScreen(
         LazyColumn(
             state = lazyListState,
         ) {
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = pluralStringResource(
+                            R.plurals.n_song,
+                            songs.size,
+                            songs.size
+                        ),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                    Spacer(Modifier.weight(1f))
+                }
+            }
             items(items = songsAndBitmap, key = { it.first.id }) { songsAndBitmap ->
                 DeviceSongItem(
                     song = songsAndBitmap.first,
