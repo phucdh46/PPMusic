@@ -6,7 +6,7 @@ import androidx.navigation.NavOptions
 import com.dhp.musicplayer.navigation.composableWithoutAnimation
 import com.dhp.musicplayer.ui.AppState
 
-const val LIBRARY_ROUTE = "library_route}"
+const val LIBRARY_ROUTE = "library_route"
 
 fun NavController.navigateToLibrary(navOptions: NavOptions? = null) {
     navigate(LIBRARY_ROUTE, navOptions)

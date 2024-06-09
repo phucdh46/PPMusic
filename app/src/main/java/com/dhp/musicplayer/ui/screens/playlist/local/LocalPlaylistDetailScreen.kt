@@ -161,8 +161,11 @@ fun LocalPlaylistDetailScreen(
 
     if (isRenaming) {
         TextFieldDialog(
-            hintText = "Enter the playlist name",
-            initialTextInput = playlistWithSongs?.playlist?.name.orEmpty(),
+            hintText = stringResource(id = R.string.hint_rename_dialog),
+            title = {
+                Text(text = stringResource(R.string.title_rename_dialog).uppercase(), style = typography.titleMedium)
+            },
+            initialTextInput = playlistWithSongs.playlist.name,
             onDismiss = { isRenaming = false },
             onDone = { text ->
                 onEditPlaylist(text)
@@ -176,21 +179,14 @@ fun LocalPlaylistDetailScreen(
 
     if (isDeleting) {
         ConfirmationDialog(
-            text = "Do you really want to delete this playlist: ${playlistWithSongs?.playlist?.name}?",
+            text = stringResource(id = R.string.body_delete_dialog, playlistWithSongs.playlist.name),
             onDismiss = { isDeleting = false },
             onConfirm = {
                 onDeletePlaylist()
             },
             title = {
-//                Text(text = "Delete", style = MaterialTheme.typography.headlineSmall)
+                Text(text = stringResource(id = R.string.title_delete_dialog).uppercase(), style = MaterialTheme.typography.titleMedium)
             },
-            icon = {
-                Icon(
-                    imageVector = IconApp.Delete,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
         )
     }
 
@@ -327,7 +323,7 @@ fun SongListDetailScreen(
                                 modifier = Modifier.size(ButtonDefaults.IconSize)
                             )
                             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                            Text("Play")
+                            Text(text = stringResource(id = R.string.playlist_text_play_button))
                         }
 
                         OutlinedButton(
@@ -343,7 +339,7 @@ fun SongListDetailScreen(
                                 modifier = Modifier.size(ButtonDefaults.IconSize)
                             )
                             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                            Text("shuffle")
+                            Text(text = stringResource(id = R.string.playlist_text_shuffle_button))
                         }
                     }
                 }

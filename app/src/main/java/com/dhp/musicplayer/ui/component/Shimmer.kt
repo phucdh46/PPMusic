@@ -1,15 +1,10 @@
 package com.dhp.musicplayer.ui.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -99,7 +93,7 @@ fun AlbumItemError(
     thumbnailSizeDp: Dp = AlbumThumbnailSizeDp,
     alternative: Boolean = false,
     message: String = stringResource(id = R.string.error_message),
-    ) {
+) {
 
     ItemContainer(
         alternative = alternative,
@@ -147,45 +141,6 @@ fun AlbumItemPlaceholder(
             TextPlaceholder()
 
             TextPlaceholder()
-        }
-    }
-}
-
-
-
-@Composable
-private fun ShimmerRow() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Top
-    ) {
-        Box(
-            modifier = Modifier
-                .size(60.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .shimmer()
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(.3f)
-                    .height(20.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .shimmer()
-
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(.5f)
-                    .height(16.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .shimmer()
-
-            )
-
         }
     }
 }

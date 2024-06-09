@@ -13,9 +13,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.dhp.musicplayer.R
 import com.dhp.musicplayer.enums.LibrarySongsDetailType
 import com.dhp.musicplayer.extensions.toEnum
 import com.dhp.musicplayer.ui.AppState
@@ -44,17 +46,17 @@ fun LibrarySongsDetailScreen(
     ) {
         when (type.toEnum(LibrarySongsDetailType.FAVOURITE)) {
             LibrarySongsDetailType.FAVOURITE -> {
-                title = "Favourites"
+                title = stringResource(id = R.string.title_library_favourites)
                 FavouritesScreen()
             }
 
             LibrarySongsDetailType.DOWNLOADED -> {
-                title = "Downloaded"
+                title = stringResource(id = R.string.title_library_downloaded)
                 DownloadSongsScreen()
             }
 
             LibrarySongsDetailType.DEVICE_SONGS -> {
-                title = "Device Songs"
+                title = stringResource(id = R.string.title_library_device_songs)
                 DeviceSongsScreen()
             }
 

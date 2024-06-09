@@ -55,7 +55,6 @@ import com.dhp.musicplayer.ui.items.PlaylistGridItem
 import com.dhp.musicplayer.ui.items.PlaylistListItem
 import com.dhp.musicplayer.ui.screens.library.LibraryViewModel
 import com.dhp.musicplayer.ui.screens.playlist.navigation.navigateToLocalPlaylistDetail
-import com.dhp.musicplayer.utils.Logg
 import com.dhp.musicplayer.utils.rememberEnumPreference
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -95,9 +94,9 @@ fun LibraryPlaylistsScreen(
 
     if (isRenaming) {
         TextFieldDialog(
-            hintText = "Enter the playlist name",
+            hintText = stringResource(R.string.hint_rename_dialog),
             title = {
-                Text(text = "Rename".uppercase(), style = MaterialTheme.typography.titleMedium)
+                Text(text = stringResource(R.string.title_rename_dialog).uppercase(), style = MaterialTheme.typography.titleMedium)
             },
             initialTextInput = currentSelectPlaylist?.name ?: "",
             onDismiss = { isRenaming = false },
@@ -113,21 +112,14 @@ fun LibraryPlaylistsScreen(
 
     if (isDeleting) {
         ConfirmationDialog(
-            text = "Do you really want to delete this playlist: ${currentSelectPlaylist?.name}?",
+            text = stringResource(id = R.string.body_delete_dialog, currentSelectPlaylist?.name?:""),
             onDismiss = { isDeleting = false },
             onConfirm = {
                 currentSelectPlaylist?.let { viewModel.deletePlaylist(it) }
             },
             title = {
-                Text(text = "Delete".uppercase(), style = MaterialTheme.typography.titleMedium)
+                Text(text = stringResource(id = R.string.title_delete_dialog).uppercase(), style = MaterialTheme.typography.titleMedium)
             },
-//            icon = {
-//                Icon(
-//                    imageVector = IconApp.Delete,
-//                    contentDescription = null,
-//                    tint = MaterialTheme.colorScheme.error
-//                )
-//            }
         )
     }
 
@@ -235,7 +227,7 @@ fun LibraryPlaylistsScreen(
                                             expanded = expanded,
                                             onDismissRequest = { expanded = false }) {
                                             DropdownMenuItem(
-                                                text = { Text("Edit") },
+                                                text = { Text(text = stringResource(id = R.string.edit_menu_dialog)) },
                                                 onClick = {
                                                     currentSelectPlaylist = playlistPreview.playlist
                                                     isRenaming = true
@@ -243,7 +235,7 @@ fun LibraryPlaylistsScreen(
                                                 }
                                             )
                                             DropdownMenuItem(
-                                                text = { Text("Delete") },
+                                                text = { Text(text = stringResource(id = R.string.delete_menu_dialog)) },
                                                 onClick = {
                                                     currentSelectPlaylist = playlistPreview.playlist
                                                     isDeleting = true
@@ -257,7 +249,6 @@ fun LibraryPlaylistsScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        Logg.d("navigateToPlaylistDetail: ${playlistPreview.playlist.id}")
                                         appState.navController.navigateToLocalPlaylistDetail(
                                             playlistId = playlistPreview.playlist.id
                                         )

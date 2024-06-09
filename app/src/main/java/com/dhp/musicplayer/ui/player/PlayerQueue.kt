@@ -36,10 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import com.dhp.musicplayer.R
 import com.dhp.musicplayer.extensions.move
 import com.dhp.musicplayer.extensions.toOnlineAndLocalSong
 import com.dhp.musicplayer.extensions.windows
@@ -129,7 +131,7 @@ fun PlayerQueue(
                     .fillMaxSize()
             ) {
                 Text(
-                    text = "Next",
+                    text = stringResource(R.string.player_queue_next_text).uppercase(),
                     modifier = Modifier
                         .align(Alignment.Center)
                 )
@@ -157,7 +159,7 @@ fun PlayerQueue(
                     modifier = Modifier
                         .padding(vertical = 16.dp)
                         .fillMaxWidth(),
-                    text = "Next",
+                    text = stringResource(R.string.player_queue_next_text).uppercase(),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )

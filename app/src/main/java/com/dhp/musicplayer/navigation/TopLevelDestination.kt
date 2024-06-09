@@ -13,7 +13,7 @@ enum class TopLevelDestination(
     FOR_YOU(
     selectedIcon = IconApp.Home,
     unselectedIcon = IconApp.Home,
-    iconTextId = R.string.feature_foryou_title,
+    iconTextId = R.string.feature_home_title,
     titleTextId = R.string.app_name,
     ),
     SEARCH(

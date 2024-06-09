@@ -248,10 +248,10 @@ fun ArtistDetailScreen(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    TextTitle(text = "Songs")
+                    TextTitle(text = stringResource(id = R.string.artist_songs_title))
                     artistPage.songsEndpoint?.let {
                         Text(
-                            text = "View all",
+                            text = stringResource(id = R.string.view_all),
                             style = typography.bodyMedium,
                             modifier = sectionTextModifier
                                 .clickable(onClick = {
@@ -315,11 +315,11 @@ fun ArtistDetailScreen(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    TextTitle(text = "Albums")
+                    TextTitle(text = stringResource(id = R.string.artist_albums_title))
 
                     artistPage.albumsEndpoint?.let {
                         Text(
-                            text = "View all",
+                            text = stringResource(id = R.string.view_all),
                             style = typography.bodyMedium,
                             modifier = sectionTextModifier
                                 .clickable(onClick = {
@@ -361,11 +361,11 @@ fun ArtistDetailScreen(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    TextTitle(text = "Singles")
+                    TextTitle(text = stringResource(id = R.string.artist_single_title))
 
                     artistPage.singlesEndpoint?.let {
                         Text(
-                            text = "View all",
+                            text = stringResource(id = R.string.view_all),
                             style = typography.bodyMedium,
                             modifier = sectionTextModifier
                                 .clickable(onClick = {

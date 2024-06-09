@@ -1,13 +1,12 @@
 <resources>
     <string name="app_name">PPMusic</string>
 
-    <string name="feature_foryou_title">For you</string>
+    <!--Home-->
+    <string name="feature_home_title">For you</string>
     <string name="feature_search_title">Search</string>
     <string name="feature_library_title">Library</string>
 
-    <string name="feature_settings_top_app_bar_action_icon_description">Settings</string>
-    <string name="feature_settings_top_app_bar_navigation_icon_description">Search</string>
-
+    <!--Setting-->
     <string name="feature_settings_title">Settings</string>
     <string name="feature_settings_dismiss_dialog_button_text">OK</string>
     <string name="feature_settings_dark_mode_preference">Theme setting</string>
@@ -16,18 +15,13 @@
     <string name="feature_settings_dark_mode_config_light">Light</string>
     <string name="feature_settings_dark_mode_config_dark">Dark</string>
 
-    <string name="slash">/</string>
-    <string name="error_unknown">Unknown error</string>
-    <string name="create_playlist">Create playlist</string>
-    <string name="playlist_title">Playlist</string>
-
-    <string name="loading_data">Loading data</string>
-    <string name="empty_data">"No available data"</string>
+    <!--empty screen-->
     <string name="empty_recent_searches">There are no recent searches</string>
     <string name="empty_playlists">There are no playlists</string>
     <string name="empty_songs">There are no songs</string>
     <string name="empty_moon_and_genres">There are moon and genres</string>
 
+    <!--permission-->
     <string name="permission_not_available">Read file and media permission not available</string>
     <string name="permission_denied">The read file and media permission is important for this app.
  Please grant the permission.</string>
@@ -55,6 +49,84 @@
     <string name="filter_playlists">Playlists</string>
     <string name="filter_community_playlists">Community playlists</string>
     <string name="filter_featured_playlists">Featured playlists</string>
+
+    <!--artist-->
+    <string name="artist_songs_title">Songs</string>
+    <string name="artist_albums_title">Albums</string>
+    <string name="artist_single_title">Singles</string>
+    <string name="view_all">View all</string>
+
+    <!--Home-->
+    <string name="home_songs_title">You might also like</string>
+    <string name="home_albums_title">Recommended albums</string>
+    <string name="home_artists_title">Similar Artists</string>
+    <string name="home_playlists_title">Recommended Playlists</string>
+
+    <!--dialog-->
+    <string name="hint_rename_dialog">Enter the playlist name</string>
+    <string name="title_rename_dialog">Rename</string>
+    <string name="body_delete_dialog">Do you really want to delete this playlist: %1$s?</string>
+    <string name="title_delete_dialog">Delete</string>
+    <string name="edit_menu_dialog">Edit</string>
+    <string name="delete_menu_dialog">Delete</string>
+    <string name="create_playlist">Create playlist</string>
+    <string name="create_playlist_add">Add </string>
+    <string name="create_playlist_to_playlist"> to playlist</string>
+    <string name="cancel_button_dialog">Cancel</string>
+    <string name="confirm_button_dialog">Confirm</string>
+    <string name="done_button_dialog">Done</string>
+
+    <!--library-->
+    <string name="title_library_favourites">Favourites</string>
+    <string name="subtitle_library_favourites">My favorite songs</string>
+    <string name="title_library_downloaded">Downloaded</string>
+    <string name="subtitle_library_downloaded">The songs you downloaded recently</string>
+    <string name="title_library_device_songs">Device Songs</string>
+    <string name="subtitle_library_device_songs">Song storage on device</string>
+    <string name="title_tabs_songs">Songs</string>
+    <string name="title_tabs_playlists">Playlists</string>
+    <string name="slash">/</string>
+
+    <!--playlist-->
+    <string name="playlist_text_play_button">Play</string>
+    <string name="playlist_text_shuffle_button">Shuffle</string>
+
+    <!--lyric-->
+    <string name="lyric_get_data_error">An error has occurred while fetching the synchronized lyrics</string>
+    <string name="lyric_get_data_not_available">Lyrics are not available for this song</string>
+    <string name="lyric_text_auto_mode">Auto</string>
+
+   <!-- player queue-->
+    <string name="player_queue_next_text">Next</string>
+
+    <!--thumbnail-->
+    <string name="network_error">A network error has occurred</string>
+    <string name="format_not_found">Couldn\"t find a playable audio format</string>
+    <string name="unplayable_exception">The original video source of this song has been deleted</string>
+    <string name="login_required_exception">This song cannot be played due to server restrictions</string>
+    <string name="video_id_mismatch_exception">The returned video id doesn\"t match the requested one</string>
+    <string name="unknown_error">An unknown playback error has occurred</string>
+
+    <!-- menu media item-->
+    <string name="title_stop_sleep_timer">Do you want to stop the sleep timer?</string>
+    <string name="confirm_text_stop_stop_sleep_timer">Stop</string>
+    <string name="cancel_text_stop_stop_sleep_timer">No</string>
+    <string name="title_set_sleep_timer">Set sleep timer</string>
+    <string name="text_enter_hours_sleep_timer">Enter hours</string>
+    <string name="hint_enter_hours_sleep_timer">Invalid hour (0–23)</string>
+    <string name="text_enter_minutes_sleep_timer">Enter minutes</string>
+    <string name="hint_enter_minutes_sleep_timer">Invalid minute (0–59)</string>
+    <string name="confirm_text_enter_sleep_timer">Set</string>
+    <string name="cancel_text_enter_sleep_timer">Cancel</string>
+    <string name="title_sleep_timer">Sleep timer</string>
+    <string name="title_turn_off_sleep_timer">Turn off sleep timer</string>
+    <string name="menu_play_next">Play next</string>
+    <string name="menu_enqueue">Enqueue</string>
+    <string name="menu_add_to_playlist">Add to playlist</string>
+    <string name="menu_remove_from_playlist">Remove from playlist</string>
+    <string name="menu_remove_download">Remove Download</string>
+    <string name="menu_downloading">Downloading</string>
+    <string name="menu_download">Download</string>
 
     <plurals name="n_song">
         <item quantity="one">%d song</item>

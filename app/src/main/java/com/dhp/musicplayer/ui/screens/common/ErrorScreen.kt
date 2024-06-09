@@ -1,6 +1,5 @@
 package com.dhp.musicplayer.ui.screens.common
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dhp.musicplayer.R
@@ -46,14 +44,4 @@ fun ErrorScreen(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun ErrorScreenPreview() {
-    ErrorScreen(
-        errorMessage = "An error occurred. Please try again.",
-        onRetry = { /* Handle retry logic here */ }
-    )
 }
