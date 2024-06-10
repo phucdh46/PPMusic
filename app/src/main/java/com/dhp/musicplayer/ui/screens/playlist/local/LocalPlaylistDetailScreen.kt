@@ -73,6 +73,7 @@ import com.dhp.musicplayer.ui.component.TopAppBarDetailScreen
 import com.dhp.musicplayer.ui.items.SongItem
 import com.dhp.musicplayer.ui.screens.common.ErrorScreen
 import com.dhp.musicplayer.utils.CoverImagePlaylist
+import com.dhp.musicplayer.utils.showSnackBar
 import com.dhp.musicplayer.utils.toSongsWithBitmap
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,11 +117,14 @@ fun LocalPlaylistDetailScreen(
 
             is UiState.Success -> {
                 LocalPlaylistDetailScreen(
+                    appState = appState,
                     thumbnailSizeDp = thumbnailSizeDp,
                     playlistWithSongs = (uiState as UiState.Success).data,
                     navController = appState.navController,
                     onEditPlaylist = { name ->
-                        viewModel.updatePlaylist(name)
+                        viewModel.updatePlaylist(name) { message ->
+                            appState.showSnackBar(message = message)
+                        }
                     },
                     onDeletePlaylist = {
                         viewModel.deletePlaylist()
@@ -146,6 +150,7 @@ fun LocalPlaylistDetailScreen(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun LocalPlaylistDetailScreen(
+    appState: AppState,
     thumbnailSizeDp: Dp,
     playlistWithSongs: PlaylistWithSongs,
     navController: NavController,
@@ -163,7 +168,10 @@ fun LocalPlaylistDetailScreen(
         TextFieldDialog(
             hintText = stringResource(id = R.string.hint_rename_dialog),
             title = {
-                Text(text = stringResource(R.string.title_rename_dialog).uppercase(), style = typography.titleMedium)
+                Text(
+                    text = stringResource(R.string.title_rename_dialog).uppercase(),
+                    style = typography.titleMedium
+                )
             },
             initialTextInput = playlistWithSongs.playlist.name,
             onDismiss = { isRenaming = false },
@@ -179,13 +187,19 @@ fun LocalPlaylistDetailScreen(
 
     if (isDeleting) {
         ConfirmationDialog(
-            text = stringResource(id = R.string.body_delete_dialog, playlistWithSongs.playlist.name),
+            text = stringResource(
+                id = R.string.body_delete_dialog,
+                playlistWithSongs.playlist.name
+            ),
             onDismiss = { isDeleting = false },
             onConfirm = {
                 onDeletePlaylist()
             },
             title = {
-                Text(text = stringResource(id = R.string.title_delete_dialog).uppercase(), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = stringResource(id = R.string.title_delete_dialog).uppercase(),
+                    style = MaterialTheme.typography.titleMedium
+                )
             },
         )
     }
@@ -206,9 +220,11 @@ fun LocalPlaylistDetailScreen(
         onLongClick = { index, song ->
             menuState.show {
                 MediaItemMenu(
+                    appState = appState,
                     onDismiss = menuState::dismiss,
                     mediaItem = song.asMediaItem(),
-                    onRemoveSongFromPlaylist = { onRemoveFromPlaylist(index, song) }
+                    onRemoveSongFromPlaylist = { onRemoveFromPlaylist(index, song) },
+                    onShowMessageAddSuccess = appState::showSnackBar
                 )
             }
         },
@@ -218,9 +234,11 @@ fun LocalPlaylistDetailScreen(
                     onClick = {
                         menuState.show {
                             MediaItemMenu(
+                                appState = appState,
                                 onDismiss = menuState::dismiss,
                                 mediaItem = song.asMediaItem(),
-                                onRemoveSongFromPlaylist = { onRemoveFromPlaylist(index, song) }
+                                onRemoveSongFromPlaylist = { onRemoveFromPlaylist(index, song) },
+                                onShowMessageAddSuccess = appState::showSnackBar
                             )
                         }
                     }

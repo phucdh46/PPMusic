@@ -31,7 +31,7 @@ data class MoodAndGenres(
 
         fun fromMusicNavigationButtonRenderer(renderer: MusicNavigationButtonRenderer): Item? {
             return Item(
-                title = renderer.buttonText.runs?.firstOrNull()?.text ?: return null,
+                title = renderer.buttonText.runs.firstOrNull()?.text ?: return null,
                 stripeColor = renderer.solid?.leftStripeColor ?: return null,
                 endpoint = renderer.clickCommand.browseEndpoint ?: return null,
             )

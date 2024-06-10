@@ -46,6 +46,7 @@ import com.dhp.musicplayer.ui.screens.search.search_text.SearchToolbar
 import com.dhp.musicplayer.utils.getSubTitleTextInnertubeItem
 import com.dhp.musicplayer.utils.getThumbnailInnertubeItem
 import com.dhp.musicplayer.utils.getTitleTextInnertubeItem
+import com.dhp.musicplayer.utils.showSnackBar
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
@@ -139,8 +140,10 @@ fun SearchResultScreen(
                                             onClick = {
                                                 menuState.show {
                                                     MediaItemMenu(
+                                                        appState = appState,
                                                         onDismiss = menuState::dismiss,
-                                                        mediaItem = item.asMediaItem
+                                                        mediaItem = item.asMediaItem,
+                                                        onShowMessageAddSuccess = appState::showSnackBar
                                                     )
                                                 }
                                             }
@@ -163,8 +166,10 @@ fun SearchResultScreen(
                                         is Innertube.SongItem -> {
                                             menuState.show {
                                                 MediaItemMenu(
+                                                    appState = appState,
                                                     onDismiss = menuState::dismiss,
-                                                    mediaItem = item.asMediaItem
+                                                    mediaItem = item.asMediaItem,
+                                                    onShowMessageAddSuccess = appState::showSnackBar
                                                 )
                                             }
                                         }

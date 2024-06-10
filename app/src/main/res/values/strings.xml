@@ -75,6 +75,10 @@
     <string name="cancel_button_dialog">Cancel</string>
     <string name="confirm_button_dialog">Confirm</string>
     <string name="done_button_dialog">Done</string>
+    <string name="add_to_playlist_success">Added "%s" to "%s"</string>
+    <string name="add_to_playlist_exists">The song "%s" already exists in the playlist "%s"</string>
+    <string name="rename_playlist_success_message">Playlist renamed successfully</string>
+    <string name="delete_playlist_success_message">Playlist "%s" deleted successfully</string>
 
     <!--library-->
     <string name="title_library_favourites">Favourites</string>

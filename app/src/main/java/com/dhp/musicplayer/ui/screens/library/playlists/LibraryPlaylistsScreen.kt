@@ -56,6 +56,7 @@ import com.dhp.musicplayer.ui.items.PlaylistListItem
 import com.dhp.musicplayer.ui.screens.library.LibraryViewModel
 import com.dhp.musicplayer.ui.screens.playlist.navigation.navigateToLocalPlaylistDetail
 import com.dhp.musicplayer.utils.rememberEnumPreference
+import com.dhp.musicplayer.utils.showSnackBar
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -101,7 +102,9 @@ fun LibraryPlaylistsScreen(
             initialTextInput = currentSelectPlaylist?.name ?: "",
             onDismiss = { isRenaming = false },
             onDone = { text ->
-                currentSelectPlaylist?.let { viewModel.updatePlaylist(text, it) }
+                currentSelectPlaylist?.let { viewModel.updatePlaylist(text, it) { message ->
+                     appState.showSnackBar(message = message)
+                } }
             }
         )
     }
@@ -115,7 +118,9 @@ fun LibraryPlaylistsScreen(
             text = stringResource(id = R.string.body_delete_dialog, currentSelectPlaylist?.name?:""),
             onDismiss = { isDeleting = false },
             onConfirm = {
-                currentSelectPlaylist?.let { viewModel.deletePlaylist(it) }
+                currentSelectPlaylist?.let { viewModel.deletePlaylist(it) { message ->
+                    appState.showSnackBar(message = message)
+                }}
             },
             title = {
                 Text(text = stringResource(id = R.string.title_delete_dialog).uppercase(), style = MaterialTheme.typography.titleMedium)

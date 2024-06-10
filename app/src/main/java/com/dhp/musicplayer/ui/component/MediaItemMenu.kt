@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -52,6 +53,7 @@ import com.dhp.musicplayer.download.ExoDownloadService
 import com.dhp.musicplayer.extensions.thumbnail
 import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.model.Song
+import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.ui.LocalDownloadUtil
 import com.dhp.musicplayer.ui.LocalPlayerConnection
@@ -60,17 +62,20 @@ import com.dhp.musicplayer.ui.screens.library.LibraryViewModel
 import com.dhp.musicplayer.ui.screens.menu.AddSongToPlaylist
 import com.dhp.musicplayer.utils.formatAsDuration
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 
 @OptIn(UnstableApi::class)
 @ExperimentalAnimationApi
 @Composable
 fun MediaItemMenu(
+    appState: AppState,
     modifier: Modifier = Modifier,
     mediaItem: MediaItem,
     onDismiss: () -> Unit,
     onRemoveSongFromPlaylist: ((song: Song) -> Unit)? = null,
     onShowSleepTimer: (() -> Unit)? = null,
     libraryViewModel: LibraryViewModel = hiltViewModel(),
+    onShowMessageAddSuccess: (String) -> Unit
 ) {
     val playerConnection = LocalPlayerConnection.current
     val context = LocalContext.current
@@ -80,6 +85,7 @@ fun MediaItemMenu(
     val likeAt by libraryViewModel.likeAt(mediaItem.mediaId).collectAsState(initial = null)
     MediaItemMenu(
         modifier = modifier,
+        appState = appState,
         mediaItem = mediaItem,
         onDismiss = onDismiss,
         onPlayNext = { playerConnection?.addNext(mediaItem) },
@@ -111,7 +117,8 @@ fun MediaItemMenu(
         isFavourite = likeAt != null,
         onFavouriteClick = {
             libraryViewModel.favourite(mediaItem)
-        }
+        },
+        onShowMessageAddSuccess = onShowMessageAddSuccess
     )
 }
 
@@ -119,6 +126,7 @@ fun MediaItemMenu(
 @ExperimentalAnimationApi
 @Composable
 fun MediaItemMenu(
+    appState: AppState,
     onDismiss: () -> Unit,
     mediaItem: MediaItem,
     modifier: Modifier = Modifier,
@@ -131,6 +139,8 @@ fun MediaItemMenu(
     onShowSleepTimer: (() -> Unit)? = null,
     isFavourite: Boolean,
     onFavouriteClick: () -> Unit = {},
+    onShowMessageAddSuccess: (String) -> Unit
+
 ) {
     val density = LocalDensity.current
     val playerConnection = LocalPlayerConnection.current
@@ -153,7 +163,7 @@ fun MediaItemMenu(
                 BackHandler {
                     menuMediaState = MenuMediaState.DEFAULT
                 }
-                AddSongToPlaylist(mediaItem, onDismiss)
+                AddSongToPlaylist(mediaItem = mediaItem, onDismiss = onDismiss, onShowMessageAddSuccess = onShowMessageAddSuccess)
             }
 
             MenuMediaState.SLEEP_TIMER -> {

@@ -64,6 +64,7 @@ import com.dhp.musicplayer.ui.screens.common.ErrorScreen
 import com.dhp.musicplayer.ui.screens.home.TextTitle
 import com.dhp.musicplayer.ui.screens.playlist.navigation.navigateToOnlinePlaylistDetail
 import com.dhp.musicplayer.ui.screens.song.navigation.navigateToListSongs
+import com.dhp.musicplayer.utils.showSnackBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +77,8 @@ fun ArtistDetailScreen(
     BoxWithConstraints(
         Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)) {
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         val maxWidth = maxWidth
         val maxHeight = maxHeight
         when (uiState) {
@@ -179,7 +181,6 @@ fun ArtistDetailScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val maxHeight = maxHeight
         val thumbnailSizeDp = maxWidth
 
         Column(
@@ -275,8 +276,10 @@ fun ArtistDetailScreen(
                                     onClick = {
                                         menuState.show {
                                             MediaItemMenu(
+                                                appState = appState,
                                                 onDismiss = menuState::dismiss,
-                                                mediaItem = songItem.asMediaItem
+                                                mediaItem = songItem.asMediaItem,
+                                                onShowMessageAddSuccess = appState::showSnackBar
                                             )
                                         }
                                     }
@@ -293,8 +296,10 @@ fun ArtistDetailScreen(
                                 onLongClick = {
                                     menuState.show {
                                         MediaItemMenu(
+                                            appState = appState,
                                             onDismiss = menuState::dismiss,
                                             mediaItem = songItem.asMediaItem,
+                                            onShowMessageAddSuccess = appState::showSnackBar
                                         )
                                     }
                                 },

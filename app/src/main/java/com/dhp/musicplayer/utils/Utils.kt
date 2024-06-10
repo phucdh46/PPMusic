@@ -13,6 +13,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,10 +34,16 @@ import com.dhp.musicplayer.extensions.toSong
 import com.dhp.musicplayer.innertube.Innertube
 import com.dhp.musicplayer.model.PlaylistWithSongs
 import com.dhp.musicplayer.model.Song
+import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.ui.component.LoadingShimmerImageMaxSize
 import com.dhp.musicplayer.ui.screens.song.navigation.LIST_SONGS_ROUTE
 import com.google.material.color.score.Score
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import kotlinx.serialization.json.Json
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -47,6 +54,7 @@ fun getAppBarTitle(route: String?): Int? {
         else -> null
     }
 }
+
 fun formatAsDuration(millis: Long) = DateUtils.formatElapsedTime(millis / 1000).removePrefix("0")
 
 fun makeTimeString(duration: Long?): String {
@@ -234,13 +242,15 @@ fun CoverImageSongOnOrOffline(
     }
 }
 
-fun isValidHour(input: String): Boolean {
-    val hourInt = input.toIntOrNull()
-    return hourInt != null && hourInt in 0..23
+fun AppState.showSnackBar(
+    message: String,
+    scope: CoroutineScope = CoroutineScope(Dispatchers.Main) + Job(),
+    duration: SnackbarDuration = SnackbarDuration.Short
+) {
+    scope.launch {
+        snackBarHostState.showSnackbar(
+            message = message,
+            duration = duration
+        )
+    }
 }
-
-fun isValidMinute(input: String): Boolean {
-    val minuteInt = input.toIntOrNull()
-    return minuteInt != null && minuteInt in 0..59
-}
-

@@ -9,7 +9,6 @@ import androidx.paging.compose.LazyPagingItems
 @Composable
 fun <T : Any> HandlePagingStates(
     lazyPagingItems: LazyPagingItems<T>,
-    modifier: Modifier = Modifier,
 ) {
     when {
         lazyPagingItems.loadState.refresh is LoadState.Loading -> {
@@ -31,7 +30,6 @@ fun <T : Any> HandlePagingStates(
 @Composable
 fun <T : Any> HandlePagingAlbumsStates(
     lazyPagingItems: LazyPagingItems<T>,
-    modifier: Modifier = Modifier,
 ) {
     when {
         lazyPagingItems.loadState.refresh is LoadState.Loading -> {

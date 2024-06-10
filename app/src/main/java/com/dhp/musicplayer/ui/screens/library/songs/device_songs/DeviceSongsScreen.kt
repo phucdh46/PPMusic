@@ -40,6 +40,7 @@ import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.extensions.isAtLeastAndroid33
 import com.dhp.musicplayer.model.Song
+import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.ui.LocalWindowInsets
@@ -48,6 +49,7 @@ import com.dhp.musicplayer.ui.component.MediaItemMenu
 import com.dhp.musicplayer.ui.component.SongItemPlaceholder
 import com.dhp.musicplayer.ui.items.DeviceSongItem
 import com.dhp.musicplayer.utils.openSettingsForReadExternalStorage
+import com.dhp.musicplayer.utils.showSnackBar
 import com.dhp.musicplayer.utils.stringToBitMap
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -56,7 +58,7 @@ import com.google.accompanist.permissions.shouldShowRationale
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun DeviceSongsScreen() {
+fun DeviceSongsScreen(appState: AppState) {
     val context = LocalContext.current
     val permissionReadAudio = if (isAtLeastAndroid33) {
         Manifest.permission.READ_MEDIA_AUDIO
@@ -66,7 +68,7 @@ fun DeviceSongsScreen() {
     val readAudioPermissionState = rememberPermissionState(permissionReadAudio)
 
     if (readAudioPermissionState.status.isGranted) {
-        DeviceSongsScreen(modifier = Modifier)
+        DeviceSongsScreen(modifier = Modifier, appState = appState)
     } else {
         Column(
             Modifier
@@ -115,6 +117,7 @@ fun DeviceSongsScreen() {
 @Composable
 fun DeviceSongsScreen(
     modifier: Modifier,
+    appState: AppState,
     viewModel: DeviceSongsViewModel = hiltViewModel()
 ) {
     LaunchedEffect(Unit) {
@@ -139,6 +142,7 @@ fun DeviceSongsScreen(
             val songs = (uiState as UiState.Success<List<Song>>).data
             DeviceSongsScreen(
                 modifier = modifier,
+                appState = appState,
                 songs = songs
             )
         }
@@ -151,6 +155,7 @@ fun DeviceSongsScreen(
 @Composable
 fun DeviceSongsScreen(
     modifier: Modifier,
+    appState: AppState,
     songs: List<Song>
 ) {
     val lazyListState = rememberLazyListState()
@@ -194,8 +199,10 @@ fun DeviceSongsScreen(
                                 onClick = {
                                     menuState.show {
                                         MediaItemMenu(
+                                            appState = appState,
                                             onDismiss = menuState::dismiss,
-                                            mediaItem = songsAndBitmap.first.asMediaItem()
+                                            mediaItem = songsAndBitmap.first.asMediaItem(),
+                                            onShowMessageAddSuccess = appState::showSnackBar
                                         )
                                     }
                                 }
@@ -212,8 +219,10 @@ fun DeviceSongsScreen(
                             onLongClick = {
                                 menuState.show {
                                     MediaItemMenu(
+                                        appState = appState,
                                         onDismiss = menuState::dismiss,
-                                        mediaItem = songsAndBitmap.first.asMediaItem()
+                                        mediaItem = songsAndBitmap.first.asMediaItem(),
+                                        onShowMessageAddSuccess = appState::showSnackBar
                                     )
                                 }
                             },

@@ -34,6 +34,7 @@ import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.extensions.asMediaItem
 import com.dhp.musicplayer.innertube.model.NavigationEndpoint
 import com.dhp.musicplayer.model.Song
+import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.ui.LocalWindowInsets
@@ -42,10 +43,12 @@ import com.dhp.musicplayer.ui.component.LocalMenuState
 import com.dhp.musicplayer.ui.component.MediaItemMenu
 import com.dhp.musicplayer.ui.component.SongItemPlaceholder
 import com.dhp.musicplayer.ui.items.SongItem
+import com.dhp.musicplayer.utils.showSnackBar
 
 @OptIn(UnstableApi::class)
 @Composable
 fun DownloadSongsScreen(
+    appState: AppState,
     viewModel: DownloadSongsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -63,7 +66,10 @@ fun DownloadSongsScreen(
             }
 
             is UiState.Success -> {
-                DownloadSongsScreen(songs = (uiState as UiState.Success<List<Song>>).data)
+                DownloadSongsScreen(
+                    appState = appState,
+                    songs = (uiState as UiState.Success<List<Song>>).data
+                )
             }
 
             is UiState.Empty -> {
@@ -78,6 +84,7 @@ fun DownloadSongsScreen(
 @kotlin.OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun DownloadSongsScreen(
+    appState: AppState,
     songs: List<Song>,
 ) {
     val lazyListState = rememberLazyListState()
@@ -114,8 +121,10 @@ fun DownloadSongsScreen(
                             onClick = {
                                 menuState.show {
                                     MediaItemMenu(
+                                        appState = appState,
                                         onDismiss = menuState::dismiss,
-                                        mediaItem = song.asMediaItem()
+                                        mediaItem = song.asMediaItem(),
+                                        onShowMessageAddSuccess = appState::showSnackBar
                                     )
                                 }
                             }
@@ -132,8 +141,10 @@ fun DownloadSongsScreen(
                         onLongClick = {
                             menuState.show {
                                 MediaItemMenu(
+                                    appState = appState,
                                     onDismiss = menuState::dismiss,
-                                    mediaItem = song.asMediaItem()
+                                    mediaItem = song.asMediaItem(),
+                                    onShowMessageAddSuccess = appState::showSnackBar
                                 )
                             }
                         },

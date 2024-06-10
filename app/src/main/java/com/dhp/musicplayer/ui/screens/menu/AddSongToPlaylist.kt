@@ -23,6 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -46,6 +47,7 @@ fun AddSongToPlaylist(
     mediaItem: MediaItem,
     onDismiss: () -> Unit,
     viewModel: LibraryViewModel = hiltViewModel(),
+    onShowMessageAddSuccess: (String) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
     val playlistWithSongs by viewModel.playlistWithSongs.collectAsStateWithLifecycle(emptyList())
@@ -62,6 +64,7 @@ fun AddSongToPlaylist(
             }
         )
     }
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -124,7 +127,14 @@ fun AddSongToPlaylist(
                                 playlistPreview.playlist,
                                 mediaItem.toSong(),
                                 playlistPreview.songs.size
-                            )
+                            ) { isSucceed ->
+                                val message = context.getString(
+                                    if (isSucceed) R.string.add_to_playlist_success else R.string.add_to_playlist_exists,
+                                    mediaItem.toSong().title,
+                                    playlistPreview.playlist.name
+                                )
+                                onShowMessageAddSuccess(message)
+                            }
                             onDismiss()
                         }
                         .animateItemPlacement()
