@@ -1,10 +1,12 @@
 package com.dhp.musicplayer.ui.screens.playlist.local
 
+import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dhp.musicplayer.R
 import com.dhp.musicplayer.db.MusicDao
 import com.dhp.musicplayer.enums.UiState
 import com.dhp.musicplayer.model.PlaylistWithSongs
@@ -12,9 +14,9 @@ import com.dhp.musicplayer.model.Song
 import com.dhp.musicplayer.model.SongPlaylistMap
 import com.dhp.musicplayer.ui.screens.playlist.navigation.LOCAL_PLAYLIST_ID_ARG
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -27,6 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LocalPlaylistDetailViewModel @Inject constructor(
+    @ApplicationContext val context: Context,
     private val savedStateHandle: SavedStateHandle,
     private val musicDao: MusicDao
     ): ViewModel() {
@@ -73,10 +76,11 @@ class LocalPlaylistDetailViewModel @Inject constructor(
         }
     }
 
-    fun updatePlaylist(playlistName: String) {
+    fun updatePlaylist(playlistName: String, onResultMessage: (String) -> Unit) {
         currentPlaylist.value?.playlist?.let {  playlist ->
             viewModelScope.launch(Dispatchers.IO) {
                 musicDao.update(playlist.copy(name = playlistName))
+                onResultMessage(context.getString(R.string.rename_playlist_success_message))
             }
         }
     }

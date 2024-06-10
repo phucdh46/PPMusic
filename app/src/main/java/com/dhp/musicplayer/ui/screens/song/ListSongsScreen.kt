@@ -37,6 +37,7 @@ import com.dhp.musicplayer.ui.component.MediaItemMenu
 import com.dhp.musicplayer.ui.component.SongItemPlaceholder
 import com.dhp.musicplayer.ui.items.SongItem
 import com.dhp.musicplayer.ui.screens.common.ErrorScreen
+import com.dhp.musicplayer.utils.showSnackBar
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -64,6 +65,7 @@ fun ListSongsScreen(
             val lazyPagingItems =
                 (uiState as UiState.Success<Flow<PagingData<Innertube.SongItem>>>).data.collectAsLazyPagingItems()
             ListSongsScreen(
+                appState = appState,
                 lazyPagingItems = lazyPagingItems,
                 onItemClick = { item ->
                     playerConnection?.stopRadio()
@@ -86,6 +88,7 @@ fun ListSongsScreen(
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ListSongsScreen(
+    appState: AppState,
     lazyPagingItems: LazyPagingItems<Innertube.SongItem>,
     onItemClick: (Innertube.SongItem) -> Unit
 ) {
@@ -113,8 +116,10 @@ fun ListSongsScreen(
                                     onClick = {
                                         menuState.show {
                                             MediaItemMenu(
+                                                appState = appState,
                                                 onDismiss = menuState::dismiss,
-                                                mediaItem = item.asMediaItem
+                                                mediaItem = item.asMediaItem,
+                                                onShowMessageAddSuccess = appState::showSnackBar
                                             )
                                         }
                                     }
@@ -131,8 +136,10 @@ fun ListSongsScreen(
                                 onLongClick = {
                                     menuState.show {
                                         MediaItemMenu(
+                                            appState = appState,
                                             onDismiss = menuState::dismiss,
-                                            mediaItem = item.asMediaItem
+                                            mediaItem = item.asMediaItem,
+                                            onShowMessageAddSuccess = appState::showSnackBar
                                         )
                                     }
                                 },

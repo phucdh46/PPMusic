@@ -33,6 +33,7 @@ import androidx.navigation.NavController
 import com.dhp.musicplayer.constant.QueuePeekHeight
 import com.dhp.musicplayer.extensions.isLandscape
 import com.dhp.musicplayer.extensions.positionAndDurationState
+import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.ui.IconApp
 import com.dhp.musicplayer.ui.LocalPlayerConnection
 import com.dhp.musicplayer.ui.component.BottomSheet
@@ -40,10 +41,12 @@ import com.dhp.musicplayer.ui.component.BottomSheetState
 import com.dhp.musicplayer.ui.component.LocalMenuState
 import com.dhp.musicplayer.ui.component.MediaItemMenu
 import com.dhp.musicplayer.ui.component.rememberBottomSheetState
+import com.dhp.musicplayer.utils.showSnackBar
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun BottomSheetPlayer(
+    appState: AppState,
     state: BottomSheetState,
     navController: NavController,
     modifier: Modifier = Modifier,
@@ -167,9 +170,11 @@ fun BottomSheetPlayer(
                         modifier = Modifier.clickable {
                             menuState.show {
                                 MediaItemMenu(
+                                    appState = appState,
                                     onDismiss = menuState::dismiss,
                                     mediaItem = mediaItem!!,
-                                    onShowSleepTimer = {}
+                                    onShowSleepTimer = {},
+                                    onShowMessageAddSuccess = appState::showSnackBar
                                 )
                             }
                         })

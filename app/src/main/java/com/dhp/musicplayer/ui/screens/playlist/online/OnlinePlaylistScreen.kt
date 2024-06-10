@@ -13,15 +13,11 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -43,6 +39,7 @@ import com.dhp.musicplayer.ui.component.TextPlaceholder
 import com.dhp.musicplayer.ui.component.TopAppBarDetailScreen
 import com.dhp.musicplayer.ui.screens.common.ErrorScreen
 import com.dhp.musicplayer.ui.screens.playlist.local.SongListDetailScreen
+import com.dhp.musicplayer.utils.showSnackBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +63,9 @@ fun OnlinePlaylistScreen(
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(16.dp).fillMaxWidth()
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
                     ) {
                         Box(
                             modifier = Modifier
@@ -84,6 +83,7 @@ fun OnlinePlaylistScreen(
 
             is UiState.Success -> {
                 OnlinePlaylistScreen(
+                    appState = appState,
                     playlistDisplay = (uiState as UiState.Success).data,
                     navController = appState.navController,
                 )
@@ -103,6 +103,7 @@ fun OnlinePlaylistScreen(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun OnlinePlaylistScreen(
+    appState: AppState,
     playlistDisplay: PlaylistDisplay?,
     navController: NavController,
 ) {
@@ -116,8 +117,10 @@ fun OnlinePlaylistScreen(
         onLongClick = { _, song ->
             menuState.show {
                 MediaItemMenu(
+                    appState = appState,
                     onDismiss = menuState::dismiss,
                     mediaItem = song.asMediaItem(),
+                    onShowMessageAddSuccess = appState::showSnackBar
                 )
             }
         },
@@ -126,9 +129,11 @@ fun OnlinePlaylistScreen(
                 IconButton(
                     onClick = {
                         menuState.show {
-                             MediaItemMenu(
+                            MediaItemMenu(
+                                appState = appState,
                                 onDismiss = menuState::dismiss,
                                 mediaItem = song.asMediaItem(),
+                                onShowMessageAddSuccess = appState::showSnackBar
                             )
                         }
                     }

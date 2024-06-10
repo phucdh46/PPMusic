@@ -47,17 +47,17 @@ fun LibrarySongsDetailScreen(
         when (type.toEnum(LibrarySongsDetailType.FAVOURITE)) {
             LibrarySongsDetailType.FAVOURITE -> {
                 title = stringResource(id = R.string.title_library_favourites)
-                FavouritesScreen()
+                FavouritesScreen(appState = appState)
             }
 
             LibrarySongsDetailType.DOWNLOADED -> {
                 title = stringResource(id = R.string.title_library_downloaded)
-                DownloadSongsScreen()
+                DownloadSongsScreen(appState = appState)
             }
 
             LibrarySongsDetailType.DEVICE_SONGS -> {
                 title = stringResource(id = R.string.title_library_device_songs)
-                DeviceSongsScreen()
+                DeviceSongsScreen(appState = appState)
             }
 
         }

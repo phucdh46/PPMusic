@@ -80,7 +80,7 @@ fun RowScope.NavigationBarItem(
 @Composable
 fun NavHost(
     appState: AppState,
-    onShowSnackbar: suspend (String, String?) -> Boolean,
+    onShowSnackBar: suspend (String, String?) -> Boolean,
     modifier: Modifier = Modifier,
     startDestination: String = FOR_YOU_ROUTE,
 ) {

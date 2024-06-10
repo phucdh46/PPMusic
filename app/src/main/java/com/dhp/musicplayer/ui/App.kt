@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -141,9 +142,7 @@ internal fun App(
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        snackbarHost = {
-            SnackbarHost(hostState = appState.snackBarHostState)
-        }
+        snackbarHost = { appState.snackBarHostState }
     ) {
         BoxWithConstraints(
             modifier = Modifier
@@ -218,10 +217,21 @@ internal fun App(
                     modifier = Modifier
                         .fillMaxSize(),
                     appState = appState,
-                    onShowSnackbar = { _, _ -> true }
+                    onShowSnackBar = { _, _ -> true }
+                )
+
+                SnackbarHost(
+                    hostState = appState.snackBarHostState,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .windowInsetsPadding(
+                            LocalWindowInsets.current
+                                .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
+                        )
                 )
 
                 BottomSheetPlayer(
+                    appState = appState,
                     state = playerBottomSheetState,
                     navController = appState.navController
                 )

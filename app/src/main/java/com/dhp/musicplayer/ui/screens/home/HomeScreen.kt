@@ -65,7 +65,7 @@ import com.dhp.musicplayer.ui.items.SongItem
 import com.dhp.musicplayer.ui.screens.artist.navigation.navigateToArtistDetail
 import com.dhp.musicplayer.ui.screens.common.ErrorScreen
 import com.dhp.musicplayer.ui.screens.playlist.navigation.navigateToOnlinePlaylistDetail
-import com.dhp.musicplayer.utils.Logg
+import com.dhp.musicplayer.utils.showSnackBar
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
@@ -117,6 +117,7 @@ internal fun ForYouScreen(
                     onRefresh = viewModel::refresh,
                 ) {
                     ForYouScreen(
+                        appState = appState,
                         songs = related?.songs?.map { it.toSong() } ?: emptyList(),
                         onItemClicked = { song ->
                             playerConnection?.stopRadio()
@@ -154,6 +155,7 @@ internal fun ForYouScreen(
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 internal fun ForYouScreen(
+    appState: AppState,
     songs: List<Song>,
     onItemClicked: (Song) -> Unit,
     modifier: Modifier = Modifier,
@@ -206,8 +208,10 @@ internal fun ForYouScreen(
                                     onClick = {
                                         menuState.show {
                                             MediaItemMenu(
+                                                appState = appState,
                                                 onDismiss = menuState::dismiss,
-                                                mediaItem = song.asMediaItem()
+                                                mediaItem = song.asMediaItem(),
+                                                onShowMessageAddSuccess = appState::showSnackBar
                                             )
                                         }
                                     }
@@ -224,8 +228,10 @@ internal fun ForYouScreen(
                                 onLongClick = {
                                     menuState.show {
                                         MediaItemMenu(
+                                            appState = appState,
                                             onDismiss = menuState::dismiss,
-                                            mediaItem = song.asMediaItem()
+                                            mediaItem = song.asMediaItem(),
+                                            onShowMessageAddSuccess = appState::showSnackBar
                                         )
                                     }
                                 },
