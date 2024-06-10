@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
@@ -129,6 +130,7 @@ fun PlayerQueue(
                 modifier = Modifier
                     .drawBehind { drawRect(containerColor) }
                     .fillMaxSize()
+                    .navigationBarsPadding()
             ) {
                 Text(
                     text = stringResource(R.string.player_queue_next_text).uppercase(),
