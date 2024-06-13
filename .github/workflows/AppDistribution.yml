@@ -17,6 +17,13 @@ jobs:
       with:
         ruby-version: '3.3'
 
+    - name: set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        ache: gradle
+
     - name: Install bundle
       run: |
         bundle config path vendor/bundle
