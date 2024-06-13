@@ -3,9 +3,7 @@ name: Distribute
 on:
   push:
     branches: [ "test" ]
-  pull_request:
-    branches: [ "test" ]
-
+    
 jobs:
   build:
 
