@@ -1,0 +1,54 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "Submit a new Beta Build to App Distrubtion"
+  lane :beta do
+    gradle(task: 'assemble', build_type: 'release')
+    firebase_app_distribution(
+	service_credentials_file: "fastlane/firebase_credentials.json",
+    	app: "1:453304655757:android:1d984d25922c992097a7c4",
+	release_notes_file: "FirebaseAppDistributionConfig/release_notes.txt",
+	#groups_file: "FirebaseAppDistributionConfig/groups.txt"
+	testers: "june041996@gmail.com",
+    	#groups: "qa-team"
+    )
+    #upload_to_play_store(track: 'beta')
+    #slack(message: 'Successfully distributed a new beta build')
+    # sh "your_script.sh"
+    # You can also use other beta testing services here
+  end
+
+  desc "Increment version app"
+  lane :increment_version do
+  	latest_release = firebase_app_distribution_get_latest_release(
+   	 app: "1:453304655757:android:1d984d25922c992097a7c4"
+  	)
+  	increment_version_code({ version_code: latest_release[:buildVersion].to_i + 1 })
+  end
+
+  desc "Deploy a new version to the Google Play"
+  lane :deploy do
+    gradle(task: "clean assembleRelease")
+    upload_to_play_store
+  end
+end
