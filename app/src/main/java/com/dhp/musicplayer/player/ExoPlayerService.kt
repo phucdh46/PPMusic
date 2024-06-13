@@ -658,6 +658,10 @@ class ExoPlayerService : MediaBrowserService(), Player.Listener, PlaybackStatsLi
         override fun onSkipToQueueItem(id: Long) =
             runCatching { player.seekToDefaultPosition(id.toInt()) }.let { }
 
+        override fun onPlayFromSearch(query: String?, extras: Bundle?) {
+            super.onPlayFromSearch(query, extras)
+        }
+
         @kotlin.OptIn(ExperimentalCoroutinesApi::class)
         override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
             val data = mediaId?.split('/') ?: return
