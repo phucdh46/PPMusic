@@ -120,7 +120,6 @@ fun PlayerQueue(
             }
         }
     )
-
     BottomSheet(
         state = state,
         modifier = modifier,
