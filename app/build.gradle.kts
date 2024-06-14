@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -13,6 +16,19 @@ plugins {
 android {
     namespace = "com.dhp.musicplayer"
     compileSdk = 34
+
+    signingConfigs {
+        val keystorePropertiesFile = rootProject.file("keystore.properties")
+        val keystoreProperties =  Properties()
+        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"].toString()
+            keyPassword = keystoreProperties["keyPassword"].toString()
+//            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+            storeFile = file("keystore.jks")
+            storePassword =  keystoreProperties["storePassword"].toString()
+        }
+    }
 
 //    signingConfigs {
 //        create("release") {
@@ -51,7 +67,7 @@ android {
                 "proguard-rules.pro"
             )
             isDebuggable = false
-//            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
