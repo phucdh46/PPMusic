@@ -14,12 +14,21 @@ android {
     namespace = "com.dhp.musicplayer"
     compileSdk = 34
 
+//    signingConfigs {
+//        create("release") {
+//            keyPassword = "Jfqklenpis04"
+//            storeFile = file ("E:/BackupC/Desktop/pp.jks")
+//            storePassword  = "Jfqklenpis04"
+//            keyAlias = "PPMusic"
+//        }
+//    }
+
     defaultConfig {
         applicationId = "com.dhp.musicplayer"
         minSdk = 26
         targetSdk = 34
-        versionCode = 100060
-        versionName = "1.0.6"
+        versionCode = 100063
+        versionName = "1.0.63"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -41,6 +50,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            isDebuggable = false
+//            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

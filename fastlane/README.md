@@ -23,13 +23,21 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Runs all the tests
 
+### android distribute
+
+```sh
+[bundle exec] fastlane android distribute
+```
+
+Submit a new Beta Build to App Distrubtion
+
 ### android beta
 
 ```sh
 [bundle exec] fastlane android beta
 ```
 
-Submit a new Beta Build to Crashlytics Beta
+Submit a new Beta Build to Google Play Console
 
 ### android increment_version
 
@@ -37,7 +45,7 @@ Submit a new Beta Build to Crashlytics Beta
 [bundle exec] fastlane android increment_version
 ```
 
-
+Increment version app
 
 ### android deploy
 

@@ -40,6 +40,22 @@ platform :android do
     # You can also use other beta testing services here
   end
 
+   desc "Submit a new Beta Build to Google Play Console"
+    lane :internal do
+      gradle(task: "clean bundleRelease")
+      upload_to_play_store(
+        track: 'internal',
+        release_status: 'draft',
+        in_app_update_priority: 5,
+#         skip_upload_metadata: true,
+#         skip_upload_images: true,
+#         skip_upload_screenshots: true,
+      )
+      #slack(message: 'Successfully distributed a new beta build')
+      # sh "your_script.sh"
+      # You can also use other beta testing services here
+    end
+
   desc "Increment version app"
   lane :increment_version do
   	latest_release = firebase_app_distribution_get_latest_release(
