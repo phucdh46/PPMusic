@@ -26,4 +26,14 @@ platform :android do
 	groups_file: "action_config/groups.txt"
     )
   end
+
+  desc "Submit a new Internal Build to Google Play Console"
+      lane :internal do
+        gradle(task: "clean bundleRelease")
+        upload_to_play_store(
+          track: 'internal',
+          release_status: 'draft',
+          in_app_update_priority: 5,
+        )
+  end
 end
