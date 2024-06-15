@@ -1,0 +1,8 @@
+- Show a list of upcoming songs in the queue.
+- Display real-time lyrics for the currently playing song.
+- Dynamic theme: Changes the app interface based on the currently playing song
+- Create a list of favorite songs for easy access.
+- Download songs: Save songs for offline listening.
+- Sleep timer: Automatically turn off music after a set time
+- Android Auto Support.
+- Improve application performance.
