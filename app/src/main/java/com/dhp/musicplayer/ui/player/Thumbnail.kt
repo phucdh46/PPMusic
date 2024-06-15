@@ -44,6 +44,7 @@ import com.dhp.musicplayer.utils.drawableToBitmap
 import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException
 
+@androidx.media3.common.util.UnstableApi
 @ExperimentalAnimationApi
 @Composable
 fun Thumbnail(
