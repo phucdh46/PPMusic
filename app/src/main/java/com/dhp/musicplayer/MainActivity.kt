@@ -30,22 +30,21 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.util.UnstableApi
 import coil.imageLoader
 import coil.request.ImageRequest
-import com.dhp.musicplayer.constant.DynamicThemeKey
-import com.dhp.musicplayer.download.DownloadUtil
-import com.dhp.musicplayer.enums.DarkThemeConfig
-import com.dhp.musicplayer.enums.UiState
-import com.dhp.musicplayer.extensions.intent
-import com.dhp.musicplayer.extensions.toSong
-import com.dhp.musicplayer.model.UserData
-import com.dhp.musicplayer.player.ExoPlayerService
-import com.dhp.musicplayer.player.PlayerConnection
+import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.designsystem.extractThemeColor
+import com.dhp.musicplayer.core.designsystem.theme.ColorSaver
+import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
+import com.dhp.musicplayer.core.model.settings.UserData
+import com.dhp.musicplayer.core.services.download.DownloadUtil
+import com.dhp.musicplayer.core.services.extensions.toSong
+import com.dhp.musicplayer.core.services.player.ExoPlayerService
+import com.dhp.musicplayer.core.services.player.PlayerConnection
+import com.dhp.musicplayer.data.datastore.DynamicThemeKey
+import com.dhp.musicplayer.core.common.extensions.intent
+import com.dhp.musicplayer.core.ui.common.rememberPreference
 import com.dhp.musicplayer.ui.App
 import com.dhp.musicplayer.ui.rememberAppState
-import com.dhp.musicplayer.ui.theme.ColorSaver
-import com.dhp.musicplayer.ui.theme.ComposeTheme
 import com.dhp.musicplayer.utils.InAppUpdateManager
-import com.dhp.musicplayer.utils.extractThemeColor
-import com.dhp.musicplayer.utils.rememberPreference
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -174,7 +173,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            ComposeTheme(
+            com.dhp.musicplayer.core.designsystem.theme.ComposeTheme(
                 darkTheme = darkTheme,
                 themeColor = themeColor,
                 enableDynamicTheme = enableDynamicTheme,

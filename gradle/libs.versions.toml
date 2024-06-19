@@ -14,6 +14,7 @@ androidxNavigation = "2.7.4"
 material3Android = "1.2.1"
 
 androidxDataStore = "1.0.0"
+datastorePreferences = "1.1.1"
 androidxHiltNavigationCompose = "1.2.0"
 androidxLifecycle = "2.7.0"
 composeRuntime = "1.6.1"
@@ -41,6 +42,14 @@ appUpdate = "2.1.0"
 reorderable = "0.9.6"
 pagingCompose = "0.9.6"
 pagingCommonAndroid = "3.3.0"
+appcompat = "1.7.0"
+material = "1.12.0"
+jetbrainsKotlinJvm = "1.9.22"
+
+androidGradlePlugin = "8.3.0"
+androidTools = "31.3.0"
+
+androidxComposeCompiler =  "1.5.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,6 +60,7 @@ androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecyc
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-util = { group = "androidx.compose.ui", name = "ui-util" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
@@ -58,11 +68,15 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "composeRuntime" }
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
-androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
+androidx-compose-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
 
 androidx-dataStore-core = { group = "androidx.datastore", name = "datastore", version.ref = "androidxDataStore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
@@ -105,6 +119,16 @@ paging-compose = { group = "androidx.paging", name = "paging-compose", version.r
 paging-runtime-ktx = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "pagingCommonAndroid" }
 
 palette = { group = "androidx.palette", name = "palette", version = "1.0.0" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
+# Dependencies of the included build-logic
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
+#android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+#room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
+#work-testing = { group = "androidx.work", name = "work-testing", version = "2.9.0" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -115,3 +139,13 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize",  version.ref = "kotlinPlugin"  }
+android-library = { id = "com.android.library", version.ref = "agp" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+
+
+# Plugins defined by this project
+dhp-android-hilt = { id = "dhp.android.hilt", version = "unspecified" }
+dhp-android-library = { id = "dhp.android.library", version = "unspecified" }
+dhp-android-library-compose = { id = "dhp.android.library.compose", version = "unspecified" }
+dhp-android-feature = { id = "dhp.android.feature", version = "unspecified" }
+

@@ -4,17 +4,18 @@ import android.app.Application
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dhp.musicplayer.api.reponse.KeyResponse
-import com.dhp.musicplayer.constant.ConfigApiKey
-import com.dhp.musicplayer.constant.DarkThemeConfigKey
-import com.dhp.musicplayer.enums.DarkThemeConfig
-import com.dhp.musicplayer.enums.UiState
-import com.dhp.musicplayer.extensions.toEnum
-import com.dhp.musicplayer.model.UserData
-import com.dhp.musicplayer.repository.MusicRepository
-import com.dhp.musicplayer.utils.Logg
-import com.dhp.musicplayer.utils.dataStore
-import com.dhp.musicplayer.utils.get
+import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.common.extensions.toEnum
+import com.dhp.musicplayer.core.model.settings.UserData
+import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
+import com.dhp.musicplayer.data.datastore.ConfigApiKey
+import com.dhp.musicplayer.data.datastore.DarkThemeConfigKey
+import com.dhp.musicplayer.data.datastore.dataStore
+import com.dhp.musicplayer.data.datastore.get
+import com.dhp.musicplayer.data.network.api.response.KeyResponse
+import com.dhp.musicplayer.data.repository.AppRepository
+import com.dhp.musicplayer.data.repository.NetworkMusicRepository
+import com.dhp.musicplayer.core.common.utils.Logg
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,7 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val application: Application,
-    private val musicRepository: MusicRepository,
+    private val appRepository: AppRepository,
 ) : ViewModel() {
 
     init {
@@ -39,7 +40,7 @@ class MainActivityViewModel @Inject constructor(
     private fun initConfig() {
         viewModelScope.launch(Dispatchers.IO) {
             if (application.dataStore[ConfigApiKey] != null) return@launch
-            val result = musicRepository.getKey()
+            val result = appRepository.getKey()
             if (result.isSuccess) {
                 result.getOrNull()?.result?.let { key ->
                     Logg.d("getKey: ${key}")
@@ -53,7 +54,6 @@ class MainActivityViewModel @Inject constructor(
                             it[ConfigApiKey] = string
                         }
                     }
-
                 }
             }
         }

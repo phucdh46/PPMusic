@@ -7,7 +7,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.dhp.musicplayer.constant.LastTimeUserCancelFlexibleUpdateKey
+import com.dhp.musicplayer.data.datastore.LastTimeUserCancelFlexibleUpdateKey
+import com.dhp.musicplayer.data.datastore.dataStore
+import com.dhp.musicplayer.data.datastore.get
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory

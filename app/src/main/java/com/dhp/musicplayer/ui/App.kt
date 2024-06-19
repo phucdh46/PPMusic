@@ -22,13 +22,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -42,30 +40,32 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.dhp.musicplayer.R
-import com.dhp.musicplayer.constant.MiniPlayerHeight
-import com.dhp.musicplayer.constant.NavigationBarAnimationSpec
-import com.dhp.musicplayer.constant.NavigationBarHeight
-import com.dhp.musicplayer.constant.TopBarHeight
-import com.dhp.musicplayer.download.DownloadUtil
+import com.dhp.musicplayer.core.designsystem.component.BottomSheetMenu
+import com.dhp.musicplayer.core.designsystem.component.NavigationBar
+import com.dhp.musicplayer.core.designsystem.component.NavigationBarItem
+import com.dhp.musicplayer.core.designsystem.component.TopAppBar
+import com.dhp.musicplayer.core.designsystem.component.rememberBottomSheetState
+import com.dhp.musicplayer.core.designsystem.constant.MiniPlayerHeight
+import com.dhp.musicplayer.core.designsystem.constant.NavigationBarAnimationSpec
+import com.dhp.musicplayer.core.designsystem.constant.NavigationBarHeight
+import com.dhp.musicplayer.core.designsystem.constant.TopBarHeight
+import com.dhp.musicplayer.core.services.download.DownloadUtil
+import com.dhp.musicplayer.core.services.player.PlayerConnection
+import com.dhp.musicplayer.core.ui.LocalDownloadUtil
+import com.dhp.musicplayer.core.ui.LocalMenuState
+import com.dhp.musicplayer.core.ui.LocalWindowInsets
+import com.dhp.musicplayer.feature.home.navigation.FOR_YOU_ROUTE
+import com.dhp.musicplayer.feature.library.navigation.LIBRARY_ROUTE
+import com.dhp.musicplayer.feature.player.BottomSheetPlayer
+import com.dhp.musicplayer.feature.search.main.navigation.SEARCH_ROUTE
+import com.dhp.musicplayer.feature.search.search_by_text.navigation.navigateToSearchByText
 import com.dhp.musicplayer.navigation.ScreensNotShowTopAppBar
 import com.dhp.musicplayer.navigation.ScreensShowBottomNavigation
 import com.dhp.musicplayer.navigation.ScreensShowSearchOnTopAppBar
 import com.dhp.musicplayer.navigation.TopLevelDestination
-import com.dhp.musicplayer.player.PlayerConnection
-import com.dhp.musicplayer.ui.component.BottomSheetMenu
-import com.dhp.musicplayer.ui.component.LocalMenuState
-import com.dhp.musicplayer.ui.component.NavHost
-import com.dhp.musicplayer.ui.component.NavigationBar
-import com.dhp.musicplayer.ui.component.NavigationBarItem
-import com.dhp.musicplayer.ui.component.TopAppBar
-import com.dhp.musicplayer.ui.component.rememberBottomSheetState
-import com.dhp.musicplayer.ui.player.BottomSheetPlayer
-import com.dhp.musicplayer.ui.screens.home.navigation.FOR_YOU_ROUTE
-import com.dhp.musicplayer.ui.screens.library.LIBRARY_ROUTE
-import com.dhp.musicplayer.ui.screens.search.navigation.SEARCH_ROUTE
-import com.dhp.musicplayer.ui.screens.search.navigation.navigateToSearchByText
-import com.dhp.musicplayer.ui.screens.settings.SettingsDialog
+import com.dhp.musicplayer.navigation.NavHost
 import com.dhp.musicplayer.utils.getAppBarTitle
+import com.dhp.musicplayer.utils.showSnackBar
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable
@@ -124,7 +124,7 @@ internal fun App(
     }
 
     if (showSettingsDialog) {
-        SettingsDialog(
+        com.dhp.musicplayer.feature.settings.SettingsDialog(
             onDismiss = { onSettingsDismissed() },
         )
     }
@@ -195,7 +195,7 @@ internal fun App(
 
             val destination = appState.currentTopLevelDestination
             CompositionLocalProvider(
-                LocalPlayerConnection provides playerConnection,
+                com.dhp.musicplayer.core.ui.LocalPlayerConnection provides playerConnection,
                 LocalWindowInsets provides localWindowInsets,
                 LocalDownloadUtil provides downloadUtil,
             ) {
@@ -217,7 +217,9 @@ internal fun App(
                     modifier = Modifier
                         .fillMaxSize(),
                     appState = appState,
-                    onShowSnackBar = { _, _ -> true }
+                    onShowMessage = { message ->
+
+                    }
                 )
 
                 SnackbarHost(
@@ -231,9 +233,9 @@ internal fun App(
                 )
 
                 BottomSheetPlayer(
-                    appState = appState,
                     state = playerBottomSheetState,
-                    navController = appState.navController
+                    navController = appState.navController,
+                    showSnackbar = appState::showSnackBar
                 )
 
                 NavigationBar(modifier = Modifier
@@ -293,8 +295,3 @@ private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLev
     this?.hierarchy?.any {
         it.route?.contains(destination.name, true) ?: false
     } ?: false
-
-val LocalWindowInsets = compositionLocalOf<WindowInsets> { error("No WindowInsets provided") }
-val LocalPlayerConnection =
-    staticCompositionLocalOf<PlayerConnection?> { error("No PlayerConnection provided") }
-val LocalDownloadUtil = staticCompositionLocalOf<DownloadUtil> { error("No DownloadUtil provided") }
