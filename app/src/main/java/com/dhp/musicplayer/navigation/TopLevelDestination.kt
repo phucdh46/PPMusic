@@ -2,7 +2,7 @@ package com.dhp.musicplayer.navigation
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.dhp.musicplayer.R
-import com.dhp.musicplayer.ui.IconApp
+import com.dhp.musicplayer.core.designsystem.icon.IconApp
 
 enum class TopLevelDestination(
     val selectedIcon: ImageVector,

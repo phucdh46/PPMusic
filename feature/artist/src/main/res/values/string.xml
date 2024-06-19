@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--artist-->
+    <string name="artist_songs_title">Songs</string>
+    <string name="artist_albums_title">Albums</string>
+    <string name="artist_single_title">Singles</string>
+    <string name="view_all">View all</string>
+</resources>

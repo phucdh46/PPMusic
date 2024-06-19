@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Setting-->
+    <string name="feature_settings_title">Settings</string>
+    <string name="feature_settings_dismiss_dialog_button_text">OK</string>
+    <string name="feature_settings_dark_mode_preference">Theme setting</string>
+    <string name="feature_settings_dynamic_theme_preference">Dynamic theme</string>
+    <string name="feature_settings_dark_mode_config_system_default">System default</string>
+    <string name="feature_settings_dark_mode_config_light">Light</string>
+    <string name="feature_settings_dark_mode_config_dark">Dark</string>
+
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--thumbnail-->
+    <string name="network_error">A network error has occurred</string>
+    <string name="format_not_found">Couldn\"t find a playable audio format</string>
+    <string name="unplayable_exception">The original video source of this song has been deleted</string>
+    <string name="login_required_exception">This song cannot be played due to server restrictions</string>
+    <string name="video_id_mismatch_exception">The returned video id doesn\"t match the requested one</string>
+    <string name="unknown_error">An unknown playback error has occurred</string>
+
+    <!--lyric-->
+    <string name="lyric_get_data_error">An error has occurred while fetching the synchronized lyrics</string>
+    <string name="lyric_get_data_not_available">Lyrics are not available for this song</string>
+    <string name="lyric_text_auto_mode">Auto</string>
+
+    <!-- player queue-->
+    <string name="player_queue_next_text">Next</string>
+</resources>

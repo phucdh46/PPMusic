@@ -37,7 +37,7 @@
         </activity>
 
         <service
-            android:name=".player.ExoPlayerService"
+            android:name=".core.services.player.ExoPlayerService"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback">
             <intent-filter>
@@ -46,7 +46,7 @@
         </service>
 
         <service
-            android:name=".download.ExoDownloadService"
+            android:name=".core.services.download.ExoDownloadService"
             android:exported="false">
             <intent-filter>
                 <action android:name="androidx.media3.exoplayer.downloadService.action.RESTART" />

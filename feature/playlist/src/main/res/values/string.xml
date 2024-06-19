@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rename_playlist_success_message">Playlist renamed successfully</string>
+    <string name="empty_songs">There are no songs</string>
+    <string name="body_delete_dialog">Do you really want to delete this playlist: %1$s?</string>
+    <string name="title_delete_dialog">Delete</string>
+    <string name="hint_rename_dialog">Enter the playlist name</string>
+    <string name="title_rename_dialog">Rename</string>
+    <string name="playlist_text_play_button">Play</string>
+    <string name="playlist_text_shuffle_button">Shuffle</string>
+
+</resources>
