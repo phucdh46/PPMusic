@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.designsystem.component.TopAppBarDetailScreen
@@ -28,10 +25,8 @@ import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.model.music.PlaylistDisplay
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.ui.LocalMenuState
-import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.EmptyList
 import com.dhp.musicplayer.core.ui.common.ErrorScreen
-import com.dhp.musicplayer.core.ui.isLandscape
 import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
 import com.dhp.musicplayer.core.ui.items.TextPlaceholder
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
@@ -43,7 +38,6 @@ import com.dhp.musicplayer.feature.playlist.local.SongListDetailScreen
 fun OnlinePlaylistScreen(
     viewModel: OnlinePlaylistViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
-    navigateToListSongs: (browseId: String?, params: String?) -> Unit,
     onShowMessage: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -53,26 +47,18 @@ fun OnlinePlaylistScreen(
         )
         when (uiState) {
             UiState.Loading -> {
-                val thumbnailSizeDp = if (isLandscape) (maxHeight - 128.dp) else (maxWidth / 3 * 2)
+                val maxWidth = maxWidth
                 Column(
-                    modifier = Modifier
-                        .windowInsetsPadding(LocalWindowInsets.current)
-                        .padding(horizontal = 4.dp)
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                    Box(
                         modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(thumbnailSizeDp)
-                                .shimmer()
-                        )
-                        TextPlaceholder()
-                    }
+                            .size(maxWidth)
+                            .shimmer()
+                    )
+                    TextPlaceholder()
                     TextPlaceholder()
                     repeat(3) {
                         SongItemPlaceholder()
@@ -105,12 +91,12 @@ fun OnlinePlaylistScreen(
     playlistDisplay: PlaylistDisplay?,
     onBackClick: () -> Unit,
     onShowMessage: (String) -> Unit
-
 ) {
     val menuState = LocalMenuState.current
 
     SongListDetailScreen(
         title = playlistDisplay?.name.orEmpty(),
+        subTitle = playlistDisplay?.year,
         songs = playlistDisplay?.songs ?: emptyList(),
         thumbnailUrl = playlistDisplay?.thumbnailUrl,
         onBackButton = onBackClick,

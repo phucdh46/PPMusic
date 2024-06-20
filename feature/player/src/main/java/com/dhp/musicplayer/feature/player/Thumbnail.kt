@@ -39,7 +39,7 @@ import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.core.ui.extensions.DisposableListener
 import com.dhp.musicplayer.core.ui.extensions.drawableToBitmap
 import com.dhp.musicplayer.core.ui.extensions.getBitmap
-import com.dhp.musicplayer.core.ui.items.LoadingShimmerImageMaxSize
+import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImageMaxSize
 import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException
 

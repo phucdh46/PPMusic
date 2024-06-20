@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImageMaxSize
 import com.dhp.musicplayer.core.designsystem.constant.GridThumbnailHeight
 import com.dhp.musicplayer.core.designsystem.constant.ListItemHeight
 import com.dhp.musicplayer.core.designsystem.constant.PlayListItemHeight

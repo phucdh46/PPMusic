@@ -45,8 +45,9 @@ fun NavHost(
                 appState.navController.navigateToArtistDetail(browseId = browseId)
             },
             navigateToPlaylistDetail = { browseId ->
-                navController.navigateToOnlinePlaylistDetail(browseId = browseId)},
-            navigateToAlbumDetail = {  browseId ->
+                navController.navigateToOnlinePlaylistDetail(browseId = browseId)
+            },
+            navigateToAlbumDetail = { browseId ->
                 navController.navigateToOnlinePlaylistDetail(
                     browseId = browseId,
                     isAlbum = true
@@ -54,55 +55,48 @@ fun NavHost(
             },
             onShowMessage = appState::showSnackBar,
         )
+
         artistDetailScreen(
-            navigateToAlbumDetail={ browseId ->
+            navigateToAlbumDetail = { browseId ->
                 navController.navigateToOnlinePlaylistDetail(
                     browseId = browseId,
                     isAlbum = true
                 )
             },
-            onBackClick= { navController.navigateUp() },
-            navigateToListSongs= { browseId, params ->
+            onBackClick = { navController.navigateUp() },
+            navigateToListSongs = { browseId, params ->
                 navController.navigateToListSongs(
                     browseId,
                     params
                 )
             },
-            navigateToListAlbums= { browseId, params ->
+            navigateToListAlbums = { browseId, params ->
                 navController.navigateToListAlbums(
                     browseId,
                     params
                 )
             },
-            onShowMessage= appState::showSnackBar
+            onShowMessage = appState::showSnackBar
         )
+
         listSongsScreen(
-            onShowMessage= appState::showSnackBar
+            onShowMessage = appState::showSnackBar
         )
+
         listAlbumsScreen(
             navigateToPlaylistDetail = { browseId ->
                 navController.navigateToOnlinePlaylistDetail(browseId)
             }
         )
+
         localPlaylistDetailScreen(
-            onBackClick= { navController.navigateUp() },
-            onShowMessage= appState::showSnackBar,
-            navigateToListSongs= { browseId, params ->
-                navController.navigateToListSongs(
-                    browseId,
-                    params
-                )
-            },
+            onBackClick = { navController.navigateUp() },
+            onShowMessage = appState::showSnackBar,
         )
+
         onlinePlaylistDetailScreen(
-            onBackClick= { navController.navigateUp() },
-            onShowMessage= appState::showSnackBar,
-            navigateToListSongs= { browseId, params ->
-                navController.navigateToListSongs(
-                    browseId,
-                    params
-                )
-            },
+            onBackClick = { navController.navigateUp() },
+            onShowMessage = appState::showSnackBar,
         )
 
         searchScreen(
@@ -113,6 +107,7 @@ fun NavHost(
                 )
             }
         )
+
         searchScreenByText(
             navController = appState.navController,
             navigateToSearchResult = { query ->
@@ -122,7 +117,7 @@ fun NavHost(
 
         searchResultScreen(
             navController = appState.navController,
-            onShowMessage= appState::showSnackBar,
+            onShowMessage = appState::showSnackBar,
             navigateToPlaylistDetail = { browseId ->
                 navController.navigateToOnlinePlaylistDetail(browseId)
             },
@@ -130,30 +125,31 @@ fun NavHost(
                 navController.navigateToOnlinePlaylistDetail(
                     browseId = browseId,
                     isAlbum = true
-                )},
-            navigateToArtistDetail = { browseId ->
-                navController.navigateToArtistDetail(browseId)
-            }
-            )
-
-        moodAndGenresDetailScreen(
-            onBackClick= { navController.navigateUp() },
-            navigateToPlaylistDetail = { browseId ->
-                navController.navigateToOnlinePlaylistDetail(browseId)
+                )
             },
-            navigateToAlbumDetail = { browseId ->
-                navController.navigateToOnlinePlaylistDetail(
-                    browseId = browseId,
-                    isAlbum = true
-                )},
             navigateToArtistDetail = { browseId ->
                 navController.navigateToArtistDetail(browseId)
             }
         )
 
+        moodAndGenresDetailScreen(
+            onBackClick = { navController.navigateUp() },
+            navigateToPlaylistDetail = { browseId ->
+                navController.navigateToOnlinePlaylistDetail(browseId)
+            },
+            navigateToAlbumDetail = { browseId ->
+                navController.navigateToOnlinePlaylistDetail(
+                    browseId = browseId,
+                    isAlbum = true
+                )
+            },
+            navigateToArtistDetail = { browseId ->
+                navController.navigateToArtistDetail(browseId)
+            }
+        )
 
         libraryScreen(
-            showMessage= appState::showSnackBar,
+            showMessage = appState::showSnackBar,
             navigateToLocalPlaylistDetail = { playlistId ->
                 appState.navController.navigateToLocalPlaylistDetail(
                     playlistId = playlistId
@@ -162,12 +158,11 @@ fun NavHost(
             navigateToLibrarySongsDetail = { type ->
                 appState.navController.navigateToLibrarySongsDetail(type)
             }
-            )
-
+        )
 
         librarySongsDetailScreen(
-            onBackClick= { navController.navigateUp() },
-            showSnackBar= appState::showSnackBar,
-            )
+            onBackClick = { navController.navigateUp() },
+            showSnackBar = appState::showSnackBar,
+        )
     }
 }

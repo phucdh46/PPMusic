@@ -47,7 +47,8 @@ class OnlinePlaylistViewModel @Inject constructor(
                         PlaylistDisplay(
                             name = result.title.orEmpty(),
                             thumbnailUrl = result.thumbnail,
-                            songs = result.songsPage ?: emptyList()
+                            songs = result.songsPage ?: emptyList(),
+                            year = result.year
                         )
                     )
                 }

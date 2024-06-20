@@ -1,4 +1,4 @@
-package com.dhp.musicplayer.core.ui.items
+package com.dhp.musicplayer.core.designsystem.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.Dp
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.extensions.shimmer
-import com.dhp.musicplayer.core.ui.R
 
 @Composable
 fun LoadingShimmerImage(
