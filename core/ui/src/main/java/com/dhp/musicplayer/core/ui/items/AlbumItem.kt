@@ -9,6 +9,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.dhp.musicplayer.core.common.extensions.thumbnail
+import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImage
 import com.dhp.musicplayer.core.model.music.Album
 
 @Composable

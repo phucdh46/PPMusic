@@ -11,9 +11,10 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.util.fastForEachIndexed
+import com.dhp.musicplayer.core.common.extensions.thumbnail
+import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImageMaxSize
 import com.dhp.musicplayer.core.designsystem.constant.ListThumbnailSize
 import com.dhp.musicplayer.core.designsystem.constant.px
-import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.model.music.PlaylistWithSongs
 import com.dhp.musicplayer.core.model.music.Song

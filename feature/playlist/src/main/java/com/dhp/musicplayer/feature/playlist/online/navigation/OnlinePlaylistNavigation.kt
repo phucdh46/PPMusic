@@ -30,7 +30,6 @@ fun NavController.navigateToOnlinePlaylistDetail(
 
 fun NavGraphBuilder.onlinePlaylistDetailScreen(
     onBackClick: () -> Unit,
-    navigateToListSongs: (browseId: String?, params: String?) -> Unit,
     onShowMessage: (String) -> Unit
 ) {
     composable(
@@ -49,7 +48,6 @@ fun NavGraphBuilder.onlinePlaylistDetailScreen(
     ) {
         OnlinePlaylistScreen(
             onBackClick = onBackClick,
-            navigateToListSongs = navigateToListSongs,
             onShowMessage = onShowMessage,
         )
     }

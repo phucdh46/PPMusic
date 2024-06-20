@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import com.dhp.musicplayer.core.common.extensions.thumbnail
+import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImageMaxSize
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.ui.LocalDownloadUtil

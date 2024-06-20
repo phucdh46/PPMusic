@@ -29,7 +29,6 @@ fun NavController.navigateToLocalPlaylistDetail(
 
 fun NavGraphBuilder.localPlaylistDetailScreen(
     onBackClick: () -> Unit,
-    navigateToListSongs: (browseId: String?, params: String?) -> Unit,
     onShowMessage: (String) -> Unit
 ) {
     composable(
@@ -43,7 +42,6 @@ fun NavGraphBuilder.localPlaylistDetailScreen(
     ) {
         LocalPlaylistDetailScreen(
             onBackClick = onBackClick,
-            navigateToListSongs = navigateToListSongs,
             onShowMessage = onShowMessage,
         )
     }

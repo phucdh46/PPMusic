@@ -19,6 +19,8 @@ dependencies {
     api(libs.androidx.compose.material3.android)
 
     implementation(libs.coil.kt)
+    implementation(libs.coil.compose)
+
     implementation(libs.palette)
     implementation(libs.androidx.activity.compose)
 

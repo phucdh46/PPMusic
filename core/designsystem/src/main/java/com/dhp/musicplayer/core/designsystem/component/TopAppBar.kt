@@ -24,6 +24,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -110,21 +111,29 @@ fun TopAppBarDetailScreen(
                 .padding(horizontal = 8.dp)
         )
     },
+    backgroundColor: Color = MaterialTheme.colorScheme.background,
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
     onBackClick: () -> Unit = {},
     onMenuClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = Modifier
-            .padding(
+//            .padding(
+//                top = WindowInsets.systemBars
+//                    .asPaddingValues()
+//                    .calculateTopPadding()
+//            )
+            .padding(horizontal = 8.dp)
+            .height(TopBarHeight +  WindowInsets.systemBars
+                .asPaddingValues()
+                .calculateTopPadding())
+            .background(backgroundColor)
+            .fillMaxSize()
+                            .padding(
                 top = WindowInsets.systemBars
                     .asPaddingValues()
                     .calculateTopPadding()
-            )
-            .padding(horizontal = 8.dp)
-            .height(TopBarHeight)
-            .background(MaterialTheme.colorScheme.background)
-            .fillMaxSize(),
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
 

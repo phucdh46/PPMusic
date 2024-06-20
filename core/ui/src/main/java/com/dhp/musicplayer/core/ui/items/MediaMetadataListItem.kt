@@ -15,6 +15,7 @@ import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.common.utils.joinByBullet
 import com.dhp.musicplayer.core.common.utils.makeTimeString
 import com.dhp.musicplayer.core.designsystem.component.LoadingFiveLinesCenter
+import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImage
 import com.dhp.musicplayer.core.model.music.Song
 
 

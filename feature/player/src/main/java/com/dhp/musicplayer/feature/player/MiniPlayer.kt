@@ -57,7 +57,7 @@ import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.core.ui.extensions.drawableToBitmap
 import com.dhp.musicplayer.core.ui.extensions.getBitmap
 import com.dhp.musicplayer.core.ui.extensions.positionAndDurationState
-import com.dhp.musicplayer.core.ui.items.LoadingShimmerImage
+import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlin.math.absoluteValue
