@@ -47,7 +47,7 @@ internal fun MiniPlayerPager(
         )
     }
 
-    if ( playbackCurrentIndex >= 0 && playbackQueue.isNullOrEmpty()) {
+    if (playbackCurrentIndex >= 0 && playbackQueue.isNullOrEmpty()) {
         content(song, playbackCurrentIndex, modifier)
         return
     }

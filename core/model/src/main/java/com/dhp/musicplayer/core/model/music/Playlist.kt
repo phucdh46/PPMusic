@@ -7,5 +7,11 @@ import kotlinx.parcelize.Parcelize
 data class Playlist (
     val id: Long = 0,
     val name: String,
-    val browseId: String? = null
-): Parcelable
+    val browseId: String = "",
+    val thumbnailUrl: String? = null,
+    val songCount: Int? = null,
+    val channelName: String? = null,
+): Parcelable, Music() {
+    override val key: String
+        get() = browseId
+}

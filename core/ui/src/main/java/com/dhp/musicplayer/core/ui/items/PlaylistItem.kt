@@ -12,21 +12,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import com.dhp.musicplayer.core.common.extensions.thumbnail
-import com.dhp.musicplayer.data.network.innertube.Innertube
+import com.dhp.musicplayer.core.model.music.Playlist
 
 @Composable
 fun PlaylistItem(
-    playlist: Innertube.PlaylistItem,
+    playlist: Playlist,
     thumbnailSizePx: Int,
     thumbnailSizeDp: Dp,
     modifier: Modifier = Modifier,
     alternative: Boolean = false,
 ) {
     PlaylistItem(
-        thumbnailUrl = playlist.thumbnail?.url,
+        thumbnailUrl = playlist.thumbnailUrl,
         songCount = playlist.songCount,
-        name = playlist.info?.name,
-        channelName = playlist.channel?.name,
+        name = playlist.name,
+        channelName = playlist.channelName,
         thumbnailSizePx = thumbnailSizePx,
         thumbnailSizeDp = thumbnailSizeDp,
         modifier = modifier,

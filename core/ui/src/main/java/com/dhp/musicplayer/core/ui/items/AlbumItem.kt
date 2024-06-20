@@ -9,20 +9,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.dhp.musicplayer.core.common.extensions.thumbnail
-import com.dhp.musicplayer.data.network.innertube.Innertube
+import com.dhp.musicplayer.core.model.music.Album
 
 @Composable
 fun AlbumItem(
-    album: Innertube.AlbumItem,
+    album: Album,
     thumbnailSizePx: Int,
     thumbnailSizeDp: Dp,
     modifier: Modifier = Modifier,
     alternative: Boolean = false
 ) {
     AlbumItem(
-        thumbnailUrl = album.thumbnail?.url,
-        title = album.info?.name,
-        authors = album.authors?.joinToString("") { it.name ?: "" },
+        thumbnailUrl = album.thumbnailUrl,
+        title = album.title,
+        authors = album.authorsText,
         year = album.year,
         thumbnailSizePx = thumbnailSizePx,
         thumbnailSizeDp = thumbnailSizeDp,

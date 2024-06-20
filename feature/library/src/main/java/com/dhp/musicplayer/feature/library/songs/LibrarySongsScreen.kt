@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dhp.musicplayer.core.designsystem.constant.ListThumbnailSize
-import com.dhp.musicplayer.core.model.settings.LibrarySongsDetailType
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.model.settings.LibrarySongsDetailType
 import com.dhp.musicplayer.core.ui.items.DefaultListItem
 import com.dhp.musicplayer.feature.library.R
 

@@ -21,21 +21,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.dhp.musicplayer.core.designsystem.constant.AlbumThumbnailSizeDp
-import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.designsystem.component.TextTitle
 import com.dhp.musicplayer.core.designsystem.component.TopAppBarDetailScreen
+import com.dhp.musicplayer.core.designsystem.constant.AlbumThumbnailSizeDp
+import com.dhp.musicplayer.core.designsystem.constant.px
+import com.dhp.musicplayer.core.model.music.Album
+import com.dhp.musicplayer.core.model.music.Artist
+import com.dhp.musicplayer.core.model.music.MoodAndGenresDetail
+import com.dhp.musicplayer.core.model.music.Playlist
+import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.ErrorScreen
-import com.dhp.musicplayer.core.ui.extensions.getSubTitleTextInnertubeItem
-import com.dhp.musicplayer.core.ui.extensions.getThumbnailInnertubeItem
-import com.dhp.musicplayer.core.ui.extensions.getTitleTextInnertubeItem
+import com.dhp.musicplayer.core.ui.extensions.getSubTitleMusic
+import com.dhp.musicplayer.core.ui.extensions.getThumbnail
+import com.dhp.musicplayer.core.ui.extensions.getTitleMusic
 import com.dhp.musicplayer.core.ui.items.AlbumItem
 import com.dhp.musicplayer.core.ui.items.AlbumItemPlaceholder
 import com.dhp.musicplayer.core.ui.items.TextPlaceholder
-import com.dhp.musicplayer.data.network.innertube.Innertube
-import com.dhp.musicplayer.data.network.innertube.model.BrowseResult
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,9 +71,9 @@ fun MoodAndGenresDetailScreen(
             }
 
             is UiState.Success -> {
-                (moonAndGenresUiState as UiState.Success<BrowseResult?>).data?.let {
+                (moonAndGenresUiState as UiState.Success<MoodAndGenresDetail?>).data?.let {
                     MoodAndGenresDetailScreen(
-                        browseResult = it,
+                        moodAndGenresDetail = it,
                         navigateToPlaylistDetail = navigateToPlaylistDetail,
                         navigateToAlbumDetail = navigateToAlbumDetail,
                         navigateToArtistDetail = navigateToArtistDetail,
@@ -89,7 +92,7 @@ fun MoodAndGenresDetailScreen(
         TopAppBarDetailScreen(
             title = {
                 Text(
-                    text = (moonAndGenresUiState as? UiState.Success<BrowseResult?>)?.data?.title.orEmpty(),
+                    text = (moonAndGenresUiState as? UiState.Success<MoodAndGenresDetail?>)?.data?.title.orEmpty(),
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -105,7 +108,7 @@ fun MoodAndGenresDetailScreen(
 @Composable
 fun MoodAndGenresDetailScreen(
     modifier: Modifier = Modifier,
-    browseResult: BrowseResult,
+    moodAndGenresDetail: MoodAndGenresDetail,
     navigateToPlaylistDetail: (browseId: String?) -> Unit,
     navigateToAlbumDetail: (browseId: String?) -> Unit,
     navigateToArtistDetail: (browseId: String?) -> Unit,
@@ -118,7 +121,7 @@ fun MoodAndGenresDetailScreen(
             .windowInsetsPadding(LocalWindowInsets.current)
             .verticalScroll(scrollState)
     ) {
-        browseResult.items.forEach { browseResultItem ->
+        moodAndGenresDetail.items.forEach { browseResultItem ->
             TextTitle(text = browseResultItem.title.orEmpty())
             LazyRow() {
                 items(
@@ -126,26 +129,26 @@ fun MoodAndGenresDetailScreen(
                     key = { it.key }
                 ) { item ->
                     AlbumItem(
-                        thumbnailUrl = getThumbnailInnertubeItem(item),
-                        title = getTitleTextInnertubeItem(item),
-                        authors = getSubTitleTextInnertubeItem(item),
+                        thumbnailUrl = getThumbnail(item),
+                        title = getTitleMusic(item),
+                        authors = getSubTitleMusic(item),
 //                        year = getSubTitleTextInnertubeItem(item),
                         thumbnailSizePx = AlbumThumbnailSizeDp.px,
                         thumbnailSizeDp = AlbumThumbnailSizeDp,
                         alternative = true,
                         modifier = modifier.clickable {
                             when (item) {
-                                is Innertube.SongItem -> { }
+                                is Song -> {}
 
-                                is Innertube.AlbumItem -> {
+                                is Album -> {
                                     navigateToAlbumDetail(item.key)
                                 }
 
-                                is Innertube.PlaylistItem -> {
+                                is Playlist -> {
                                     navigateToPlaylistDetail(item.key)
                                 }
 
-                                is Innertube.ArtistItem -> {
+                                is Artist -> {
                                     navigateToArtistDetail(item.key)
                                 }
                             }

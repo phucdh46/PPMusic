@@ -26,9 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.constant.px
-import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.services.extensions.currentWindow
 import com.dhp.musicplayer.core.services.extensions.toSong
 import com.dhp.musicplayer.core.services.player.LoginRequiredException
@@ -158,7 +158,10 @@ fun Thumbnail(
                 isDisplayed = error != null,
                 messageProvider = {
                     when (error?.cause?.cause) {
-                        is UnresolvedAddressException, is UnknownHostException -> context.getString(R.string.network_error)
+                        is UnresolvedAddressException, is UnknownHostException -> context.getString(
+                            R.string.network_error
+                        )
+
                         is PlayableFormatNotFoundException -> context.getString(R.string.format_not_found)
                         is UnplayableException -> context.getString(R.string.unplayable_exception)
                         is LoginRequiredException -> context.getString(R.string.login_required_exception)

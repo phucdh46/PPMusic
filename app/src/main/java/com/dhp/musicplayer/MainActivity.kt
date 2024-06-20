@@ -39,7 +39,7 @@ import com.dhp.musicplayer.core.services.download.DownloadUtil
 import com.dhp.musicplayer.core.services.extensions.toSong
 import com.dhp.musicplayer.core.services.player.ExoPlayerService
 import com.dhp.musicplayer.core.services.player.PlayerConnection
-import com.dhp.musicplayer.data.datastore.DynamicThemeKey
+import com.dhp.musicplayer.core.datastore.DynamicThemeKey
 import com.dhp.musicplayer.core.common.extensions.intent
 import com.dhp.musicplayer.core.ui.common.rememberPreference
 import com.dhp.musicplayer.ui.App

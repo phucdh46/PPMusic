@@ -6,16 +6,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.toEnum
-import com.dhp.musicplayer.core.model.settings.UserData
-import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
-import com.dhp.musicplayer.data.datastore.ConfigApiKey
-import com.dhp.musicplayer.data.datastore.DarkThemeConfigKey
-import com.dhp.musicplayer.data.datastore.dataStore
-import com.dhp.musicplayer.data.datastore.get
-import com.dhp.musicplayer.data.network.api.response.KeyResponse
-import com.dhp.musicplayer.data.repository.AppRepository
-import com.dhp.musicplayer.data.repository.NetworkMusicRepository
+import com.dhp.musicplayer.core.common.model.isSuccess
 import com.dhp.musicplayer.core.common.utils.Logg
+import com.dhp.musicplayer.core.domain.repository.AppRepository
+import com.dhp.musicplayer.core.domain.user_case.GetApiKeyUseCase
+import com.dhp.musicplayer.core.model.settings.ApiKey
+import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
+import com.dhp.musicplayer.core.model.settings.UserData
+import com.dhp.musicplayer.core.datastore.ApiConfigKey
+import com.dhp.musicplayer.core.datastore.DarkThemeConfigKey
+import com.dhp.musicplayer.core.datastore.dataStore
+import com.dhp.musicplayer.core.datastore.get
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,7 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val application: Application,
-    private val appRepository: AppRepository,
+    private val getApiKeyUseCase: GetApiKeyUseCase,
 ) : ViewModel() {
 
     init {
@@ -39,19 +40,19 @@ class MainActivityViewModel @Inject constructor(
 
     private fun initConfig() {
         viewModelScope.launch(Dispatchers.IO) {
-            if (application.dataStore[ConfigApiKey] != null) return@launch
-            val result = appRepository.getKey()
-            if (result.isSuccess) {
-                result.getOrNull()?.result?.let { key ->
+            if (application.dataStore[ApiConfigKey] != null) return@launch
+            val result = getApiKeyUseCase()
+            if (result.isSuccess()) {
+                result.result?.let { key ->
                     Logg.d("getKey: ${key}")
                     val keyString = try {
-                        Json.encodeToString(KeyResponse.serializer(), key)
+                        Json.encodeToString(ApiKey.serializer(), key)
                     } catch (e: Exception) {
                         null
                     }
                     keyString?.let { string ->
                         application.dataStore.edit {
-                            it[ConfigApiKey] = string
+                            it[ApiConfigKey] = string
                         }
                     }
                 }

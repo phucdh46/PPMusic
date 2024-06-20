@@ -9,7 +9,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":data:repository"))
+    implementation(project(":core:domain"))
     implementation(project(":feature:menu"))
     implementation(project(":core:common"))
 

@@ -28,7 +28,7 @@ fun NavController.navigateToLibrarySongsDetail(
 
 fun NavGraphBuilder.librarySongsDetailScreen(
     onBackClick: () -> Unit,
-    showSnackBar: (String) -> Unit ,
+    showSnackBar: (String) -> Unit,
 ) {
     composable(
         route = LIBRARY_SONGS_DETAIL_ROUTE,

@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LibrarySongsDetailViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val type: StateFlow<String?> =
         savedStateHandle.getStateFlow(LIBRARY_SONGS_DETAIL_TYPE_ARG, null)

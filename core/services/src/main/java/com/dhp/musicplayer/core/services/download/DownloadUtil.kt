@@ -15,10 +15,9 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
 import com.dhp.musicplayer.core.common.utils.Logg
+import com.dhp.musicplayer.core.domain.repository.NetworkMusicRepository
 import com.dhp.musicplayer.core.services.di.DownloadCache
 import com.dhp.musicplayer.core.services.di.PlayerCache
-import com.dhp.musicplayer.data.network.innertube.model.bodies.PlayerBody
-import com.dhp.musicplayer.data.repository.NetworkMusicRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -64,31 +63,22 @@ class DownloadUtil @Inject constructor(
         }
 
         val playerResponse = runBlocking(Dispatchers.IO) {
-            networkMusicRepository.player(PlayerBody(videoId = mediaId))
-        }?.getOrThrow()
-        if (playerResponse?.playabilityStatus?.status != "OK") {
+            networkMusicRepository.player(id = mediaId, idDownload = true)
+        }
+        if (playerResponse?.status != "OK") {
             throw PlaybackException(
-                playerResponse?.playabilityStatus?.status,
+                playerResponse?.status,
                 null,
                 PlaybackException.ERROR_CODE_REMOTE_ERROR
             )
         }
 
-        val format = playerResponse.streamingData?.adaptiveFormats
-            ?.filter { it.isAudio }
-            ?.maxByOrNull {
-                it.bitrate?.times((if (connectivityManager.isActiveNetworkMetered) -1 else 1))
-                +(if (it.mimeType.startsWith("audio/webm")) 10240 else 0) // prefer opus stream
-            }
-            .let {
-                // Specify range to avoid YouTube's throttling
-                it?.copy(url = "${it.url}&range=0-${it.contentLength ?: 10000000}")
-            }
 
         songUrlCache[mediaId] =
-            format?.url!! to playerResponse.streamingData!!.expiresInSeconds * 1000L
-        Logg.d("Download: ${format.url!!.toUri()}")
-        dataSpec.withUri(format.url!!.toUri())
+            playerResponse.url!! to playerResponse.expiresInSeconds!! * 1000L
+        Logg.d("Download: ${playerResponse.url!!.toUri()}")
+        dataSpec.withUri(playerResponse
+            .url!!.toUri())
     }
     val downloadNotificationHelper =
         DownloadNotificationHelper(context, ExoDownloadService.CHANNEL_DOWNLOAD_ID)

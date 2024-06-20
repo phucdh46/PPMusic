@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,29 +35,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.designsystem.component.TextTitle
 import com.dhp.musicplayer.core.designsystem.constant.AlbumThumbnailSizeDp
 import com.dhp.musicplayer.core.designsystem.constant.ArtistThumbnailSizeDp
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.constant.px
-import com.dhp.musicplayer.core.common.enums.UiState
-import com.dhp.musicplayer.core.ui.items.AlbumItemPlaceholder
-import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
-import com.dhp.musicplayer.core.ui.items.TextPlaceholder
-import com.dhp.musicplayer.core.designsystem.component.TextTitle
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.model.music.Album
+import com.dhp.musicplayer.core.model.music.Artist
+import com.dhp.musicplayer.core.model.music.Playlist
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.ui.LocalMenuState
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
-import com.dhp.musicplayer.core.ui.extensions.toSong
 import com.dhp.musicplayer.core.ui.isLandscape
 import com.dhp.musicplayer.core.ui.items.AlbumItem
+import com.dhp.musicplayer.core.ui.items.AlbumItemPlaceholder
 import com.dhp.musicplayer.core.ui.items.ArtistItem
 import com.dhp.musicplayer.core.ui.items.PlaylistItem
 import com.dhp.musicplayer.core.ui.items.SongItem
-import com.dhp.musicplayer.data.network.innertube.Innertube
-import com.dhp.musicplayer.data.network.innertube.model.NavigationEndpoint
+import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
+import com.dhp.musicplayer.core.ui.items.TextPlaceholder
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -114,13 +113,11 @@ internal fun ForYouScreen(
                     onRefresh = viewModel::refresh,
                 ) {
                     ForYouScreen(
-                        songs = related?.songs?.map { it.toSong() } ?: emptyList(),
+                        songs = related?.songs ?: emptyList(),
                         onItemClicked = { song ->
                             playerConnection?.stopRadio()
                             playerConnection?.forcePlay(song)
-                            playerConnection?.addRadio(
-                                NavigationEndpoint.Endpoint.Watch(videoId = song.id)
-                            )
+                            playerConnection?.addRadio(song.radioEndpoint)
                         },
                         modifier = modifier,
                         album = related?.albums,
@@ -148,9 +145,9 @@ internal fun ForYouScreen(
     songs: List<Song>,
     onItemClicked: (Song) -> Unit,
     modifier: Modifier = Modifier,
-    album: List<Innertube.AlbumItem>?,
-    artist: List<Innertube.ArtistItem>?,
-    playlist: List<Innertube.PlaylistItem>?,
+    album: List<Album>?,
+    artist: List<Artist>?,
+    playlist: List<Playlist>?,
     onPlaylistItemClick: (browseId: String) -> Unit,
     onAlbumItemClick: (browseId: String) -> Unit,
     onArtistItemClick: (browseId: String) -> Unit,
@@ -238,7 +235,7 @@ internal fun ForYouScreen(
                 LazyRow() {
                     items(
                         items = album,
-                        key = { it.key }
+                        key = { it.id }
                     ) { album ->
                         AlbumItem(
                             album = album,
@@ -247,7 +244,7 @@ internal fun ForYouScreen(
                             alternative = true,
                             modifier = Modifier
                                 .clickable(onClick = {
-                                    onAlbumItemClick(album.key)
+                                    onAlbumItemClick(album.id)
                                 })
                         )
                     }
@@ -259,7 +256,7 @@ internal fun ForYouScreen(
                 LazyRow {
                     items(
                         items = artists,
-                        key = Innertube.ArtistItem::key,
+                        key = Artist::id,
                     ) { artist ->
                         ArtistItem(
                             artist = artist,
@@ -268,7 +265,7 @@ internal fun ForYouScreen(
                             alternative = true,
                             modifier = Modifier
                                 .clickable(onClick = {
-                                    onArtistItemClick(artist.key)
+                                    onArtistItemClick(artist.id)
                                 })
                         )
                     }
@@ -284,7 +281,7 @@ internal fun ForYouScreen(
                 LazyRow {
                     items(
                         items = playlists,
-                        key = Innertube.PlaylistItem::key,
+                        key = Playlist::browseId,
                     ) { playlist ->
                         PlaylistItem(
                             playlist = playlist,
@@ -293,7 +290,7 @@ internal fun ForYouScreen(
                             alternative = true,
                             modifier = Modifier
                                 .clickable(onClick = {
-                                    onPlaylistItemClick(playlist.key)
+                                    onPlaylistItemClick(playlist.browseId)
                                 })
                         )
                     }

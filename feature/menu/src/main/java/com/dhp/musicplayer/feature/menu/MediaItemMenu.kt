@@ -45,8 +45,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
-import com.dhp.musicplayer.core.designsystem.constant.Dimensions
-import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.common.extensions.formatAsDuration
 import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.designsystem.component.ConfirmationDialog
@@ -55,6 +53,8 @@ import com.dhp.musicplayer.core.designsystem.component.DefaultDialog
 import com.dhp.musicplayer.core.designsystem.component.DialogTextButton
 import com.dhp.musicplayer.core.designsystem.component.Menu
 import com.dhp.musicplayer.core.designsystem.component.MenuEntry
+import com.dhp.musicplayer.core.designsystem.constant.Dimensions
+import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.download.ExoDownloadService
@@ -161,7 +161,11 @@ fun MediaItemMenu(
                 BackHandler {
                     menuMediaState = MenuMediaState.DEFAULT
                 }
-                AddSongToPlaylist(mediaItem = mediaItem, onDismiss = onDismiss, onShowMessageAddSuccess = onShowMessageAddSuccess)
+                AddSongToPlaylist(
+                    mediaItem = mediaItem,
+                    onDismiss = onDismiss,
+                    onShowMessageAddSuccess = onShowMessageAddSuccess
+                )
             }
 
             MenuMediaState.SLEEP_TIMER -> {

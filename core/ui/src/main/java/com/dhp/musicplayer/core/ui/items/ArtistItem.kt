@@ -1,7 +1,6 @@
 package com.dhp.musicplayer.core.ui.items
 
 import com.dhp.musicplayer.core.common.extensions.thumbnail
-import com.dhp.musicplayer.data.network.innertube.Innertube
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme.typography
@@ -14,18 +13,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.dhp.musicplayer.core.designsystem.constant.px
+import com.dhp.musicplayer.core.model.music.Artist
 
 @Composable
 fun ArtistItem(
-    artist: Innertube.ArtistItem,
+    artist: Artist,
     thumbnailSizePx: Int,
     thumbnailSizeDp: Dp,
     modifier: Modifier = Modifier,
     alternative: Boolean = false,
 ) {
     ArtistItem(
-        thumbnailUrl = artist.thumbnail?.url,
-        name = artist.info?.name,
+        thumbnailUrl = artist.thumbnailUrl,
+        name = artist.name,
 //        subscribersCount = artist.subscribersCountText,
         subscribersCount = null,
         thumbnailSizePx = thumbnailSizePx,

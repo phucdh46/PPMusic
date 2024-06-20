@@ -11,7 +11,7 @@ android {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
-    implementation(project(":data:datastore"))
+    implementation(project(":core:datastore"))
 
 //    implementation(libs.androidx.hilt.navigation.compose)
 

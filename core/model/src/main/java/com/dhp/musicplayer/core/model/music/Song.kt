@@ -15,8 +15,12 @@ data class Song(
     val thumbnailUrl: String?,
     val likedAt: Long? = null,
     val totalPlayTimeMs: Long = 0,
-    val isOffline: Boolean = false
-) : Parcelable {
+    val isOffline: Boolean = false,
+    val radioEndpoint: RadioEndpoint? = null
+) : Parcelable, Music() {
+    override val key: String
+        get() = id
+
     fun toggleLike(): Song {
         return copy(
             likedAt = if (likedAt == null) System.currentTimeMillis() else null

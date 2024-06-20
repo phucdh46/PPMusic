@@ -25,9 +25,9 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.constant.px
-import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
@@ -37,7 +37,6 @@ import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.EmptyList
 import com.dhp.musicplayer.core.ui.items.SongItem
 import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
-import com.dhp.musicplayer.data.network.innertube.model.NavigationEndpoint
 import com.dhp.musicplayer.feature.library.R
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
 
@@ -145,9 +144,7 @@ fun FavouritesScreen(
                         onClick = {
                             playerConnection?.stopRadio()
                             playerConnection?.forcePlay(song)
-                            playerConnection?.addRadio(
-                                NavigationEndpoint.Endpoint.Watch(videoId = song.id)
-                            )
+                            playerConnection?.addRadio(song.radioEndpoint)
                         }
                     )
                     .animateItemPlacement()

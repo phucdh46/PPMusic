@@ -8,6 +8,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
+import com.dhp.musicplayer.core.model.music.RadioEndpoint
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.extensions.currentMetadata
 import com.dhp.musicplayer.core.services.player.ExoPlayerService
@@ -17,10 +18,10 @@ import com.dhp.musicplayer.core.services.extensions.forcePlay
 import com.dhp.musicplayer.core.services.extensions.playQueue
 import com.dhp.musicplayer.core.services.extensions.toSong
 import com.dhp.musicplayer.core.services.extensions.windows
-import com.dhp.musicplayer.data.network.innertube.Innertube
-import com.dhp.musicplayer.data.network.innertube.InnertubeApiService
-import com.dhp.musicplayer.data.network.innertube.model.NavigationEndpoint
-import com.dhp.musicplayer.data.network.innertube.model.bodies.NextBody
+import com.dhp.musicplayer.core.network.innertube.Innertube
+import com.dhp.musicplayer.core.network.innertube.InnertubeApiService
+import com.dhp.musicplayer.core.network.innertube.model.NavigationEndpoint
+import com.dhp.musicplayer.core.network.innertube.model.bodies.NextBody
 import com.dhp.musicplayer.core.services.utils.TimerJob
 import com.dhp.musicplayer.core.services.utils.timer
 import kotlinx.coroutines.CoroutineScope
@@ -164,7 +165,7 @@ class PlayerConnection(
      var isLoadingRadio = false
     private val coroutineScope = CoroutineScope(Dispatchers.IO) + Job()
 
-    fun addRadio(endpoint: NavigationEndpoint.Endpoint.Watch?) {
+    fun addRadio(endpoint: RadioEndpoint?) {
         radioJob?.cancel()
         isLoadingRadio = true
         radioJob = coroutineScope.launch(Dispatchers.Main) {

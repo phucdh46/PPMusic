@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import com.dhp.musicplayer.core.domain.repository.MusicRepository
 import com.dhp.musicplayer.core.model.music.Playlist
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.model.music.SongPlaylistMap
 import com.dhp.musicplayer.core.services.extensions.toSong
-import com.dhp.musicplayer.data.repository.MusicRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +49,11 @@ class LibraryViewModel @Inject constructor(
         }
     }
 
-    fun updatePlaylist(playlistName: String, playlist: Playlist, onResultMessage: (String) -> Unit) {
+    fun updatePlaylist(
+        playlistName: String,
+        playlist: Playlist,
+        onResultMessage: (String) -> Unit
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             musicRepository.update(playlist.copy(name = playlistName))
             onResultMessage(context.getString(R.string.rename_playlist_success_message))
@@ -59,7 +63,12 @@ class LibraryViewModel @Inject constructor(
     fun deletePlaylist(playlist: Playlist, onResultMessage: (String) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             musicRepository.delete(playlist)
-            onResultMessage(context.getString(R.string.delete_playlist_success_message, playlist.name))
+            onResultMessage(
+                context.getString(
+                    R.string.delete_playlist_success_message,
+                    playlist.name
+                )
+            )
         }
     }
 

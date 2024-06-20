@@ -28,23 +28,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.dhp.musicplayer.core.designsystem.constant.MoodAndGenresButtonHeight
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.designsystem.component.TextTitle
+import com.dhp.musicplayer.core.designsystem.constant.MoodAndGenresButtonHeight
 import com.dhp.musicplayer.core.designsystem.extensions.drawOneSideBorder
 import com.dhp.musicplayer.core.designsystem.extensions.shimmer
+import com.dhp.musicplayer.core.model.music.MoodAndGenres
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.EmptyList
 import com.dhp.musicplayer.core.ui.common.ErrorScreen
 import com.dhp.musicplayer.core.ui.items.TextPlaceholder
-import com.dhp.musicplayer.data.network.innertube.model.MoodAndGenres
 import com.dhp.musicplayer.feature.search.R
 
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
     navigateToMoodAndGenresDetail: (browseId: String?, params: String?) -> Unit,
-    ) {
+) {
     val uiStateSearchScreen by viewModel.uiStateSearchScreen.collectAsState()
     Box(
         modifier = Modifier
@@ -121,7 +121,7 @@ fun SearchScreen(
                                 row.forEach {
                                     MoodAndGenresButton(
                                         title = it.title,
-                                        color = it.getColor()?.let { it1 -> Color(it1) }
+                                        color = it.stripeColor?.let { it1 -> Color(it1) }
                                             ?: MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp),
                                         onClick = {
                                             onItemClick(it.endpoint.params, it.endpoint.browseId)

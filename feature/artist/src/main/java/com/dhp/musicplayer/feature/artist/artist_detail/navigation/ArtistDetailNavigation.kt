@@ -40,12 +40,12 @@ fun NavGraphBuilder.artistDetailScreen(
         ),
     ) {
         ArtistDetailScreen(
-            navigateToSingleDetail=navigateToAlbumDetail,
-        navigateToAlbumDetail=navigateToAlbumDetail,
-        onBackClick=onBackClick,
-        navigateToListSongs=navigateToListSongs,
-        navigateToListAlbums=navigateToListAlbums,
-        onShowMessage=onShowMessage
+            navigateToSingleDetail = navigateToAlbumDetail,
+            navigateToAlbumDetail = navigateToAlbumDetail,
+            onBackClick = onBackClick,
+            navigateToListSongs = navigateToListSongs,
+            navigateToListAlbums = navigateToListAlbums,
+            onShowMessage = onShowMessage
         )
     }
 }

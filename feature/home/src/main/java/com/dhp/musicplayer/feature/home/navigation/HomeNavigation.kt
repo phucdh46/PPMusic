@@ -3,9 +3,7 @@ package com.dhp.musicplayer.feature.home.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.dhp.musicplayer.feature.home.ForYouScreen
 
@@ -26,7 +24,7 @@ fun NavGraphBuilder.forYouScreen(
             navDeepLink { uriPattern = DEEP_LINK_URI_PATTERN },
         ),
 
-    ) {
+        ) {
         ForYouScreen(
             navigateToPlaylistDetail = navigateToPlaylistDetail,
             navigateToArtistDetail = navigateToArtistDetail,

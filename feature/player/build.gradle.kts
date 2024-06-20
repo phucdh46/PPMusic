@@ -11,8 +11,9 @@ android {
 dependencies {
 
     api(project(":core:services"))
-    api(project(":data:repository"))
+    implementation(project(":core:domain"))
     implementation(project(":feature:menu"))
+    implementation(project(":core:network"))
     implementation(libs.accompanist.pager)
     implementation(libs.reorderable)
 

@@ -44,14 +44,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.dhp.musicplayer.core.designsystem.constant.Dimensions
-import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.common.extensions.toSongsWithBitmap
 import com.dhp.musicplayer.core.designsystem.component.ConfirmationDialog
 import com.dhp.musicplayer.core.designsystem.component.TextFieldDialog
 import com.dhp.musicplayer.core.designsystem.component.TopAppBarDetailScreen
+import com.dhp.musicplayer.core.designsystem.constant.Dimensions
+import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.designsystem.extensions.shimmer
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.model.music.PlaylistWithSongs
@@ -83,7 +83,7 @@ fun LocalPlaylistDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     BoxWithConstraints(Modifier.fillMaxSize()) {
         TopAppBarDetailScreen(
-            onBackClick = onBackClick ,
+            onBackClick = onBackClick,
         )
         val thumbnailSizeDp = if (isLandscape) (maxHeight - 128.dp) else (maxWidth / 3 * 2)
         when (uiState) {
@@ -156,7 +156,7 @@ fun LocalPlaylistDetailScreen(
     onShowMessage: (String) -> Unit,
     onBackClick: () -> Unit,
 
-) {
+    ) {
     val menuState = LocalMenuState.current
 
     var isRenaming by rememberSaveable {

@@ -25,25 +25,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.dhp.musicplayer.core.designsystem.component.ChipsRow
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.constant.ResultNavigationKey
-import com.dhp.musicplayer.core.designsystem.component.ChipsRow
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.model.music.Album
+import com.dhp.musicplayer.core.model.music.Artist
+import com.dhp.musicplayer.core.model.music.Playlist
+import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.ui.LocalMenuState
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.core.ui.common.HandlePagingStates
-import com.dhp.musicplayer.core.ui.extensions.getSubTitleTextInnertubeItem
-import com.dhp.musicplayer.core.ui.extensions.getThumbnailInnertubeItem
-import com.dhp.musicplayer.core.ui.extensions.getTitleTextInnertubeItem
-import com.dhp.musicplayer.core.ui.extensions.toSong
+import com.dhp.musicplayer.core.ui.extensions.getSubTitleMusic
+import com.dhp.musicplayer.core.ui.extensions.getThumbnail
+import com.dhp.musicplayer.core.ui.extensions.getTitleMusic
 import com.dhp.musicplayer.core.ui.items.SongItem
-import com.dhp.musicplayer.data.network.innertube.Innertube
-import com.dhp.musicplayer.data.network.innertube.InnertubeApiService
+import com.dhp.musicplayer.core.network.innertube.InnertubeApiService
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
 import com.dhp.musicplayer.feature.search.R
 import com.dhp.musicplayer.feature.search.search_by_text.SearchToolbar
-
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
@@ -91,7 +92,7 @@ fun SearchResultScreen(
             },
             readOnly = true,
             trailingIconClick = {
-               navController.previousBackStackEntry?.savedStateHandle?.set(
+                navController.previousBackStackEntry?.savedStateHandle?.set(
                     ResultNavigationKey.SEARCH_RESULT_KEY,
                     ""
                 )
@@ -126,23 +127,23 @@ fun SearchResultScreen(
                 item?.let {
                     SongItem(
                         id = item.key,
-                        thumbnailUrl = getThumbnailInnertubeItem(item),
-                        title = getTitleTextInnertubeItem(item),
-                        subtitle = getSubTitleTextInnertubeItem(item),
-                        duration = getSubTitleTextInnertubeItem(item),
+                        thumbnailUrl = getThumbnail(item),
+                        title = getTitleMusic(item),
+                        subtitle = getSubTitleMusic(item),
+                        duration = getSubTitleMusic(item),
                         isOffline = false,
                         bitmap = null,
                         thumbnailSizeDp = Dimensions.thumbnails.song,
                         trailingContent = {
                             when (item) {
-                                is Innertube.SongItem -> {
+                                is Song -> {
                                     Box {
                                         IconButton(
                                             onClick = {
                                                 menuState.show {
                                                     MediaItemMenu(
                                                         onDismiss = menuState::dismiss,
-                                                        mediaItem = item.asMediaItem,
+                                                        mediaItem = item.asMediaItem(),
                                                         onShowMessageAddSuccess = onShowMessage
                                                     )
                                                 }
@@ -163,11 +164,11 @@ fun SearchResultScreen(
                             .combinedClickable(
                                 onLongClick = {
                                     when (item) {
-                                        is Innertube.SongItem -> {
+                                        is Song -> {
                                             menuState.show {
                                                 MediaItemMenu(
                                                     onDismiss = menuState::dismiss,
-                                                    mediaItem = item.asMediaItem,
+                                                    mediaItem = item.asMediaItem(),
                                                     onShowMessageAddSuccess = onShowMessage
                                                 )
                                             }
@@ -178,23 +179,23 @@ fun SearchResultScreen(
                                 },
                                 onClick = {
                                     when (item) {
-                                        is Innertube.SongItem -> {
+                                        is Song -> {
                                             playerConnection?.stopRadio()
-                                            playerConnection?.forcePlay(item.toSong())
-                                            playerConnection?.addRadio(item.info?.endpoint)
+                                            playerConnection?.forcePlay(item)
+                                            playerConnection?.addRadio(item.radioEndpoint)
                                         }
 
-                                        is Innertube.AlbumItem -> {
+                                        is Album -> {
                                             navigateToAlbumDetail(item.key)
                                         }
 
-                                        is Innertube.PlaylistItem -> {
+                                        is Playlist -> {
                                             navigateToPlaylistDetail(item.key)
 
                                         }
 
-                                        is Innertube.ArtistItem -> {
-                                            navigateToArtistDetail( item.key)
+                                        is Artist -> {
+                                            navigateToArtistDetail(item.key)
                                         }
                                     }
                                 }

@@ -1,16 +1,10 @@
 package com.dhp.musicplayer.feature.artist.list_songs
 
-import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.cachedIn
 import com.dhp.musicplayer.core.common.enums.UiState
-import com.dhp.musicplayer.data.network.innertube.Innertube
-import com.dhp.musicplayer.data.network.innertube.utils.from
-import com.dhp.musicplayer.data.network.source.ListMusicPagingSource
+import com.dhp.musicplayer.core.domain.repository.NetworkMusicRepository
 import com.dhp.musicplayer.feature.artist.list_songs.navigation.LIST_SONGS_BROWSE_ID_ARG
 import com.dhp.musicplayer.feature.artist.list_songs.navigation.LIST_SONGS_PARAMS_ARG
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,24 +18,23 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ListSongsViewModel @Inject constructor(
-    private val application: Application,
     private val savedStateHandle: SavedStateHandle,
+    private val networkMusicRepository: NetworkMusicRepository,
 ) : ViewModel() {
-    val browseId: StateFlow<String?> = savedStateHandle.getStateFlow(LIST_SONGS_BROWSE_ID_ARG, null)
-    private val params: StateFlow<String?> = savedStateHandle.getStateFlow(LIST_SONGS_PARAMS_ARG, null)
+    private val browseId: StateFlow<String?> =
+        savedStateHandle.getStateFlow(LIST_SONGS_BROWSE_ID_ARG, null)
+    private val params: StateFlow<String?> =
+        savedStateHandle.getStateFlow(LIST_SONGS_PARAMS_ARG, null)
 
     val pagingData = browseId.combine(params) { browseIdValue, paramsValue ->
         Pair(browseIdValue, paramsValue)
-    }.map {(browseIdValue, paramsValue) ->
+    }.map { (browseIdValue, paramsValue) ->
         if (browseIdValue != null && paramsValue != null) {
-            val data = Pager(
-                config = PagingConfig(pageSize = 20),
-                pagingSourceFactory = { ListMusicPagingSource(browseId = browseIdValue,
-                    paramsRequest = paramsValue,
-                    context = application,
-                    fromMusicResponsiveListItemRenderer = Innertube.SongItem.Companion::from
-                ) }
-            ).flow.cachedIn(viewModelScope)
+            val data = networkMusicRepository.getListSongs(
+                browseId = browseIdValue,
+                params = paramsValue,
+                scope = viewModelScope
+            )
             delay(500)
             UiState.Success(data)
         } else {

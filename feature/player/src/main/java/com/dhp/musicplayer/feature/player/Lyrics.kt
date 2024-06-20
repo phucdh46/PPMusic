@@ -44,12 +44,12 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
-import com.dhp.musicplayer.data.network.kugou.KuGou
-import com.dhp.musicplayer.data.network.kugou.findCurrentLineIndex
-import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.core.common.utils.Logg
 import com.dhp.musicplayer.core.designsystem.extensions.verticalFadingEdge
+import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.core.ui.items.TextPlaceholder
+import com.dhp.musicplayer.core.network.kugou.KuGou
+import com.dhp.musicplayer.core.network.kugou.findCurrentLineIndex
 import com.dhp.musicplayer.feature.player.utils.SynchronizedLyrics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -291,7 +291,10 @@ fun Lyrics(
                             }
                         }
                     ) {
-                        Text(text = stringResource(R.string.lyric_text_auto_mode), style = typography.labelMedium)
+                        Text(
+                            text = stringResource(R.string.lyric_text_auto_mode),
+                            style = typography.labelMedium
+                        )
                     }
                 }
 

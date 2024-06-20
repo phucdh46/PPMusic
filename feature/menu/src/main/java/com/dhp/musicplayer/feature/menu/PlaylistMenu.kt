@@ -1,14 +1,13 @@
 package com.dhp.musicplayer.feature.menu
 
-import com.dhp.musicplayer.core.designsystem.component.Menu
-import com.dhp.musicplayer.core.designsystem.component.MenuEntry
-
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dhp.musicplayer.core.designsystem.component.Menu
+import com.dhp.musicplayer.core.designsystem.component.MenuEntry
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 
 @Composable

@@ -62,7 +62,7 @@ fun SearchByTextScreen(
     searchViewModel: SearchByTextViewModel = hiltViewModel(),
     navController: NavController,
     navigateToSearchResult: (query: String) -> Unit,
-    ) {
+) {
     val searchQuery by searchViewModel.searchQuery.collectAsState()
     val searchSuggestions by searchViewModel.searchSuggestions.collectAsState(emptyList())
     val searchHistories by searchViewModel.searchHistories.collectAsState()

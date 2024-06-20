@@ -10,7 +10,7 @@ import com.dhp.musicplayer.feature.search.search_result.SearchResultScreen
 
 
 const val SEARCH_RESULT_QUERY_ARG = "search_result_query"
-const val SEARCH_RESULT_ROUTE_BASE = "earch_result_route"
+const val SEARCH_RESULT_ROUTE_BASE = "search_result_route"
 const val SEARCH_RESULT_ROUTE =
     "$SEARCH_RESULT_ROUTE_BASE?$SEARCH_RESULT_QUERY_ARG={$SEARCH_RESULT_QUERY_ARG}"
 

@@ -4,14 +4,12 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.core.common.enums.UiState
-import com.dhp.musicplayer.data.datastore.ConfigApiKey
-import com.dhp.musicplayer.data.datastore.RelatedMediaIdKey
-import com.dhp.musicplayer.data.datastore.dataStore
-import com.dhp.musicplayer.data.datastore.get
-import com.dhp.musicplayer.data.network.innertube.Innertube
-import com.dhp.musicplayer.data.network.innertube.InnertubeApiService
-import com.dhp.musicplayer.data.network.innertube.model.bodies.NextBody
-import com.dhp.musicplayer.data.repository.NetworkMusicRepository
+import com.dhp.musicplayer.core.domain.repository.NetworkMusicRepository
+import com.dhp.musicplayer.core.model.music.RelatedPage
+import com.dhp.musicplayer.core.datastore.ApiConfigKey
+import com.dhp.musicplayer.core.datastore.RelatedMediaIdKey
+import com.dhp.musicplayer.core.datastore.dataStore
+import com.dhp.musicplayer.core.datastore.get
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,8 +26,8 @@ class HomeViewModel @Inject constructor(
     private val networkMusicRepository: NetworkMusicRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<UiState<Innertube.RelatedPage>>(UiState.Loading)
-    val uiState: StateFlow<UiState<Innertube.RelatedPage>> = _uiState
+    private val _uiState = MutableStateFlow<UiState<RelatedPage>>(UiState.Loading)
+    val uiState: StateFlow<UiState<RelatedPage>> = _uiState
 
     val isRefreshing = MutableStateFlow(false)
 
@@ -40,7 +38,7 @@ class HomeViewModel @Inject constructor(
     private fun fetchRelatedMedia() {
         viewModelScope.launch {
             application.dataStore.data.distinctUntilChanged()
-                .map { dataStore -> dataStore[ConfigApiKey] }
+                .map { dataStore -> dataStore[ApiConfigKey] }
                 .distinctUntilChanged()
                 .collect { configApiKey ->
                     if (configApiKey != null) {
@@ -51,9 +49,8 @@ class HomeViewModel @Inject constructor(
                                 application.dataStore[RelatedMediaIdKey] ?: "xl8thVrlvjI"
                             }
                             val result = withContext(Dispatchers.IO) {
-//                                InnertubeApiService.getInstance(application).relatedPage(NextBody(videoId = relatedMediaId))
-                                networkMusicRepository.relatedPage(NextBody(videoId = relatedMediaId))
-                            }?.getOrNull()
+                                networkMusicRepository.relatedPage(id = relatedMediaId)
+                            }
                             if (result != null) {
                                 _uiState.value = UiState.Success(result)
                             } else {

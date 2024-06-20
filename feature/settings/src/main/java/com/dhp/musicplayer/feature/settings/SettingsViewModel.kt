@@ -6,8 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.toEnum
 import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
-import com.dhp.musicplayer.data.datastore.DarkThemeConfigKey
-import com.dhp.musicplayer.data.datastore.dataStore
+import com.dhp.musicplayer.core.datastore.DarkThemeConfigKey
+import com.dhp.musicplayer.core.datastore.dataStore
+import com.dhp.musicplayer.core.datastore.edit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
-import com.dhp.musicplayer.data.datastore.edit
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -27,9 +27,11 @@ class SettingsViewModel @Inject constructor(
         .map { dataStore -> dataStore[DarkThemeConfigKey].toEnum(DarkThemeConfig.FOLLOW_SYSTEM) }
         .distinctUntilChanged()
         .map {
-            UiState.Success(UserEditableSettings(
-                darkThemeConfig = it,
-            ))
+            UiState.Success(
+                UserEditableSettings(
+                    darkThemeConfig = it,
+                )
+            )
         }
         .stateIn(
             scope = viewModelScope,

@@ -20,8 +20,6 @@ fun MediaItem.toOnlineAndLocalSong(context: Context? = null): Song {
         mediaMetadata.artworkUri?.toString()
     }
 
-    Logg.d("toOnlineAndLocalSong: $idLocal - $thumbnail")
-
     return Song(
         id = mediaId,
         idLocal = mediaId.toLongOrNull() ?: 0L,
