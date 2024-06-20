@@ -7,8 +7,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.core.common.enums.UiState

@@ -6,4 +6,7 @@ data class Album(
     val thumbnailUrl: String? = null,
     val year: String? = null,
     val authorsText: String? = null,
-)
+): Music() {
+    override val key: String
+        get() = id
+}

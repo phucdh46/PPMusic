@@ -1,6 +1,5 @@
 package com.dhp.musicplayer.feature.settings
 
-import android.app.AlertDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,12 +10,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,14 +34,8 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Switch
-import androidx.compose.runtime.collectAsState
 import com.dhp.musicplayer.core.ui.common.rememberPreference
-import com.dhp.musicplayer.data.datastore.DynamicThemeKey
+import com.dhp.musicplayer.core.datastore.DynamicThemeKey
 
 
 @Composable

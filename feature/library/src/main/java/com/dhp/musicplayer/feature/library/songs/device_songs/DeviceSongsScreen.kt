@@ -34,13 +34,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.isAtLeastAndroid33
 import com.dhp.musicplayer.core.common.extensions.openSettingsForReadExternalStorage
 import com.dhp.musicplayer.core.common.extensions.stringToBitMap
-import com.dhp.musicplayer.core.model.music.Song
+import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.ui.LocalMenuState
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
@@ -144,7 +144,7 @@ fun DeviceSongsScreen(
             DeviceSongsScreen(
                 modifier = modifier,
                 songs = songs,
-                showMessage =  showMessage
+                showMessage = showMessage
             )
         }
 
@@ -157,7 +157,7 @@ fun DeviceSongsScreen(
 fun DeviceSongsScreen(
     modifier: Modifier,
     songs: List<Song>,
-    showMessage: (String) -> Unit ,
+    showMessage: (String) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val playerConnection = LocalPlayerConnection.current

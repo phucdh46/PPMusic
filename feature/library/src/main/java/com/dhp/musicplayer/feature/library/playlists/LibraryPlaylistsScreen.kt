@@ -1,6 +1,5 @@
 package com.dhp.musicplayer.feature.library.playlists
 
-
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -41,18 +40,18 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.dhp.musicplayer.core.designsystem.constant.GridThumbnailHeight
 import com.dhp.musicplayer.core.designsystem.component.ConfirmationDialog
 import com.dhp.musicplayer.core.designsystem.component.TextFieldDialog
-import com.dhp.musicplayer.core.model.settings.LibraryViewType
-import com.dhp.musicplayer.data.datastore.PlaylistViewTypeKey
+import com.dhp.musicplayer.core.designsystem.constant.GridThumbnailHeight
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.model.settings.LibraryViewType
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.EmptyList
 import com.dhp.musicplayer.core.ui.common.HideOnScrollFAB
 import com.dhp.musicplayer.core.ui.common.rememberEnumPreference
 import com.dhp.musicplayer.core.ui.items.PlaylistGridItem
 import com.dhp.musicplayer.core.ui.items.PlaylistListItem
+import com.dhp.musicplayer.core.datastore.PlaylistViewTypeKey
 import com.dhp.musicplayer.feature.library.LibraryViewModel
 import com.dhp.musicplayer.feature.library.R
 
@@ -96,14 +95,19 @@ fun LibraryPlaylistsScreen(
         TextFieldDialog(
             hintText = stringResource(R.string.hint_rename_dialog),
             title = {
-                Text(text = stringResource(R.string.title_rename_dialog).uppercase(), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = stringResource(R.string.title_rename_dialog).uppercase(),
+                    style = MaterialTheme.typography.titleMedium
+                )
             },
             initialTextInput = currentSelectPlaylist?.name ?: "",
             onDismiss = { isRenaming = false },
             onDone = { text ->
-                currentSelectPlaylist?.let { viewModel.updatePlaylist(text, it) { message ->
-                    showMessage(message)
-                } }
+                currentSelectPlaylist?.let {
+                    viewModel.updatePlaylist(text, it) { message ->
+                        showMessage(message)
+                    }
+                }
             }
         )
     }
@@ -114,15 +118,23 @@ fun LibraryPlaylistsScreen(
 
     if (isDeleting) {
         ConfirmationDialog(
-            text = stringResource(id = R.string.body_delete_dialog, currentSelectPlaylist?.name?:""),
+            text = stringResource(
+                id = R.string.body_delete_dialog,
+                currentSelectPlaylist?.name ?: ""
+            ),
             onDismiss = { isDeleting = false },
             onConfirm = {
-                currentSelectPlaylist?.let { viewModel.deletePlaylist(it) { message ->
-                    showMessage(message)
-                }}
+                currentSelectPlaylist?.let {
+                    viewModel.deletePlaylist(it) { message ->
+                        showMessage(message)
+                    }
+                }
             },
             title = {
-                Text(text = stringResource(id = R.string.title_delete_dialog).uppercase(), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = stringResource(id = R.string.title_delete_dialog).uppercase(),
+                    style = MaterialTheme.typography.titleMedium
+                )
             },
         )
     }

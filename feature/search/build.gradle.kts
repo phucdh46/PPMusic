@@ -10,7 +10,8 @@ android {
 
 dependencies {
     implementation(project(":core:common"))
-    implementation(project(":data:repository"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:network"))
     implementation(project(":feature:menu"))
 
     implementation(libs.paging.compose)

@@ -18,9 +18,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.core.common.extensions.toEnum
-import com.dhp.musicplayer.core.model.settings.LibrarySongsDetailType
 import com.dhp.musicplayer.core.common.utils.Logg
 import com.dhp.musicplayer.core.designsystem.component.TopAppBarDetailScreen
+import com.dhp.musicplayer.core.model.settings.LibrarySongsDetailType
 import com.dhp.musicplayer.feature.library.R
 import com.dhp.musicplayer.feature.library.songs.device_songs.DeviceSongsScreen
 import com.dhp.musicplayer.feature.library.songs.downloaded.DownloadSongsScreen
@@ -31,7 +31,7 @@ import com.dhp.musicplayer.feature.library.songs.favourites.FavouritesScreen
 fun LibrarySongsDetailScreen(
     viewModel: LibrarySongsDetailViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
-    showSnackBar: (String) -> Unit ,
+    showSnackBar: (String) -> Unit,
 
     ) {
     val type by viewModel.type.collectAsState()

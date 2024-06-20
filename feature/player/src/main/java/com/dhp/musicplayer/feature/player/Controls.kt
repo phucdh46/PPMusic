@@ -37,10 +37,10 @@ import androidx.media3.common.C
 import androidx.media3.common.Player
 import com.dhp.musicplayer.core.common.extensions.formatAsDuration
 import com.dhp.musicplayer.core.designsystem.component.SeekBar
+import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.services.extensions.forceSeekToNext
 import com.dhp.musicplayer.core.services.extensions.forceSeekToPrevious
 import com.dhp.musicplayer.core.services.extensions.toggleRepeatMode
-import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 
 @Composable

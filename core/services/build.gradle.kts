@@ -15,9 +15,9 @@ android {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
-    implementation(project(":data:repository"))
-    implementation(project(":data:datastore"))
-    implementation(project(":data:network"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:datastore"))
+    implementation(project(":core:network"))
 
     api(libs.media3.exoplayer)
     implementation(libs.media3.okhttp)

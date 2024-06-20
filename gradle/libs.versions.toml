@@ -122,6 +122,8 @@ palette = { group = "androidx.palette", name = "palette", version = "1.0.0" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
+javax-inject = { module = "javax.inject:javax.inject", version = "1" }
+
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 #android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }

@@ -27,12 +27,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
+import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.constant.px
-import com.dhp.musicplayer.core.common.enums.UiState
-import com.dhp.musicplayer.core.model.music.Song
-import com.dhp.musicplayer.data.network.innertube.model.NavigationEndpoint
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.ui.LocalMenuState
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
@@ -48,8 +47,8 @@ import com.dhp.musicplayer.feature.menu.MediaItemMenu
 @Composable
 fun DownloadSongsScreen(
     viewModel: DownloadSongsViewModel = hiltViewModel(),
-    showSnackBar: (String) -> Unit ,
-    ) {
+    showSnackBar: (String) -> Unit,
+) {
     val uiState by viewModel.uiState.collectAsState()
     Box(
         modifier = Modifier
@@ -84,7 +83,7 @@ fun DownloadSongsScreen(
 @Composable
 fun DownloadSongsScreen(
     songs: List<Song>,
-    showSnackBar: (String) -> Unit ,
+    showSnackBar: (String) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val menuState = LocalMenuState.current
@@ -148,9 +147,7 @@ fun DownloadSongsScreen(
                         onClick = {
                             playerConnection?.stopRadio()
                             playerConnection?.forcePlay(song)
-                            playerConnection?.addRadio(
-                                NavigationEndpoint.Endpoint.Watch(videoId = song.id)
-                            )
+                            playerConnection?.addRadio(song.radioEndpoint)
                         }
                     )
                     .animateItemPlacement()

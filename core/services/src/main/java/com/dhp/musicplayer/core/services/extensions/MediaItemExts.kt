@@ -6,7 +6,7 @@ import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import com.dhp.musicplayer.core.model.music.Song
-import com.dhp.musicplayer.data.network.innertube.Innertube
+import com.dhp.musicplayer.core.network.innertube.Innertube
 
 fun MediaItem.toSong(): Song {
     val idLocal = mediaId.toLongOrNull()

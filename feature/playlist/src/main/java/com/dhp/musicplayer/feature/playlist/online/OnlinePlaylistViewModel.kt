@@ -1,15 +1,11 @@
 package com.dhp.musicplayer.feature.playlist.online
 
-import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.domain.repository.NetworkMusicRepository
 import com.dhp.musicplayer.core.model.music.PlaylistDisplay
-import com.dhp.musicplayer.core.ui.extensions.toSong
-import com.dhp.musicplayer.data.network.innertube.model.bodies.BrowseBody
-import com.dhp.musicplayer.data.network.innertube.utils.completed
-import com.dhp.musicplayer.data.repository.NetworkMusicRepository
 import com.dhp.musicplayer.feature.playlist.online.navigation.IS_ALBUM_ARG
 import com.dhp.musicplayer.feature.playlist.online.navigation.ONLINE_PLAYLIST_ID_ARG
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,11 +19,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OnlinePlaylistViewModel @Inject constructor(
-    private val application: Application,
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val networkMusicRepository: NetworkMusicRepository,
-): ViewModel() {
-    val browseId: StateFlow<String?> = savedStateHandle.getStateFlow(ONLINE_PLAYLIST_ID_ARG, null)
+) : ViewModel() {
+    private val browseId: StateFlow<String?> =
+        savedStateHandle.getStateFlow(ONLINE_PLAYLIST_ID_ARG, null)
     private val isAlbum: StateFlow<Boolean> = savedStateHandle.getStateFlow(IS_ALBUM_ARG, false)
 
     val uiState: StateFlow<UiState<PlaylistDisplay>> =
@@ -36,9 +32,9 @@ class OnlinePlaylistViewModel @Inject constructor(
                 val result = withContext(Dispatchers.IO) {
                     try {
                         if (isAlbum) {
-                            networkMusicRepository.albumPage(BrowseBody(browseId = browseId))?.completed(application)?.getOrNull()
+                            networkMusicRepository.albumPage(browseId = browseId)
                         } else {
-                            networkMusicRepository.playlistPage(BrowseBody(browseId = browseId))?.completed(application)?.getOrNull()
+                            networkMusicRepository.playlistPage(browseId = browseId)
                         }
                     } catch (e: Exception) {
                         null
@@ -50,8 +46,8 @@ class OnlinePlaylistViewModel @Inject constructor(
                     UiState.Success(
                         PlaylistDisplay(
                             name = result.title.orEmpty(),
-                            thumbnailUrl = result.thumbnail?.url,
-                            songs = result.songsPage?.items?.map { it.toSong() } ?: emptyList()
+                            thumbnailUrl = result.thumbnail,
+                            songs = result.songsPage ?: emptyList()
                         )
                     )
                 }

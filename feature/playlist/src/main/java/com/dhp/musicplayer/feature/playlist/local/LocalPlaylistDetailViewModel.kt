@@ -7,10 +7,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.domain.repository.MusicRepository
 import com.dhp.musicplayer.core.model.music.PlaylistWithSongs
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.model.music.SongPlaylistMap
-import com.dhp.musicplayer.data.repository.MusicRepository
 import com.dhp.musicplayer.feature.playlist.R
 import com.dhp.musicplayer.feature.playlist.local.navigation.LOCAL_PLAYLIST_ID_ARG
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,8 +32,8 @@ class LocalPlaylistDetailViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val savedStateHandle: SavedStateHandle,
     private val musicRepository: MusicRepository
-): ViewModel() {
-    val playlistId: StateFlow<Long?> = savedStateHandle.getStateFlow(LOCAL_PLAYLIST_ID_ARG, null)
+) : ViewModel() {
+    private val playlistId: StateFlow<Long?> = savedStateHandle.getStateFlow(LOCAL_PLAYLIST_ID_ARG, null)
 
     private val currentPlaylist: MutableState<PlaylistWithSongs?> = mutableStateOf(null)
 
@@ -77,7 +77,7 @@ class LocalPlaylistDetailViewModel @Inject constructor(
     }
 
     fun updatePlaylist(playlistName: String, onResultMessage: (String) -> Unit) {
-        currentPlaylist.value?.playlist?.let {  playlist ->
+        currentPlaylist.value?.playlist?.let { playlist ->
             viewModelScope.launch(Dispatchers.IO) {
                 musicRepository.update(playlist.copy(name = playlistName))
                 onResultMessage(context.getString(R.string.rename_playlist_success_message))

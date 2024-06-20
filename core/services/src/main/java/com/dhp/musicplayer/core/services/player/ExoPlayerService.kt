@@ -62,13 +62,12 @@ import com.dhp.musicplayer.core.common.extensions.isAtLeastAndroid8
 import com.dhp.musicplayer.core.model.music.PersistQueueMedia
 import com.dhp.musicplayer.core.model.music.PlaylistPreview
 import com.dhp.musicplayer.core.model.music.Song
-import com.dhp.musicplayer.data.datastore.PersistentQueueDataKey
-import com.dhp.musicplayer.data.datastore.RelatedMediaIdKey
-import com.dhp.musicplayer.data.datastore.RepeatModeKey
-import com.dhp.musicplayer.data.datastore.dataStore
-import com.dhp.musicplayer.data.datastore.get
-import com.dhp.musicplayer.data.repository.MusicRepository
-import com.dhp.musicplayer.data.repository.NetworkMusicRepository
+import com.dhp.musicplayer.core.datastore.PersistentQueueDataKey
+import com.dhp.musicplayer.core.datastore.RelatedMediaIdKey
+import com.dhp.musicplayer.core.datastore.RepeatModeKey
+import com.dhp.musicplayer.core.datastore.dataStore
+import com.dhp.musicplayer.core.datastore.get
+import com.dhp.musicplayer.core.domain.repository.MusicRepository
 import com.dhp.musicplayer.core.services.di.PlayerCache
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.services.extensions.forceSeekToNext
@@ -77,9 +76,9 @@ import com.dhp.musicplayer.core.services.extensions.mediaItems
 import com.dhp.musicplayer.core.services.extensions.shouldBePlaying
 import com.dhp.musicplayer.core.services.extensions.toSong
 import com.dhp.musicplayer.core.common.utils.Logg
+import com.dhp.musicplayer.core.domain.repository.NetworkMusicRepository
 import com.dhp.musicplayer.core.services.R
 import com.dhp.musicplayer.core.services.download.DownloadUtil
-import com.dhp.musicplayer.data.network.innertube.model.bodies.PlayerBody
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -365,18 +364,16 @@ class ExoPlayerService : MediaBrowserService(), Player.Listener, PlaybackStatsLi
                         ringBuffer.getOrNull(0)?.first -> dataSpec.withUri(ringBuffer.getOrNull(0)!!.second)
                         ringBuffer.getOrNull(1)?.first -> dataSpec.withUri(ringBuffer.getOrNull(1)!!.second)
                         else -> {
-                            val urlResult = runBlocking(Dispatchers.IO) {
-                                networkMusicRepository.player(PlayerBody(videoId = videoId))
-                            }?.mapCatching { body ->
-                                if (body.videoDetails?.videoId != videoId) {
+                            val result = runBlocking(Dispatchers.IO) {
+                                networkMusicRepository.player(id = videoId)
+                            }
+                            val urlResult = runCatching {
+                                if (result?.id != videoId) {
                                     throw VideoIdMismatchException()
                                 }
 
-                                when (val status = body.playabilityStatus?.status) {
-                                    "OK" -> body.streamingData?.highestQualityFormat?.let { format ->
-//
-                                        format.url
-                                    } ?: throw PlayableFormatNotFoundException()
+                                when (val status = result.status) {
+                                    "OK" -> result.url ?: throw PlayableFormatNotFoundException()
 
                                     "UNPLAYABLE" -> throw UnplayableException()
                                     "LOGIN_REQUIRED" -> throw LoginRequiredException()
@@ -387,7 +384,9 @@ class ExoPlayerService : MediaBrowserService(), Player.Listener, PlaybackStatsLi
                                     )
                                 }
                             }
-                            urlResult?.getOrThrow()?.let { url ->
+
+
+                            urlResult.getOrThrow().let { url ->
                                 Logg.d("Service: url: $url")
                                 ringBuffer.append(videoId to url.toUri())
                                 dataSpec.withUri(url.toUri())

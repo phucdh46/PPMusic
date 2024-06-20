@@ -11,7 +11,8 @@ import com.dhp.musicplayer.feature.playlist.local.LocalPlaylistDetailScreen
 
 const val LOCAL_PLAYLIST_ID_ARG = "local_playlist_id"
 const val LOCAL_PLAYLIST_DETAIL_ROUTE_BASE = "local_playlist_route"
-const val LOCAL_PLAYLIST_DETAIL_ROUTE = "$LOCAL_PLAYLIST_DETAIL_ROUTE_BASE?$LOCAL_PLAYLIST_ID_ARG={$LOCAL_PLAYLIST_ID_ARG}"
+const val LOCAL_PLAYLIST_DETAIL_ROUTE =
+    "$LOCAL_PLAYLIST_DETAIL_ROUTE_BASE?$LOCAL_PLAYLIST_ID_ARG={$LOCAL_PLAYLIST_ID_ARG}"
 
 fun NavController.navigateToLocalPlaylistDetail(
     playlistId: Long? = null,

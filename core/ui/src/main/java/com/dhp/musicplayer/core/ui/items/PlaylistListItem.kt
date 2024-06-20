@@ -34,9 +34,9 @@ import com.dhp.musicplayer.core.designsystem.constant.GridThumbnailHeight
 import com.dhp.musicplayer.core.designsystem.constant.ListItemHeight
 import com.dhp.musicplayer.core.designsystem.constant.PlayListItemHeight
 import com.dhp.musicplayer.core.designsystem.constant.ThumbnailCornerRadius
+import com.dhp.musicplayer.core.model.music.Album
 import com.dhp.musicplayer.core.model.music.PlaylistWithSongs
 import com.dhp.musicplayer.core.ui.R
-import com.dhp.musicplayer.data.network.innertube.Innertube
 
 @Composable
 fun DefaultListItem(
@@ -152,17 +152,17 @@ inline fun ListItem(
 
 @Composable
 fun AlbumGridItem(
-    album: Innertube.AlbumItem,
+    album: Album,
     modifier: Modifier = Modifier,
     badges: @Composable RowScope.() -> Unit = { },
     fillMaxWidth: Boolean = false,
 ) = GridItem(
-    title = album.info?.name.orEmpty(),
+    title = album.title.orEmpty(),
     subtitle = album.year.orEmpty(),
     badges = badges,
     thumbnailContent = {
         LoadingShimmerImageMaxSize(
-            thumbnailUrl = album.thumbnail?.url,
+            thumbnailUrl = album.thumbnailUrl,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()

@@ -5,21 +5,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Size
+import com.dhp.musicplayer.core.model.music.Album
+import com.dhp.musicplayer.core.model.music.Artist
+import com.dhp.musicplayer.core.model.music.Music
+import com.dhp.musicplayer.core.model.music.Playlist
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.extensions.toContentUri
 import com.dhp.musicplayer.core.ui.R
-import com.dhp.musicplayer.data.network.innertube.Innertube
 import java.io.IOException
-
-fun Innertube.SongItem.toSong(): Song {
-    return Song(
-        id = key,
-        title = info?.name.orEmpty(),
-        artistsText = authors?.joinToString("") { it.name ?: "" },
-        durationText = durationText,
-        thumbnailUrl = thumbnail?.url,
-    )
-}
 
 fun Song.getBitmap(context: Context): Bitmap? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -38,29 +31,30 @@ fun drawableToBitmap(context: Context, drawable: Int = R.drawable.logo_grayscale
     return BitmapFactory.decodeResource(context.resources, drawable)
 }
 
-fun getTitleTextInnertubeItem(item: Innertube.Item): String {
-    return when (item) {
-        is Innertube.SongItem -> item.info?.name.orEmpty()
-        is Innertube.AlbumItem -> item.info?.name.orEmpty()
-        is Innertube.PlaylistItem -> item.info?.name.orEmpty()
-        is Innertube.ArtistItem -> item.info?.name.orEmpty()
+fun getThumbnail(item : Music) :String? {
+    return when(item) {
+        is Song -> item.thumbnailUrl
+        is Album -> item.thumbnailUrl
+        is Playlist -> item.thumbnailUrl
+        is Artist -> item.thumbnailUrl
     }
 }
 
-fun getSubTitleTextInnertubeItem(item: Innertube.Item): String {
+fun getTitleMusic(item: Music): String {
     return when (item) {
-        is Innertube.SongItem -> item.toSong().artistsText.orEmpty()
-        is Innertube.AlbumItem -> item.year.orEmpty()
-        is Innertube.PlaylistItem -> item.channel?.name.orEmpty()
-        is Innertube.ArtistItem -> item.subscribersCountText.orEmpty()
+        is Song -> item.title
+        is Album -> item.title.orEmpty()
+        is Playlist -> item.name
+        is Artist -> item.name.orEmpty()
     }
 }
 
-fun getThumbnailInnertubeItem(item: Innertube.Item): String? {
+
+fun getSubTitleMusic(item: Music): String {
     return when (item) {
-        is Innertube.SongItem -> item.thumbnail?.url
-        is Innertube.AlbumItem -> item.thumbnail?.url
-        is Innertube.PlaylistItem -> item.thumbnail?.url
-        is Innertube.ArtistItem -> item.thumbnail?.url
+        is Song -> item.artistsText.orEmpty()
+        is Album -> item.year.orEmpty()
+        is Playlist -> item.channelName.orEmpty()
+        is Artist -> item.subscribersCountText.orEmpty()
     }
 }

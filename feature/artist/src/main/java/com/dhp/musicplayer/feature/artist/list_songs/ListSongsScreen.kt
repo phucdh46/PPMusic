@@ -21,20 +21,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.constant.px
-import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.ui.LocalMenuState
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.ErrorScreen
 import com.dhp.musicplayer.core.ui.common.HandlePagingStates
-import com.dhp.musicplayer.core.ui.extensions.toSong
 import com.dhp.musicplayer.core.ui.items.SongItem
 import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
-import com.dhp.musicplayer.data.network.innertube.Innertube
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
 import kotlinx.coroutines.flow.Flow
 
@@ -61,13 +60,13 @@ fun ListSongsScreen(
 
         is UiState.Success -> {
             val lazyPagingItems =
-                (uiState as UiState.Success<Flow<PagingData<Innertube.SongItem>>>).data.collectAsLazyPagingItems()
+                (uiState as UiState.Success<Flow<PagingData<Song>>>).data.collectAsLazyPagingItems()
             ListSongsScreen(
                 lazyPagingItems = lazyPagingItems,
                 onItemClick = { item ->
                     playerConnection?.stopRadio()
-                    playerConnection?.forcePlay(item.toSong())
-                    playerConnection?.addRadio(item.info?.endpoint)
+                    playerConnection?.forcePlay(item)
+                    playerConnection?.addRadio(item.radioEndpoint)
                 },
                 onShowMessage = onShowMessage
             )
@@ -76,6 +75,7 @@ fun ListSongsScreen(
         is UiState.Error -> {
             ErrorScreen(onRetry = { })
         }
+
         else -> {}
     }
 }
@@ -83,8 +83,8 @@ fun ListSongsScreen(
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ListSongsScreen(
-    lazyPagingItems: LazyPagingItems<Innertube.SongItem>,
-    onItemClick: (Innertube.SongItem) -> Unit,
+    lazyPagingItems: LazyPagingItems<Song>,
+    onItemClick: (Song) -> Unit,
     onShowMessage: (String) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
@@ -102,7 +102,7 @@ fun ListSongsScreen(
                 val item = lazyPagingItems[index]
                 item?.let {
                     SongItem(
-                        song = item.toSong(),
+                        song = item,
                         thumbnailSizePx = Dimensions.thumbnails.song.px,
                         thumbnailSizeDp = Dimensions.thumbnails.song,
                         trailingContent = {
@@ -112,7 +112,7 @@ fun ListSongsScreen(
                                         menuState.show {
                                             MediaItemMenu(
                                                 onDismiss = menuState::dismiss,
-                                                mediaItem = item.asMediaItem,
+                                                mediaItem = item.asMediaItem(),
                                                 onShowMessageAddSuccess = onShowMessage
                                             )
                                         }
@@ -131,7 +131,7 @@ fun ListSongsScreen(
                                     menuState.show {
                                         MediaItemMenu(
                                             onDismiss = menuState::dismiss,
-                                            mediaItem = item.asMediaItem,
+                                            mediaItem = item.asMediaItem(),
                                             onShowMessageAddSuccess = onShowMessage
                                         )
                                     }

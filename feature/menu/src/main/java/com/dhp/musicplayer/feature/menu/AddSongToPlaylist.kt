@@ -112,9 +112,8 @@ fun AddSongToPlaylist(
                 }
             }
             items(
-                playlistWithSongs,
+                items = playlistWithSongs,
                 key = { it.playlist.id },
-//                        contentType = { CONTENT_TYPE_PLAYLIST }
             ) { playlistPreview ->
                 PlaylistListItem(
                     playlistWithSongs = playlistPreview,

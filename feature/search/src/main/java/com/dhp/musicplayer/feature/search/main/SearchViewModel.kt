@@ -1,11 +1,10 @@
 package com.dhp.musicplayer.feature.search.main
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.core.common.enums.UiState
-import com.dhp.musicplayer.data.network.innertube.model.MoodAndGenres
-import com.dhp.musicplayer.data.repository.NetworkMusicRepository
+import com.dhp.musicplayer.core.domain.repository.NetworkMusicRepository
+import com.dhp.musicplayer.core.model.music.MoodAndGenres
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +14,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val application: Application,
     private val networkMusicRepository: NetworkMusicRepository,
 ) : ViewModel() {
 
@@ -30,9 +28,8 @@ class SearchViewModel @Inject constructor(
     private fun getMoodAndGenres() {
         viewModelScope.launch(Dispatchers.IO) {
             val result = networkMusicRepository.moodAndGenres()
-            val data = result.getOrNull()
-            if (result.isSuccess && data != null) {
-                _uiStateSearchScreen.value = UiState.Success(data)
+            if (result != null) {
+                _uiStateSearchScreen.value = UiState.Success(result)
             } else {
                 _uiStateSearchScreen.value = UiState.Error
             }

@@ -37,25 +37,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.dhp.musicplayer.core.designsystem.constant.Dimensions
-import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.designsystem.component.TextTitle
 import com.dhp.musicplayer.core.designsystem.component.TopAppBarDetailScreen
+import com.dhp.musicplayer.core.designsystem.constant.Dimensions
+import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.designsystem.extensions.shimmer
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.model.music.Album
+import com.dhp.musicplayer.core.model.music.ArtistPage
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.ui.LocalMenuState
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
-import com.dhp.musicplayer.core.ui.extensions.toSong
 import com.dhp.musicplayer.core.ui.items.AlbumItem
 import com.dhp.musicplayer.core.ui.items.LoadingShimmerImage
 import com.dhp.musicplayer.core.ui.items.SongItem
 import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
 import com.dhp.musicplayer.core.ui.items.TextPlaceholder
-import com.dhp.musicplayer.data.network.innertube.Innertube
 import com.dhp.musicplayer.feature.artist.R
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
 
@@ -155,7 +155,7 @@ fun ArtistDetailScreen(
 @Composable
 fun ArtistDetailScreen(
     scrollState: ScrollState,
-    artistPage: Innertube.ArtistPage,
+    artistPage: ArtistPage,
     onSingleItemClick: (browseId: String) -> Unit,
     onAlbumItemClick: (browseId: String) -> Unit,
     navigateToListSongs: (browseId: String?, params: String?) -> Unit,
@@ -191,7 +191,7 @@ fun ArtistDetailScreen(
             ) {
                 LoadingShimmerImage(
                     thumbnailSizeDp = thumbnailSizeDp,
-                    thumbnailUrl = artistPage.thumbnail?.url.thumbnail(thumbnailSizeDp.px),
+                    thumbnailUrl = artistPage.thumbnailUrl.thumbnail(thumbnailSizeDp.px),
                 )
                 Text(
                     text = artistPage.name.orEmpty(),
@@ -257,7 +257,7 @@ fun ArtistDetailScreen(
 
                 songItems.forEach { songItem ->
                     SongItem(
-                        song = songItem.toSong(),
+                        song = songItem,
                         thumbnailSizeDp = Dimensions.thumbnails.song,
                         thumbnailSizePx = Dimensions.thumbnails.song.px,
                         trailingContent = {
@@ -267,7 +267,7 @@ fun ArtistDetailScreen(
                                         menuState.show {
                                             MediaItemMenu(
                                                 onDismiss = menuState::dismiss,
-                                                mediaItem = songItem.asMediaItem,
+                                                mediaItem = songItem.asMediaItem(),
                                                 onShowMessageAddSuccess = onShowMessage
                                             )
                                         }
@@ -286,15 +286,15 @@ fun ArtistDetailScreen(
                                     menuState.show {
                                         MediaItemMenu(
                                             onDismiss = menuState::dismiss,
-                                            mediaItem = songItem.asMediaItem,
+                                            mediaItem = songItem.asMediaItem(),
                                             onShowMessageAddSuccess = onShowMessage
                                         )
                                     }
                                 },
                                 onClick = {
                                     playerConnection?.stopRadio()
-                                    playerConnection?.forcePlay(songItem.toSong())
-                                    playerConnection?.addRadio(songItem.info?.endpoint)
+                                    playerConnection?.forcePlay(songItem)
+                                    playerConnection?.addRadio(songItem.radioEndpoint)
                                 }
                             )
                     )
@@ -328,7 +328,7 @@ fun ArtistDetailScreen(
                 ) {
                     items(
                         items = albumItems,
-                        key = Innertube.AlbumItem::key
+                        key = Album::id
                     ) { album ->
                         AlbumItem(
                             album = album,
@@ -337,7 +337,7 @@ fun ArtistDetailScreen(
                             alternative = true,
                             modifier = Modifier
                                 .clickable(onClick = {
-                                    onAlbumItemClick(album.key)
+                                    onAlbumItemClick(album.id)
                                 })
                         )
                     }
@@ -371,7 +371,7 @@ fun ArtistDetailScreen(
                 ) {
                     items(
                         items = singles,
-                        key = Innertube.AlbumItem::key
+                        key = Album::id
                     ) { album ->
                         AlbumItem(
                             album = album,
@@ -380,7 +380,7 @@ fun ArtistDetailScreen(
                             alternative = true,
                             modifier = Modifier
                                 .clickable(onClick = {
-                                    onSingleItemClick(album.key)
+                                    onSingleItemClick(album.id)
                                 })
                         )
                     }

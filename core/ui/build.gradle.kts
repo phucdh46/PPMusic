@@ -14,8 +14,7 @@ dependencies {
     api(project(":core:designsystem"))
     api(project(":core:model"))
     api(project(":core:services"))
-    api(project(":data:datastore"))
-    api(project(":data:network"))
+    api(project(":core:datastore"))
 
     implementation(libs.coil.compose)
 

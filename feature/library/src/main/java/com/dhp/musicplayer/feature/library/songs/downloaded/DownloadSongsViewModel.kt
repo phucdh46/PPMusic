@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import com.dhp.musicplayer.core.common.enums.UiState
-import com.dhp.musicplayer.data.repository.MusicRepository
+import com.dhp.musicplayer.core.domain.repository.MusicRepository
 import com.dhp.musicplayer.core.services.download.DownloadUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,7 +36,6 @@ class DownloadSongsViewModel
                 UiState.Success(it)
             }
         }
-
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
