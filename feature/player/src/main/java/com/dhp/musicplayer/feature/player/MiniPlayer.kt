@@ -1,6 +1,5 @@
 package com.dhp.musicplayer.feature.player
 
-import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -42,11 +42,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.isSpecified
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.common.utils.Logg
 import com.dhp.musicplayer.core.designsystem.component.DebouncedIconButton
+import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImage
 import com.dhp.musicplayer.core.designsystem.constant.MiniPlayerHeight
 import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
@@ -57,8 +57,6 @@ import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.core.ui.extensions.drawableToBitmap
 import com.dhp.musicplayer.core.ui.extensions.getBitmap
 import com.dhp.musicplayer.core.ui.extensions.positionAndDurationState
-import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImage
-import com.google.accompanist.pager.ExperimentalPagerApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlin.math.absoluteValue
 
@@ -69,12 +67,7 @@ fun MiniPlayer(
     viewModel: PlayerViewModel = hiltViewModel()
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isPlaying.collectAsState()
-    val playbackState by playerConnection.playbackState.collectAsState()
-    val error by playerConnection.error.collectAsState()
-//    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val currentMediaItem by playerConnection.currentMediaItem.collectAsState()
-//    val canSkipNext by playerConnection.canSkipNext.collectAsState()
     val positionAndDuration by playerConnection.player.positionAndDurationState()
 
     var likedAt by rememberSaveable {
@@ -96,11 +89,14 @@ fun MiniPlayer(
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
     ) {
         Column {
-            var aspectRatio by remember { mutableStateOf(0f) }
+            var aspectRatio by remember { mutableFloatStateOf(0f) }
             var controlsVisible by remember { mutableStateOf(true) }
             var nowPlayingVisible by remember { mutableStateOf(true) }
             var controlsEndPadding by remember { mutableStateOf(0.dp) }
-            val controlsEndPaddingAnimated by animateDpAsState(controlsEndPadding)
+            val controlsEndPaddingAnimated by animateDpAsState(
+                controlsEndPadding,
+                label = "controlsEndPadding"
+            )
 
             val smallPadding = 8.dp
             val tinyPadding = 4.dp
@@ -146,12 +142,10 @@ fun MiniPlayer(
                     playerConnection = playerConnection
                 )
             }
-
         }
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 private fun RowScope.MiniPlayerContent(
     song: Song?,
@@ -167,8 +161,6 @@ private fun RowScope.MiniPlayerContent(
             .padding(horizontal = 8.dp),
     ) {
         val size = maxHeight - 12.dp
-        val sizeMod = if (size.isSpecified) Modifier.size(size) else Modifier
-        Log.d("DHP", "minicontrol: $song")
         if (song?.isOffline == true) {
             Image(
                 bitmap = (song.getBitmap(LocalContext.current)
@@ -181,7 +173,6 @@ private fun RowScope.MiniPlayerContent(
                 thumbnailSizeDp = size,
                 thumbnailUrl = song?.thumbnailUrl?.thumbnail(size.px),
                 modifier = Modifier.size(48.dp)
-//                    .padding(8.dp)
             )
         }
 
@@ -200,7 +191,7 @@ private fun MiniPlayerTextContent(audio: Song, modifier: Modifier = Modifier) {
             .then(modifier)
     ) {
         Text(
-            audio.title.orEmpty(),
+            audio.title,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
@@ -242,8 +233,6 @@ private fun RowScope.MiniPlayerControl(
 
     IconButton(
         onClick = { playerConnection.playOrPause() },
-//        colors = MaterialTheme.colorScheme.primary,
-//        rippleColor = LocalContentColor.current,
         modifier = modifier.weight(1f)
     ) {
         Icon(

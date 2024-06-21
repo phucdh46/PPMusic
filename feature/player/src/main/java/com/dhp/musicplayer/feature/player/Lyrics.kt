@@ -5,7 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,10 +45,10 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
 import com.dhp.musicplayer.core.common.utils.Logg
 import com.dhp.musicplayer.core.designsystem.extensions.verticalFadingEdge
-import com.dhp.musicplayer.core.ui.LocalPlayerConnection
-import com.dhp.musicplayer.core.ui.items.TextPlaceholder
 import com.dhp.musicplayer.core.network.kugou.KuGou
 import com.dhp.musicplayer.core.network.kugou.findCurrentLineIndex
+import com.dhp.musicplayer.core.ui.LocalPlayerConnection
+import com.dhp.musicplayer.core.ui.items.TextPlaceholder
 import com.dhp.musicplayer.feature.player.utils.SynchronizedLyrics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -131,7 +130,6 @@ fun Lyrics(
 //                    )
 //                }
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
         ) {
             AnimatedVisibility(
                 visible = isError && lyrics == null,
