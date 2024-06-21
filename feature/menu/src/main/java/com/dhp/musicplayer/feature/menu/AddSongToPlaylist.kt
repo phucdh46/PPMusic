@@ -44,7 +44,7 @@ import com.dhp.musicplayer.core.ui.items.PlaylistListItem
 fun AddSongToPlaylist(
     mediaItem: MediaItem,
     onDismiss: () -> Unit,
-    viewModel: LibraryViewModel = hiltViewModel(),
+    viewModel: MediaItemMenuViewModel = hiltViewModel(),
     onShowMessageAddSuccess: (String) -> Unit
 ) {
     val lazyListState = rememberLazyListState()

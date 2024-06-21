@@ -59,11 +59,11 @@ import com.dhp.musicplayer.feature.library.navigation.LIBRARY_ROUTE
 import com.dhp.musicplayer.feature.player.BottomSheetPlayer
 import com.dhp.musicplayer.feature.search.main.navigation.SEARCH_ROUTE
 import com.dhp.musicplayer.feature.search.search_by_text.navigation.navigateToSearchByText
+import com.dhp.musicplayer.navigation.NavHost
 import com.dhp.musicplayer.navigation.ScreensNotShowTopAppBar
 import com.dhp.musicplayer.navigation.ScreensShowBottomNavigation
 import com.dhp.musicplayer.navigation.ScreensShowSearchOnTopAppBar
 import com.dhp.musicplayer.navigation.TopLevelDestination
-import com.dhp.musicplayer.navigation.NavHost
 import com.dhp.musicplayer.utils.getAppBarTitle
 import com.dhp.musicplayer.utils.showSnackBar
 
@@ -284,7 +284,6 @@ internal fun App(
                 }
                 BottomSheetMenu(
                     state = LocalMenuState.current,
-                    modifier = Modifier.align(Alignment.BottomCenter)
                 )
             }
         }
