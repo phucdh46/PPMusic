@@ -1,5 +1,8 @@
 package com.dhp.musicplayer.feature.player
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -8,33 +11,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.util.lerp
-import androidx.media3.common.util.UnstableApi
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.extensions.toSong
 import com.dhp.musicplayer.core.services.player.PlayerConnection
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
-import com.google.accompanist.pager.calculateCurrentOffsetForPage
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlin.math.absoluteValue
 
-@androidx.annotation.OptIn(UnstableApi::class)
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun MiniPlayerPager(
     song: Song,
     modifier: Modifier = Modifier,
-    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    pagerState: PagerState = rememberPagerState(),
     content: @Composable (Song, Int, Modifier) -> Unit,
 ) {
     val playerConnection: PlayerConnection = LocalPlayerConnection.current ?: return
@@ -46,8 +39,9 @@ internal fun MiniPlayerPager(
             playbackCurrentIndex
         )
     }
+    val pagerState = rememberPagerState(initialPage = playbackCurrentIndex) { playbackQueue.size }
 
-    if (playbackCurrentIndex >= 0 && playbackQueue.isNullOrEmpty()) {
+    if (playbackCurrentIndex >= 0 && playbackQueue.isEmpty()) {
         content(song, playbackCurrentIndex, modifier)
         return
     }
@@ -68,35 +62,31 @@ internal fun MiniPlayerPager(
                 }
             }
     }
-    HorizontalPager(
-        count = playbackQueue.size ?: 0,
+
+   HorizontalPager(
         modifier = modifier,
         state = pagerState,
-        key = { playbackQueue.getOrNull(it) ?: it },
-        verticalAlignment = verticalAlignment,
     ) { page ->
         val currentAudio = playbackQueue.getOrNull(page)
 
         val pagerMod = Modifier.graphicsLayer {
-            val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
-            // TODO: report to upstream if can be reproduced in isolation
-            if (pageOffset.isNaN()) {
-                return@graphicsLayer
-            }
+            val offset =
+                ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).absoluteValue
 
-            lerp(
-                start = 0.85f,
-                stop = 1f,
-                fraction = 1f - pageOffset.coerceIn(0f, 1f)
-            ).also { scale ->
-                scaleX = scale
-                scaleY = scale
-            }
             alpha = lerp(
                 start = 0.5f,
                 stop = 1f,
-                fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                fraction = 1f - offset.coerceIn(0f, 1f),
             )
+
+            lerp(
+                start = 0.8f,
+                stop = 1f,
+                fraction = 1f - (offset / 2).coerceIn(0f, 1f),
+            ).also {
+                scaleX = it
+                scaleY = it
+            }
         }
         currentAudio?.let { content(it, page, pagerMod) }
     }

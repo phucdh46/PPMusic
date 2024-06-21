@@ -204,12 +204,7 @@ fun BottomSheetPlayer(
                     modifier = Modifier
                         .weight(1.8f)
                 ) {
-                    thumbnailContent(
-                        Modifier
-//                        .padding(horizontal = 32.dp, vertical = 8.dp)
-                            .padding(horizontal = 16.dp)
-
-                    )
+                    thumbnailContent(Modifier)
                 }
 
                 controlsContent(

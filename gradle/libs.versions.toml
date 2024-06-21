@@ -19,7 +19,6 @@ androidxHiltNavigationCompose = "1.2.0"
 androidxLifecycle = "2.7.0"
 composeRuntime = "1.6.1"
 accompanist = "0.34.0"
-accompanistPager = "0.26.3-beta"
 
 hilt = "2.51"
 serialization = "1.6.10"
@@ -107,7 +106,6 @@ navigation-fragment = { group = "androidx.navigation", name = "navigation-fragme
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
-accompanist-pager = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "accompanistPager" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
 accompanist-swiperefresh = { group = "com.google.accompanist", name = "accompanist-swiperefresh", version.ref = "accompanist" }
 
@@ -119,8 +117,6 @@ paging-compose = { group = "androidx.paging", name = "paging-compose", version.r
 paging-runtime-ktx = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "pagingCommonAndroid" }
 
 palette = { group = "androidx.palette", name = "palette", version = "1.0.0" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 javax-inject = { module = "javax.inject:javax.inject", version = "1" }
 
