@@ -50,6 +50,7 @@ import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.ui.LocalMenuState
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
+import com.dhp.musicplayer.core.ui.common.ErrorScreen
 import com.dhp.musicplayer.core.ui.isLandscape
 import com.dhp.musicplayer.core.ui.items.AlbumItem
 import com.dhp.musicplayer.core.ui.items.AlbumItemPlaceholder
@@ -102,7 +103,7 @@ internal fun ForYouScreen(
             }
 
             is UiState.Error -> {
-//                ErrorScreen(onRetry = { viewModel.refresh() })
+                ErrorScreen(onRetry = { viewModel.refresh() })
             }
 
             is UiState.Success -> {

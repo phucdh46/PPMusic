@@ -74,7 +74,7 @@ fun MediaItemMenu(
     onDismiss: () -> Unit,
     onRemoveSongFromPlaylist: ((song: Song) -> Unit)? = null,
     onShowSleepTimer: (() -> Unit)? = null,
-    libraryViewModel: LibraryViewModel = hiltViewModel(),
+    mediaItemMenuViewModel: MediaItemMenuViewModel = hiltViewModel(),
     onShowMessageAddSuccess: (String) -> Unit
 ) {
     val playerConnection = LocalPlayerConnection.current
@@ -82,7 +82,7 @@ fun MediaItemMenu(
     val download by LocalDownloadUtil.current.getDownload(mediaItem.mediaId)
         .collectAsState(initial = null)
     val song = mediaItem.toSong()
-    val likeAt by libraryViewModel.likeAt(mediaItem.mediaId).collectAsState(initial = null)
+    val likeAt by mediaItemMenuViewModel.likeAt(mediaItem.mediaId).collectAsState(initial = null)
     MediaItemMenu(
         modifier = modifier,
         mediaItem = mediaItem,
@@ -92,7 +92,7 @@ fun MediaItemMenu(
         onRemoveSongFromPlaylist = onRemoveSongFromPlaylist,
         state = download?.state,
         onDownload = {
-            libraryViewModel.insertSong(mediaItem.toSong())
+            mediaItemMenuViewModel.insertSong(mediaItem.toSong())
             val downloadRequest = DownloadRequest.Builder(song.id, song.id.toUri())
                 .setCustomCacheKey(song.id)
                 .setData(song.title.toByteArray())
@@ -115,7 +115,7 @@ fun MediaItemMenu(
         onShowSleepTimer = onShowSleepTimer,
         isFavourite = likeAt != null,
         onFavouriteClick = {
-            libraryViewModel.favourite(mediaItem)
+            mediaItemMenuViewModel.favourite(mediaItem)
         },
         onShowMessageAddSuccess = onShowMessageAddSuccess
     )

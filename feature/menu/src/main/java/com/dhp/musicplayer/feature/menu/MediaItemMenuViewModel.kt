@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LibraryViewModel @Inject constructor(
+class MediaItemMenuViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val musicRepository: MusicRepository,
 ) : ViewModel() {
