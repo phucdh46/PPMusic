@@ -75,8 +75,8 @@ class ExoDownloadService : DownloadService(
 
     companion object {
         const val CHANNEL_DOWNLOAD_ID = "download"
-        const val NOTIFICATION_DOWNLOAD_ID = 1
-        const val NOTIFICATION_DOWNLOAD_ERROR_ID = 2
+        const val NOTIFICATION_DOWNLOAD_ID = 54321
+        const val NOTIFICATION_DOWNLOAD_ERROR_ID = 54320
         const val JOB_ID = 1
     }
 }
