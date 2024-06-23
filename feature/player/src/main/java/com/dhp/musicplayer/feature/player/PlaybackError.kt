@@ -18,8 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @androidx.media3.common.util.UnstableApi
@@ -47,7 +47,7 @@ fun PlaybackError(
                         )
                     }
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background(MaterialTheme.colorScheme.error)
             )
         }
 
@@ -61,9 +61,8 @@ fun PlaybackError(
             Text(
                 text = remember { messageProvider() },
                 color = MaterialTheme.colorScheme.onError,
-//                style = typography.xs.center.medium.color(PureBlackColorPalette.text),
+                textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .background(Color.Black.copy(0.4f))
                     .padding(all = 8.dp)
                     .fillMaxWidth()
             )

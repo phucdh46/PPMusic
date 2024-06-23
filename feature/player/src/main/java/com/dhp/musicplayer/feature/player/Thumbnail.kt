@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -144,13 +145,13 @@ fun Thumbnail(
             )
 
             PlaybackError(
+                modifier = Modifier.padding(24.dp),
                 isDisplayed = error != null,
                 messageProvider = {
                     when (error?.cause?.cause) {
                         is UnresolvedAddressException, is UnknownHostException -> context.getString(
                             R.string.network_error
                         )
-
                         is PlayableFormatNotFoundException -> context.getString(R.string.format_not_found)
                         is UnplayableException -> context.getString(R.string.unplayable_exception)
                         is LoginRequiredException -> context.getString(R.string.login_required_exception)
