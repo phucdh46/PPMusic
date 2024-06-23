@@ -17,8 +17,6 @@ interface MusicRepository {
     fun moveSongInPlaylist(playlistId: Long, fromPosition: Int, toPosition: Int)
 
     fun favorites(): Flow<List<Song>>
-    fun isFavorite(songId: String?): Song?
-    fun likedAt(songId: String?): Flow<Long?>
     fun favorite(songId: String, likedAt: Long?): Int
 
     fun insert(playlist: Playlist): Long
@@ -33,5 +31,10 @@ interface MusicRepository {
 
     fun insert(song: Song): Long
     fun getAllSongs(): Flow<List<Song>>
+    fun song(id: String?): Flow<Song?>
 
+    fun toggleLike(song: Song)
+    fun isFavoriteSong(songId: String?): Flow<Boolean>
+
+    fun getSongsAndroidAuto(): Flow<List<Song>>
 }

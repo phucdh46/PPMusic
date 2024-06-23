@@ -70,12 +70,12 @@ fun MiniPlayer(
     val currentMediaItem by playerConnection.currentMediaItem.collectAsState()
     val positionAndDuration by playerConnection.player.positionAndDurationState()
 
-    var likedAt by rememberSaveable {
-        mutableStateOf<Long?>(null)
+    var isFavourite by rememberSaveable {
+        mutableStateOf(false)
     }
 
     LaunchedEffect(currentMediaItem) {
-        viewModel.likeAt(currentMediaItem?.mediaId).distinctUntilChanged().collect { likedAt = it }
+        viewModel.isFavoriteSong(currentMediaItem?.mediaId).distinctUntilChanged().collect { isFavourite = it }
     }
 
     val song = currentMediaItem?.toSong()
@@ -135,9 +135,11 @@ fun MiniPlayer(
                     song = song, maxHeight = MiniPlayerHeight, coverOnly = !nowPlayingVisible
                 )
                 if (controlsVisible) MiniPlayerControl(
-                    isFavourite = likedAt != null,
+                    isFavourite = isFavourite,
                     onFavouriteClick = {
-                        currentMediaItem?.let { viewModel.favourite(it) }
+                        currentMediaItem?.let {
+                            playerConnection.toggleLike(it.toSong())
+                        }
                     },
                     playerConnection = playerConnection
                 )

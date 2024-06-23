@@ -23,6 +23,7 @@ import com.dhp.musicplayer.core.network.innertube.InnertubeApiService
 import com.dhp.musicplayer.core.network.innertube.model.bodies.BrowseBody
 import com.dhp.musicplayer.core.network.innertube.model.bodies.NextBody
 import com.dhp.musicplayer.core.network.innertube.model.bodies.PlayerBody
+import com.dhp.musicplayer.core.network.innertube.model.bodies.SearchBody
 import com.dhp.musicplayer.core.network.innertube.model.bodies.SearchSuggestionsBody
 import com.dhp.musicplayer.core.network.innertube.utils.completed
 import com.dhp.musicplayer.core.network.innertube.utils.from
@@ -154,5 +155,16 @@ class NetworkMusicRepositoryImpl @Inject constructor(
                 }
             }
         }.cachedIn(scope)
+    }
+
+    override suspend fun getSearchResultAndroidAuto(query: String): List<Song>? {
+        val apiService = InnertubeApiService.getInstance(context)
+        return apiService.searchPage(
+            body = SearchBody(
+                query = query,
+                params = apiService.filterSong
+            ),
+            fromMusicShelfRendererContent =  Innertube.SongItem.Companion::fromSearch,
+        )?.getOrNull()?.items?.map { it.asExternalModel() }
     }
 }

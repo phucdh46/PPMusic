@@ -27,4 +27,5 @@ interface NetworkMusicRepository {
     suspend fun getListSongs(browseId: String, params: String, scope: CoroutineScope): Flow<PagingData<Song>>
     suspend fun getListAlbums(browseId: String, params: String, scope: CoroutineScope): Flow<PagingData<Album>>
     suspend fun getSearchResult(query: String, params: String, scope: CoroutineScope): Flow<PagingData<Music>>
+    suspend fun getSearchResultAndroidAuto(query: String): List<Song>?
 }

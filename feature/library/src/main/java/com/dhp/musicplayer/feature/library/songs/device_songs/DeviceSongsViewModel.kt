@@ -12,8 +12,9 @@ import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.bitMapToString
 import com.dhp.musicplayer.core.common.extensions.isAtLeastAndroid29
+import com.dhp.musicplayer.core.common.extensions.toContentUri
+import com.dhp.musicplayer.core.domain.repository.MusicRepository
 import com.dhp.musicplayer.core.model.music.Song
-import com.dhp.musicplayer.core.services.extensions.toContentUri
 import com.dhp.musicplayer.feature.library.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +27,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DeviceSongsViewModel @Inject constructor(
-    private val application: Application
+    private val application: Application,
+    private val musicRepository: MusicRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<UiState<List<Song>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<Song>>> get() = _uiState

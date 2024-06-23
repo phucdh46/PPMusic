@@ -10,18 +10,13 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import com.dhp.musicplayer.core.model.music.RadioEndpoint
 import com.dhp.musicplayer.core.model.music.Song
-import com.dhp.musicplayer.core.services.extensions.currentMetadata
-import com.dhp.musicplayer.core.services.player.ExoPlayerService
-import com.dhp.musicplayer.core.services.extensions.asMediaItem
-import com.dhp.musicplayer.core.services.extensions.currentMetadata
-import com.dhp.musicplayer.core.services.extensions.forcePlay
-import com.dhp.musicplayer.core.services.extensions.playQueue
-import com.dhp.musicplayer.core.services.extensions.toSong
-import com.dhp.musicplayer.core.services.extensions.windows
 import com.dhp.musicplayer.core.network.innertube.Innertube
 import com.dhp.musicplayer.core.network.innertube.InnertubeApiService
-import com.dhp.musicplayer.core.network.innertube.model.NavigationEndpoint
 import com.dhp.musicplayer.core.network.innertube.model.bodies.NextBody
+import com.dhp.musicplayer.core.services.extensions.asMediaItem
+import com.dhp.musicplayer.core.services.extensions.forcePlay
+import com.dhp.musicplayer.core.services.extensions.playQueue
+import com.dhp.musicplayer.core.services.extensions.windows
 import com.dhp.musicplayer.core.services.utils.TimerJob
 import com.dhp.musicplayer.core.services.utils.timer
 import kotlinx.coroutines.CoroutineScope
@@ -38,12 +33,12 @@ import kotlinx.coroutines.plus
 @OptIn(UnstableApi::class)
 class PlayerConnection(
     val context: Context,
-    binder: ExoPlayerService.Binder,
+    binder: PlaybackService.MusicBinder,
     scope: CoroutineScope,
 ) : Player.Listener {
 
     val player = binder.player
-    val exoPlayerService = binder.exoPlayerService
+    private val exoPlayerService = binder.service
 
     private val _currentMediaItem = MutableStateFlow(player.currentMediaItem)
     val currentMediaItem: StateFlow<MediaItem?> = _currentMediaItem
@@ -51,17 +46,8 @@ class PlayerConnection(
     private val _currentMediaItemIndex = MutableStateFlow(player.currentMediaItemIndex)
     val currentMediaItemIndex: StateFlow<Int> = _currentMediaItemIndex
 
-    private val _currentSong = MutableStateFlow<Song?>(null)
-
-    val currentSong: StateFlow<Song?> = _currentSong
-
-    private val _currentQueue = MutableStateFlow<List<Song>?>(emptyList())
-
-    val mediaMetadata = MutableStateFlow(player.currentMetadata)
-
-    val playbackState = MutableStateFlow(player.playbackState)
+    private val playbackState = MutableStateFlow(player.playbackState)
     private val playWhenReady = MutableStateFlow(player.playWhenReady)
-//    val isPlaying: StateFlow<Boolean> = playWhenReady
 
     val repeatMode = MutableStateFlow(Player.REPEAT_MODE_OFF)
 
@@ -91,7 +77,6 @@ class PlayerConnection(
         songs ?: return
         val selectedSong = song ?: songs.getOrNull(0) ?: return
         player.clearMediaItems()
-        exoPlayerService.isOfflineSong = selectedSong.isOffline
         player.addMediaItems(songs.map { it.asMediaItem() })
         player.playQueue(selectedSong.asMediaItem())
     }
@@ -126,11 +111,8 @@ class PlayerConnection(
         if (state == Player.STATE_READY) {
             Log.d("DHP", "onPlaybackStateChanged STATE_READY")
             _currentMediaItem.value = player.currentMediaItem
-            _currentSong.value = player.currentMediaItem?.toSong()
-//            mediaPlayerInterface.onPlayerReady()
         }
         error.value = player.playerError
-
     }
 
     override fun onPlayWhenReadyChanged(newPlayWhenReady: Boolean, reason: Int) {
@@ -141,7 +123,6 @@ class PlayerConnection(
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         super.onMediaItemTransition(mediaItem, reason)
         _currentMediaItem.value = mediaItem
-        _currentSong.value = mediaItem?.toSong()
         _currentMediaItemIndex.value =
             if (player.mediaItemCount == 0) -1 else player.currentMediaItemIndex
     }
@@ -162,7 +143,7 @@ class PlayerConnection(
     }
 
     private var radioJob: Job? = null
-     var isLoadingRadio = false
+    var isLoadingRadio = false
     private val coroutineScope = CoroutineScope(Dispatchers.IO) + Job()
 
     fun addRadio(endpoint: RadioEndpoint?) {
@@ -187,15 +168,18 @@ class PlayerConnection(
         }
     }
 
+    fun stopRadio() {
+        isLoadingRadio = false
+        radioJob?.cancel()
+    }
+
     fun forcePlay(song: Song) {
-        exoPlayerService.isOfflineSong = song.isOffline
         player.forcePlay(song.asMediaItem())
     }
 
     fun addNext(mediaItem: MediaItem) {
         player.apply {
             if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
-                exoPlayerService.isOfflineSong = mediaItem.toSong().isOffline
                 forcePlay(mediaItem)
             } else {
                 addMediaItem(currentMediaItemIndex + 1, mediaItem)
@@ -206,17 +190,11 @@ class PlayerConnection(
     fun enqueue(mediaItem: MediaItem) {
         player.apply {
             if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
-                exoPlayerService.isOfflineSong = mediaItem.toSong().isOffline
                 forcePlay(mediaItem)
             } else {
                 addMediaItem(mediaItemCount, mediaItem)
             }
         }
-    }
-
-    fun stopRadio() {
-        isLoadingRadio = false
-        radioJob?.cancel()
     }
 
     fun startSleepTimer(delayMillis: Long) {
@@ -231,6 +209,10 @@ class PlayerConnection(
     fun cancelSleepTimer() {
         timerJob?.cancel()
         timerJob = null
+    }
+
+    fun toggleLike(song: Song) {
+        exoPlayerService.toggleLike(song = song)
     }
 
     fun dispose() {

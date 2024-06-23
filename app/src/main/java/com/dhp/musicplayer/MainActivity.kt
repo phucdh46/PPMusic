@@ -37,10 +37,10 @@ import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
 import com.dhp.musicplayer.core.model.settings.UserData
 import com.dhp.musicplayer.core.services.download.DownloadUtil
 import com.dhp.musicplayer.core.services.extensions.toSong
-import com.dhp.musicplayer.core.services.player.ExoPlayerService
 import com.dhp.musicplayer.core.services.player.PlayerConnection
 import com.dhp.musicplayer.core.datastore.DynamicThemeKey
 import com.dhp.musicplayer.core.common.extensions.intent
+import com.dhp.musicplayer.core.services.player.PlaybackService
 import com.dhp.musicplayer.core.ui.common.rememberPreference
 import com.dhp.musicplayer.ui.App
 import com.dhp.musicplayer.ui.rememberAppState
@@ -61,26 +61,22 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var downloadUtil: DownloadUtil
 
-    var binder: ExoPlayerService.Binder? = null
-
     var playerConnection by mutableStateOf<PlayerConnection?>(null)
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            if (service is ExoPlayerService.Binder) {
-                this@MainActivity.binder = service
+            if (service is PlaybackService.MusicBinder) {
                 playerConnection = PlayerConnection(this@MainActivity, service, lifecycleScope)
             }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            binder = null
             playerConnection?.dispose()
         }
     }
 
     private fun doBindService() {
-        bindService(intent<ExoPlayerService>(), serviceConnection, Context.BIND_AUTO_CREATE)
+        bindService(intent<PlaybackService>(), serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
     private lateinit var inAppUpdateManager: InAppUpdateManager
