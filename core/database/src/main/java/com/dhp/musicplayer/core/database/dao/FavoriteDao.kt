@@ -12,13 +12,14 @@ interface FavoriteDao {
     @Query("SELECT * FROM Song WHERE likedAt IS NOT NULL ORDER BY likedAt DESC")
     fun favorites(): Flow<List<SongEntity>>
 
-    @Transaction
-    @Query("SELECT * FROM Song WHERE likedAt IS NOT NULL AND id = :songId")
-    fun isFavorite(songId: String?): SongEntity?
-
-    @Query("SELECT likedAt FROM Song WHERE id = :songId")
-    fun likedAt(songId: String?): Flow<Long?>
-
     @Query("UPDATE Song SET likedAt = :likedAt WHERE id = :songId")
     fun favorite(songId: String, likedAt: Long?): Int
+
+    @Query("SELECT CASE\n" +
+            "           WHEN likedAt IS NOT NULL THEN 1\n" +
+            "           ELSE 0\n" +
+            "       END AS isFavorite\n" +
+            "FROM Song\n" +
+            "WHERE id = :songId")
+    fun isFavoriteSong(songId: String?): Flow<Boolean>
 }

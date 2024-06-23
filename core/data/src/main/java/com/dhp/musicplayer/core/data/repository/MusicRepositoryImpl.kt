@@ -2,6 +2,10 @@ package com.dhp.musicplayer.core.data.repository
 
 import com.dhp.musicplayer.core.data.model.asEntity
 import com.dhp.musicplayer.core.data.model.asExternalModel
+import com.dhp.musicplayer.core.database.dao.FavoriteDao
+import com.dhp.musicplayer.core.database.dao.PlaylistDao
+import com.dhp.musicplayer.core.database.dao.SearchHistoryDao
+import com.dhp.musicplayer.core.database.dao.SongDao
 import com.dhp.musicplayer.core.domain.repository.MusicRepository
 import com.dhp.musicplayer.core.model.music.Playlist
 import com.dhp.musicplayer.core.model.music.PlaylistPreview
@@ -9,12 +13,10 @@ import com.dhp.musicplayer.core.model.music.PlaylistWithSongs
 import com.dhp.musicplayer.core.model.music.SearchHistory
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.model.music.SongPlaylistMap
-import com.dhp.musicplayer.core.database.dao.FavoriteDao
-import com.dhp.musicplayer.core.database.dao.PlaylistDao
-import com.dhp.musicplayer.core.database.dao.SearchHistoryDao
-import com.dhp.musicplayer.core.database.dao.SongDao
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class MusicRepositoryImpl @Inject constructor(
@@ -48,14 +50,6 @@ class MusicRepositoryImpl @Inject constructor(
 
     override fun favorites(): Flow<List<Song>> {
         return favoriteDao.favorites().map { flow -> flow.map { it.asExternalModel() } }
-    }
-
-    override fun isFavorite(songId: String?): Song? {
-        return favoriteDao.isFavorite(songId)?.asExternalModel()
-    }
-
-    override fun likedAt(songId: String?): Flow<Long?> {
-        return favoriteDao.likedAt(songId)
     }
 
     override fun favorite(songId: String, likedAt: Long?): Int {
@@ -101,5 +95,32 @@ class MusicRepositoryImpl @Inject constructor(
 
     override fun getAllSongs(): Flow<List<Song>> {
         return songDao.getAllSongs().map { it.map { song -> song.asExternalModel() } }
+    }
+
+    override fun song(id: String?): Flow<Song?> {
+        return songDao.song(id).map { it?.asExternalModel() }
+    }
+
+    override fun toggleLike(song: Song) {
+        val isFavorite = runBlocking { isFavoriteSong(song.id).first() }
+        if (favorite(
+                song.id,
+                if (!isFavorite) System.currentTimeMillis() else null
+            ) == 0
+        ) {
+            insert(song.toggleLike())
+        }
+    }
+
+    override fun isFavoriteSong(songId: String?): Flow<Boolean> {
+        return favoriteDao.isFavoriteSong(songId)
+    }
+
+    override fun getSongsAndroidAuto(): Flow<List<Song>> {
+        return getAllSongs().map { songs ->
+            songs.filter { song ->
+                !song.isOffline
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@ import com.dhp.musicplayer.core.model.music.Artist
 import com.dhp.musicplayer.core.model.music.Music
 import com.dhp.musicplayer.core.model.music.Playlist
 import com.dhp.musicplayer.core.model.music.Song
-import com.dhp.musicplayer.core.services.extensions.toContentUri
+import com.dhp.musicplayer.core.common.extensions.toContentUri
 import com.dhp.musicplayer.core.ui.R
 import java.io.IOException
 

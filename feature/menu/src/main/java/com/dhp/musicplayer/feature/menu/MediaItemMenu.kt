@@ -82,7 +82,7 @@ fun MediaItemMenu(
     val download by LocalDownloadUtil.current.getDownload(mediaItem.mediaId)
         .collectAsState(initial = null)
     val song = mediaItem.toSong()
-    val likeAt by mediaItemMenuViewModel.likeAt(mediaItem.mediaId).collectAsState(initial = null)
+    val isFavourite by mediaItemMenuViewModel.isFavoriteSong(mediaItem.mediaId).collectAsState(initial = false)
     MediaItemMenu(
         modifier = modifier,
         mediaItem = mediaItem,
@@ -113,9 +113,10 @@ fun MediaItemMenu(
             )
         },
         onShowSleepTimer = onShowSleepTimer,
-        isFavourite = likeAt != null,
+        isFavourite = isFavourite,
         onFavouriteClick = {
-            mediaItemMenuViewModel.favourite(mediaItem)
+            playerConnection?.toggleLike(mediaItem.toSong())
+//            mediaItemMenuViewModel.favourite(mediaItem)
         },
         onShowMessageAddSuccess = onShowMessageAddSuccess
     )

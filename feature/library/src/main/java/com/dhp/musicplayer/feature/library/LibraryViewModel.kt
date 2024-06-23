@@ -3,12 +3,8 @@ package com.dhp.musicplayer.feature.library
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.MediaItem
 import com.dhp.musicplayer.core.domain.repository.MusicRepository
 import com.dhp.musicplayer.core.model.music.Playlist
-import com.dhp.musicplayer.core.model.music.Song
-import com.dhp.musicplayer.core.model.music.SongPlaylistMap
-import com.dhp.musicplayer.core.services.extensions.toSong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -21,27 +17,6 @@ class LibraryViewModel @Inject constructor(
     private val musicRepository: MusicRepository,
 ) : ViewModel() {
     val playlistWithSongs = musicRepository.getAllPlaylistWithSongs()
-
-    fun likeAt(songId: String?) = musicRepository.likedAt(songId)
-
-    fun favourite(mediaItem: MediaItem) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val likedAt = musicRepository.isFavorite(mediaItem.mediaId) != null
-            if (musicRepository.favorite(
-                    mediaItem.mediaId,
-                    if (!likedAt) System.currentTimeMillis() else null
-                ) == 0
-            ) {
-                musicRepository.insert(mediaItem.toSong().toggleLike())
-            }
-        }
-    }
-
-    fun insertSong(song: Song) {
-        viewModelScope.launch(Dispatchers.IO) {
-            musicRepository.insert(song)
-        }
-    }
 
     fun createPlaylist(playlistName: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -69,20 +44,6 @@ class LibraryViewModel @Inject constructor(
                     playlist.name
                 )
             )
-        }
-    }
-
-    fun addToPlaylist(playlist: Playlist, song: Song, position: Int, onResult: (Boolean) -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            musicRepository.insert(song)
-            val id = musicRepository.insert(
-                SongPlaylistMap(
-                    song.id,
-                    playlist.id,
-                    position
-                )
-            )
-            onResult(id != -1L)
         }
     }
 }

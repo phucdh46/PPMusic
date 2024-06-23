@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.dhp.android.library)
     alias(libs.plugins.dhp.android.hilt)
     alias(libs.plugins.jetbrainsKotlinSerialization)
-
 }
 
 android {
@@ -25,10 +24,6 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
 
-//    implementation(libs.androidx.core.ktx)
-//    implementation(libs.androidx.appcompat)
-//    implementation(libs.material)
-//    testImplementation(libs.junit)
-//    androidTestImplementation(libs.androidx.junit)
-//    androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.guava)
 }
