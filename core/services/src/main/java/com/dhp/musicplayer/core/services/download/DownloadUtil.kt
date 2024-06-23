@@ -1,8 +1,7 @@
 package com.dhp.musicplayer.core.services.download
 
 import android.content.Context
-import android.net.ConnectivityManager
-import androidx.core.content.getSystemService
+import android.net.Uri
 import androidx.core.net.toUri
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
@@ -14,10 +13,11 @@ import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
-import com.dhp.musicplayer.core.common.utils.Logg
 import com.dhp.musicplayer.core.domain.repository.NetworkMusicRepository
 import com.dhp.musicplayer.core.services.di.DownloadCache
 import com.dhp.musicplayer.core.services.di.PlayerCache
+import com.dhp.musicplayer.core.services.player.PlayableFormatNotFoundException
+import com.dhp.musicplayer.core.services.player.RingBuffer
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -39,8 +39,8 @@ class DownloadUtil @Inject constructor(
     @DownloadCache val downloadCache: SimpleCache,
     @PlayerCache val playerCache: SimpleCache,
 ) {
-    private val connectivityManager = context.getSystemService<ConnectivityManager>()!!
-    private val songUrlCache = HashMap<String, Pair<String, Long>>()
+    private val ringBuffer = RingBuffer<Pair<String, Uri>?>(2) { null }
+
     private val dataSourceFactory = ResolvingDataSource.Factory(
         CacheDataSource.Factory()
             .setCache(playerCache)
@@ -58,27 +58,32 @@ class DownloadUtil @Inject constructor(
             return@Factory dataSpec
         }
 
-        songUrlCache[mediaId]?.takeIf { it.second < System.currentTimeMillis() }?.let {
-            return@Factory dataSpec.withUri(it.first.toUri())
+        when (mediaId) {
+            ringBuffer.getOrNull(0)?.first -> return@Factory dataSpec.withUri(ringBuffer.getOrNull(0)!!.second)
+            ringBuffer.getOrNull(1)?.first -> return@Factory dataSpec.withUri(ringBuffer.getOrNull(1)!!.second)
         }
 
         val playerResponse = runBlocking(Dispatchers.IO) {
             networkMusicRepository.player(id = mediaId, idDownload = true)
         }
-        if (playerResponse?.status != "OK") {
-            throw PlaybackException(
-                playerResponse?.status,
-                null,
-                PlaybackException.ERROR_CODE_REMOTE_ERROR
-            )
+
+        val urlResult = runCatching {
+            if (playerResponse?.status == "OK") {
+                playerResponse.url ?: throw PlayableFormatNotFoundException()
+
+            } else {
+                throw PlaybackException(
+                    playerResponse?.status,
+                    null,
+                    PlaybackException.ERROR_CODE_REMOTE_ERROR
+                )
+            }
         }
 
-
-        songUrlCache[mediaId] =
-            playerResponse.url!! to playerResponse.expiresInSeconds!! * 1000L
-        Logg.d("Download: ${playerResponse.url!!.toUri()}")
-        dataSpec.withUri(playerResponse
-            .url!!.toUri())
+        urlResult.getOrThrow().let { url ->
+            ringBuffer.append(mediaId to url.toUri())
+            dataSpec.withUri(url.toUri())
+        }
     }
     val downloadNotificationHelper =
         DownloadNotificationHelper(context, ExoDownloadService.CHANNEL_DOWNLOAD_ID)
