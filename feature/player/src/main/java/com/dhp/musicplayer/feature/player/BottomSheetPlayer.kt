@@ -219,7 +219,6 @@ fun BottomSheetPlayer(
         PlayerQueue(
             state = queueSheetState,
             playerBottomSheetState = state,
-            navController = navController,
         )
     }
 }

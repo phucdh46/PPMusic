@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dhp.musicplayer.core.designsystem.icon.IconApp
 
 @Preview
 @Composable
@@ -38,6 +40,7 @@ fun LoadingFiveLinesCenterPreviewPlay() {
 
 @Composable
 fun LoadingFiveLinesCenter(
+    modifier: Modifier = Modifier,
     color: Color = Color.White,
     size: Int = 50,
     speed: Double = 0.5,
@@ -46,21 +49,31 @@ fun LoadingFiveLinesCenter(
 ) {
     AnimatedVisibility(
         visible = isShow,
-        modifier = Modifier
-            .background(Color.Black.copy(alpha = 0.4f))
+        modifier = modifier
+//            .background(Color.Black.copy(alpha = 0.4f))
             .fillMaxSize()
     ) {
         val maxCounter = if (isPlaying) 4 else 2
 
-        Row(
-            Modifier.height(size.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Spacer(modifier = Modifier.width(size.div(10).dp))
-            repeat(maxCounter) { index ->
-                EachRect(size * 3 / 4, index, color, speed, isPlaying)
+        if (isPlaying) {
+            Row(
+                Modifier.height(size.dp),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Spacer(modifier = Modifier.width(size.div(10).dp))
+                repeat(maxCounter) { index ->
+                    EachRect(size * 3 / 4, index, color, speed, isPlaying)
+                    Spacer(modifier = Modifier.width(size.div(10).dp))
+                }
+            }
+        } else {
+            Row(
+                Modifier.height(size.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(imageVector = IconApp.PlayArrow, contentDescription = "play", tint = color)
             }
         }
     }

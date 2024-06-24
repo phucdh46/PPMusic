@@ -14,5 +14,5 @@
     <string name="lyric_text_auto_mode">Auto</string>
 
     <!-- player queue-->
-    <string name="player_queue_next_text">Next</string>
+    <string name="player_queue_next_text">Queue</string>
 </resources>
