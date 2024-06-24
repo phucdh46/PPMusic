@@ -84,14 +84,14 @@ fun Controls(
 
         Text(
             text = artist ?: "",
-            style = typography.bodyLarge,
+            style = typography.bodyMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
 
         Spacer(
             modifier = Modifier
-                .weight(0.5f)
+                .weight(1f)
         )
 
         SeekBar(
