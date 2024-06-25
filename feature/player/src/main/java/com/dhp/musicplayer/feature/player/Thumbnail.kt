@@ -26,6 +26,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.common.utils.Logg
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.ImageNotLoading
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.constant.px

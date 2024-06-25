@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.dhp.musicplayer.feature.settings.R
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.feature.settings.items.SettingTextItem
 import com.dhp.musicplayer.feature.settings.items.SettingTopTitleItem
 

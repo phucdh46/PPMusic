@@ -18,8 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
-import com.dhp.musicplayer.feature.settings.R
 import com.dhp.musicplayer.feature.settings.dialog.CacheSettingDialog
 import com.dhp.musicplayer.feature.settings.dialog.ConfirmDeleteCacheSettingDialog
 

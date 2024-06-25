@@ -63,6 +63,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.common.extensions.toSongsWithBitmap
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.Artwork
 import com.dhp.musicplayer.core.designsystem.component.ConfirmationDialog
 import com.dhp.musicplayer.core.designsystem.component.TextFieldDialog
@@ -86,7 +87,6 @@ import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
 import com.dhp.musicplayer.core.ui.items.TextPlaceholder
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
 import com.dhp.musicplayer.feature.menu.PlaylistMenu
-import com.dhp.musicplayer.feature.playlist.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -171,7 +171,7 @@ fun LocalPlaylistDetailScreen(
 
     if (isRenaming) {
         TextFieldDialog(
-            hintText = stringResource(id = R.string.hint_rename_dialog),
+            hintText = stringResource(id = R.string.hint_rename_playlist_dialog),
             title = {
                 Text(
                     text = stringResource(R.string.title_rename_dialog).uppercase(),
@@ -193,7 +193,7 @@ fun LocalPlaylistDetailScreen(
     if (isDeleting) {
         ConfirmationDialog(
             text = stringResource(
-                id = R.string.body_delete_dialog,
+                id = R.string.message_delete_playlist_dialog,
                 playlistWithSongs.playlist.name
             ),
             onDismiss = { isDeleting = false },

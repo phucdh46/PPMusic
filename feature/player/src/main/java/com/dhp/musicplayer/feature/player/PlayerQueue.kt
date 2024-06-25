@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.BottomSheet
 import com.dhp.musicplayer.core.designsystem.component.BottomSheetState
 import com.dhp.musicplayer.core.designsystem.theme.bold
@@ -41,7 +42,7 @@ fun PlayerQueue(
                     .navigationBarsPadding()
             ) {
                 Text(
-                    text = stringResource(R.string.player_queue_next_text),
+                    text = stringResource(R.string.player_queue_text),
                     style = MaterialTheme.typography.bodyLarge.bold().center(),
                     modifier = Modifier
                         .align(Alignment.Center)

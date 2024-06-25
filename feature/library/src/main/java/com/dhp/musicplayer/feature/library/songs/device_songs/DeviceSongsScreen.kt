@@ -38,6 +38,7 @@ import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.isAtLeastAndroid33
 import com.dhp.musicplayer.core.common.extensions.openSettingsForReadExternalStorage
 import com.dhp.musicplayer.core.common.extensions.stringToBitMap
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.model.music.Song
@@ -47,7 +48,6 @@ import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.items.DeviceSongItem
 import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
-import com.dhp.musicplayer.feature.library.R
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -102,13 +102,13 @@ fun DeviceSongsScreen(
                     modifier = Modifier.weight(1f),
                     onClick = { readAudioPermissionState.launchPermissionRequest() },
                 ) {
-                    Text(text = stringResource(id = R.string.grant_permission_button))
+                    Text(text = stringResource(id = R.string.permission_grant_button))
                 }
                 Button(
                     modifier = Modifier.weight(1f),
                     onClick = { openSettingsForReadExternalStorage(context) },
                 ) {
-                    Text(text = stringResource(id = R.string.go_to_settings_button))
+                    Text(text = stringResource(id = R.string.permission_go_to_settings_button))
                 }
             }
         }

@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import com.dhp.musicplayer.core.common.extensions.formatAsDuration
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.SeekBar
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.services.extensions.forceSeekToNext

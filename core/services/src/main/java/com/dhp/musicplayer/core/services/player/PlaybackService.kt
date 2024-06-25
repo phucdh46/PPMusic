@@ -53,7 +53,7 @@ import com.dhp.musicplayer.core.domain.repository.MusicRepository
 import com.dhp.musicplayer.core.domain.repository.NetworkMusicRepository
 import com.dhp.musicplayer.core.model.music.PersistQueueMedia
 import com.dhp.musicplayer.core.model.music.Song
-import com.dhp.musicplayer.core.services.R
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.services.di.DownloadCache
 import com.dhp.musicplayer.core.services.di.PlayerCache
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
@@ -117,7 +117,7 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
                 context = this,
                 notificationIdProvider = { NOTIFICATION_ID },
                 channelId = NOTIFICATION_CHANNEL_ID,
-                channelNameResourceId = R.string.player_channel_name,
+                channelNameResourceId = R.string.service_music_channel_name,
             ).apply {
                 setSmallIcon(R.drawable.ic_notification)
             }
@@ -217,7 +217,7 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
         mediaLibrarySession?.setCustomLayout(
             listOf(
                 CommandButton.Builder()
-                    .setDisplayName(getString(if (currentSong?.likedAt != null) R.string.action_remove_like else R.string.action_like))
+                    .setDisplayName(getString(if (currentSong?.likedAt != null) R.string.android_auto_action_remove_like else R.string.android_auto_action_like))
                     .setIconResId(if (currentSong?.likedAt != null) R.drawable.favorite else R.drawable.favorite_border)
                     .setSessionCommand(MediaSessionConstants.CommandToggleLike)
                     .setEnabled(currentSong != null)
@@ -227,9 +227,9 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
                     .setDisplayName(
                         getString(
                             when (player.repeatMode) {
-                                REPEAT_MODE_OFF -> R.string.repeat_mode_off
-                                REPEAT_MODE_ONE -> R.string.repeat_mode_one
-                                REPEAT_MODE_ALL -> R.string.repeat_mode_all
+                                REPEAT_MODE_OFF -> R.string.android_auto_repeat_mode_off
+                                REPEAT_MODE_ONE -> R.string.android_auto_repeat_mode_one
+                                REPEAT_MODE_ALL -> R.string.android_auto_repeat_mode_all
                                 else -> throw IllegalStateException()
                             }
                         )

@@ -50,13 +50,13 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.constant.ResultNavigationKey
 import com.dhp.musicplayer.core.designsystem.constant.TopBarHeight
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.designsystem.theme.bold
 import com.dhp.musicplayer.core.model.music.SearchHistory
 import com.dhp.musicplayer.core.ui.common.EmptyList
-import com.dhp.musicplayer.feature.search.R
 
 @Composable
 fun SearchByTextScreen(

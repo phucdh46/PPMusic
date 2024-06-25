@@ -33,6 +33,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.TextFieldDialog
 import com.dhp.musicplayer.core.designsystem.component.TextIconButton
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
@@ -55,7 +56,7 @@ fun AddSongToPlaylist(
     if (showAddPlaylistDialog) {
         TextFieldDialog(
 //            icon = { Icon(imageVector = IconApp.PlaylistAdd, contentDescription = null) },
-            title = { Text(text = stringResource(R.string.create_playlist), style = MaterialTheme.typography.titleMedium) },
+            title = { Text(text = stringResource(R.string.create_playlist_title), style = MaterialTheme.typography.titleMedium) },
             onDismiss = { showAddPlaylistDialog = false },
             onDone = { playlistName ->
                 viewModel.createPlaylist(playlistName)

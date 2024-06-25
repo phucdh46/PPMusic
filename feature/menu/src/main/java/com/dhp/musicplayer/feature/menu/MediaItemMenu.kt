@@ -47,6 +47,7 @@ import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import com.dhp.musicplayer.core.common.extensions.formatAsDuration
 import com.dhp.musicplayer.core.common.extensions.thumbnail
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.ConfirmationDialog
 import com.dhp.musicplayer.core.designsystem.component.DebouncedIconButton
 import com.dhp.musicplayer.core.designsystem.component.DefaultDialog
@@ -191,9 +192,9 @@ fun MediaItemMenu(
                 if (isShowingTurnOffSleepTimerDialog) {
                     if (sleepTimerMillisLeft != null) {
                         ConfirmationDialog(
-                            text = stringResource(R.string.title_stop_sleep_timer),
-                            cancelText = stringResource(R.string.cancel_text_stop_stop_sleep_timer),
-                            confirmText = stringResource(R.string.confirm_text_stop_stop_sleep_timer),
+                            text = stringResource(R.string.sleep_timer_message_stop),
+                            cancelText = stringResource(R.string.sleep_timer_stop_cancel_text),
+                            confirmText = stringResource(R.string.sleep_timer_stop_confirm_text),
                             onDismiss = { isShowingTurnOffSleepTimerDialog = false },
                             onConfirm = {
                                 playerConnection?.cancelSleepTimer()
@@ -210,7 +211,7 @@ fun MediaItemMenu(
                         var hoursText by remember { mutableStateOf(TextFieldValue()) }
                         var minutesText by remember { mutableStateOf(TextFieldValue()) }
                         BasicText(
-                            text = stringResource(R.string.title_set_sleep_timer),
+                            text = stringResource(R.string.set_sleep_timer_title),
                             style = typography.titleMedium,
                             modifier = Modifier
                                 .padding(vertical = 8.dp, horizontal = 24.dp)
@@ -234,8 +235,8 @@ fun MediaItemMenu(
                                     selection = TextRange(filteredHoursText.length)
                                 )
                             },
-                            label = { Text(text = stringResource(R.string.text_enter_hours_sleep_timer)) },
-                            placeholder = { Text(text = stringResource(R.string.hint_enter_hours_sleep_timer)) },
+                            label = { Text(text = stringResource(R.string.sleep_timer_enter_hours_text)) },
+                            placeholder = { Text(text = stringResource(R.string.sleep_timer_enter_hours_hint)) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             singleLine = true
                         )
@@ -249,8 +250,8 @@ fun MediaItemMenu(
                                     selection = TextRange(filteredMinutesText.length)
                                 )
                             },
-                            label = { Text(text = stringResource(R.string.text_enter_minutes_sleep_timer)) },
-                            placeholder = { Text(text = stringResource(R.string.hint_enter_minutes_sleep_timer)) },
+                            label = { Text(text = stringResource(R.string.sleep_timer_enter_minutes_text)) },
+                            placeholder = { Text(text = stringResource(R.string.sleep_timer_enter_minutes_hint)) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             singleLine = true
                         )
@@ -262,14 +263,14 @@ fun MediaItemMenu(
                                 .padding(top = 16.dp)
                         ) {
                             DialogTextButton(
-                                text = stringResource(R.string.cancel_text_enter_sleep_timer),
+                                text = stringResource(R.string.sleep_timer_enter_cancel_text),
                                 onClick = { isShowingSleepTimerDialog = false }
                             )
                             val timeSleep = (hoursText.text.toIntOrNull()
                                 ?: 0) * 60 + (minutesText.text.toIntOrNull() ?: 0)
 
                             DialogTextButton(
-                                text = stringResource(R.string.confirm_text_enter_sleep_timer),
+                                text = stringResource(R.string.sleep_timer_enter_confirm_text),
                                 enabled = timeSleep > 0,
                                 primary = true,
                                 onClick = {
@@ -287,7 +288,7 @@ fun MediaItemMenu(
                 Menu {
                     MenuEntry(
                         imageVector = IconApp.Bedtime,
-                        text = stringResource(R.string.title_sleep_timer),
+                        text = stringResource(R.string.sleep_timer_title),
                         onClick = { },
                         trailingContent = sleepTimerMillisLeft?.let {
                             {
@@ -316,7 +317,7 @@ fun MediaItemMenu(
 
                     MenuEntry(
                         icon = {},
-                        text = stringResource(R.string.title_set_sleep_timer),
+                        text = stringResource(R.string.set_sleep_timer_title),
                         onClick = {
                             isShowingSleepTimerDialog = true
                         }
@@ -325,7 +326,7 @@ fun MediaItemMenu(
                     sleepTimerMillisLeft?.let {
                         MenuEntry(
                             icon = {},
-                            text = stringResource(R.string.title_turn_off_sleep_timer),
+                            text = stringResource(R.string.sleep_timer_turn_off_title),
                             onClick = {
                                 isShowingTurnOffSleepTimerDialog = true
                             }
@@ -464,7 +465,7 @@ fun MediaItemMenu(
 
                         MenuEntry(
                             imageVector = IconApp.Bedtime,
-                            text = stringResource(id = R.string.title_sleep_timer),
+                            text = stringResource(id = R.string.sleep_timer_title),
                             onClick = {
                                 menuMediaState = MenuMediaState.SLEEP_TIMER
 

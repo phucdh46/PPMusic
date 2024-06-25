@@ -14,7 +14,7 @@ import com.dhp.musicplayer.core.designsystem.constant.ListThumbnailSize
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.model.settings.LibrarySongsDetailType
 import com.dhp.musicplayer.core.ui.items.DefaultListItem
-import com.dhp.musicplayer.feature.library.R
+import com.dhp.musicplayer.core.designsystem.R
 
 @Composable
 fun LibrarySongsScreen(
@@ -45,8 +45,8 @@ fun LibrarySongsScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         DefaultListItem(
-            title = stringResource(id = R.string.title_library_favourites),
-            subtitle = stringResource(id = R.string.subtitle_library_favourites),
+            title = stringResource(id = R.string.library_favourites_title),
+            subtitle = stringResource(id = R.string.library_favourites_subtitle),
             thumbnailContent = {
                 Icon(
                     imageVector = IconApp.Favorite,
@@ -63,8 +63,8 @@ fun LibrarySongsScreen(
         )
 
         DefaultListItem(
-            title = stringResource(id = R.string.title_library_downloaded),
-            subtitle = stringResource(id = R.string.subtitle_library_downloaded),
+            title = stringResource(id = R.string.library_downloaded_title),
+            subtitle = stringResource(id = R.string.library_downloaded_subtitle),
             thumbnailContent = {
                 Icon(
                     imageVector = IconApp.DownloadForOffline,
@@ -80,8 +80,8 @@ fun LibrarySongsScreen(
         )
 
         DefaultListItem(
-            title = stringResource(id = R.string.title_library_device_songs),
-            subtitle = stringResource(id = R.string.subtitle_library_device_songs),
+            title = stringResource(id = R.string.library_device_songs_title),
+            subtitle = stringResource(id = R.string.library_device_songs_subtitle),
             thumbnailContent = {
                 Icon(
                     imageVector = IconApp.PhoneAndroid,

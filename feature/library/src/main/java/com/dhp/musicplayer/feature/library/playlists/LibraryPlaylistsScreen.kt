@@ -53,7 +53,7 @@ import com.dhp.musicplayer.core.ui.items.PlaylistGridItem
 import com.dhp.musicplayer.core.ui.items.PlaylistListItem
 import com.dhp.musicplayer.core.datastore.PlaylistViewTypeKey
 import com.dhp.musicplayer.feature.library.LibraryViewModel
-import com.dhp.musicplayer.feature.library.R
+import com.dhp.musicplayer.core.designsystem.R
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -77,7 +77,7 @@ fun LibraryPlaylistsScreen(
     if (showAddPlaylistDialog) {
         TextFieldDialog(
 //            icon = { Icon(imageVector = IconApp.PlaylistAdd, contentDescription = null) },
-            title = { Text(text = stringResource(R.string.create_playlist)) },
+            title = { Text(text = stringResource(R.string.create_playlist_title)) },
             onDismiss = { showAddPlaylistDialog = false },
             onDone = { playlistName ->
                 viewModel.createPlaylist(playlistName)
@@ -93,7 +93,7 @@ fun LibraryPlaylistsScreen(
 
     if (isRenaming) {
         TextFieldDialog(
-            hintText = stringResource(R.string.hint_rename_dialog),
+            hintText = stringResource(R.string.hint_rename_playlist_dialog),
             title = {
                 Text(
                     text = stringResource(R.string.title_rename_dialog).uppercase(),
@@ -119,7 +119,7 @@ fun LibraryPlaylistsScreen(
     if (isDeleting) {
         ConfirmationDialog(
             text = stringResource(
-                id = R.string.body_delete_dialog,
+                id = R.string.message_delete_playlist_dialog,
                 currentSelectPlaylist?.name ?: ""
             ),
             onDismiss = { isDeleting = false },

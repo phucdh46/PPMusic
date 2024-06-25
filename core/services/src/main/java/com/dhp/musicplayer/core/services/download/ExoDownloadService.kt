@@ -11,7 +11,7 @@ import androidx.media3.exoplayer.offline.DownloadNotificationHelper
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.PlatformScheduler
 import androidx.media3.exoplayer.scheduler.Scheduler
-import com.dhp.musicplayer.core.services.R
+import com.dhp.musicplayer.core.designsystem.R
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -21,7 +21,7 @@ class ExoDownloadService : DownloadService(
     NOTIFICATION_DOWNLOAD_ID,
     1000L,
     CHANNEL_DOWNLOAD_ID,
-    R.string.download,
+    R.string.service_download_channel_name,
     0
 ) {
     @Inject

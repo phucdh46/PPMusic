@@ -31,16 +31,17 @@ import androidx.media3.common.util.UnstableApi
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.common.extensions.intent
+import com.dhp.musicplayer.core.datastore.DynamicThemeKey
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.extractThemeColor
 import com.dhp.musicplayer.core.designsystem.theme.ColorSaver
 import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
 import com.dhp.musicplayer.core.model.settings.UserData
 import com.dhp.musicplayer.core.services.download.DownloadUtil
 import com.dhp.musicplayer.core.services.extensions.toSong
-import com.dhp.musicplayer.core.services.player.PlayerConnection
-import com.dhp.musicplayer.core.datastore.DynamicThemeKey
-import com.dhp.musicplayer.core.common.extensions.intent
 import com.dhp.musicplayer.core.services.player.PlaybackService
+import com.dhp.musicplayer.core.services.player.PlayerConnection
 import com.dhp.musicplayer.core.ui.common.rememberPreference
 import com.dhp.musicplayer.ui.App
 import com.dhp.musicplayer.ui.rememberAppState
@@ -130,8 +131,8 @@ class MainActivity : ComponentActivity() {
                     scope.launch {
                         val result = appState.snackBarHostState
                             .showSnackbar(
-                                message = this@MainActivity.getString(R.string.update_was_downloaded_snack_bar),
-                                actionLabel = this@MainActivity.getString(R.string.restart_string),
+                                message = this@MainActivity.getString(R.string.in_app_update_message_downloaded),
+                                actionLabel = this@MainActivity.getString(R.string.in_app_update_restart_button_text),
                                 // Defaults to SnackbarDuration.Short
                                 duration = SnackbarDuration.Indefinite
                             )
