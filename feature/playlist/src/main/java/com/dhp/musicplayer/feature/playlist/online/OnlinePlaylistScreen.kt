@@ -42,44 +42,46 @@ fun OnlinePlaylistScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     BoxWithConstraints(Modifier.fillMaxSize()) {
-        TopAppBarDetailScreen(
-            onBackClick = onBackClick,
-        )
-        when (uiState) {
-            UiState.Loading -> {
-                val maxWidth = maxWidth
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(maxWidth)
-                            .shimmer()
-                    )
-                    TextPlaceholder()
-                    TextPlaceholder()
-                    repeat(3) {
-                        SongItemPlaceholder()
+        val maxWidth = maxWidth
+        Column {
+            TopAppBarDetailScreen(
+                onBackClick = onBackClick,
+            )
+            when (uiState) {
+                UiState.Loading -> {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(maxWidth)
+                                .shimmer()
+                        )
+                        TextPlaceholder()
+                        TextPlaceholder()
+                        repeat(3) {
+                            SongItemPlaceholder()
+                        }
                     }
                 }
-            }
 
-            is UiState.Success -> {
-                OnlinePlaylistScreen(
-                    playlistDisplay = (uiState as UiState.Success).data,
-                    onBackClick = onBackClick,
-                    onShowMessage = onShowMessage,
-                )
-            }
+                is UiState.Success -> {
+                    OnlinePlaylistScreen(
+                        playlistDisplay = (uiState as UiState.Success).data,
+                        onBackClick = onBackClick,
+                        onShowMessage = onShowMessage,
+                    )
+                }
 
-            is UiState.Empty -> {
-                EmptyList(text = stringResource(id = R.string.empty_songs))
-            }
+                is UiState.Empty -> {
+                    EmptyList(text = stringResource(id = R.string.empty_songs))
+                }
 
-            is UiState.Error -> {
-                ErrorScreen()
+                is UiState.Error -> {
+                    ErrorScreen()
+                }
             }
         }
     }

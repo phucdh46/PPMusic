@@ -40,7 +40,7 @@ class OnlinePlaylistViewModel @Inject constructor(
                         null
                     }
                 }
-                if (result == null) {
+                if (result?.songsPage == null) {
                     UiState.Error
                 } else {
                     UiState.Success(
