@@ -23,10 +23,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -54,12 +51,11 @@ import com.dhp.musicplayer.core.services.player.PlayerConnection
 import com.dhp.musicplayer.core.ui.LocalDownloadUtil
 import com.dhp.musicplayer.core.ui.LocalMenuState
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
-import com.dhp.musicplayer.feature.home.navigation.FOR_YOU_ROUTE
-import com.dhp.musicplayer.feature.library.navigation.LIBRARY_ROUTE
 import com.dhp.musicplayer.feature.player.BottomSheetPlayer
-import com.dhp.musicplayer.feature.search.main.navigation.SEARCH_ROUTE
 import com.dhp.musicplayer.feature.search.search_by_text.navigation.navigateToSearchByText
+import com.dhp.musicplayer.feature.settings.navigateToSettings
 import com.dhp.musicplayer.navigation.NavHost
+import com.dhp.musicplayer.navigation.ScreensNotShowSettingButton
 import com.dhp.musicplayer.navigation.ScreensNotShowTopAppBar
 import com.dhp.musicplayer.navigation.ScreensShowBottomNavigation
 import com.dhp.musicplayer.navigation.ScreensShowSearchOnTopAppBar
@@ -70,13 +66,12 @@ import com.dhp.musicplayer.utils.showSnackBar
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 fun App(appState: AppState, playerConnection: PlayerConnection?, downloadUtil: DownloadUtil) {
-    var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
     App(
         appState = appState,
         playerConnection = playerConnection,
-        showSettingsDialog = showSettingsDialog,
-        onSettingsDismissed = { showSettingsDialog = false },
-        onTopAppBarActionClick = { showSettingsDialog = true },
+        onTopAppBarActionClick = {
+             appState.navController.navigateToSettings()
+        },
         downloadUtil = downloadUtil,
     )
 }
@@ -87,46 +82,26 @@ fun App(appState: AppState, playerConnection: PlayerConnection?, downloadUtil: D
 internal fun App(
     appState: AppState,
     playerConnection: PlayerConnection?,
-    showSettingsDialog: Boolean,
     downloadUtil: DownloadUtil,
-    onSettingsDismissed: () -> Unit,
     onTopAppBarActionClick: () -> Unit,
 ) {
-    val bottomBarState = rememberSaveable { (mutableStateOf(true)) }
-    val topBarState = rememberSaveable { (mutableStateOf(true)) }
-
     val navBackStackEntry by appState.navController.currentBackStackEntryAsState()
-    when (navBackStackEntry?.destination?.route) {
-        FOR_YOU_ROUTE, SEARCH_ROUTE, LIBRARY_ROUTE -> {
-            bottomBarState.value = true
-            topBarState.value = true
-        }
 
-        else -> {
-            bottomBarState.value = false
-            topBarState.value = false
-        }
-    }
     val shouldShowNavigationBar = remember(navBackStackEntry) {
         ScreensShowBottomNavigation.contains(navBackStackEntry?.destination?.route)
     }
     val shouldBackOnTopAppBar = remember(navBackStackEntry) {
-//        ScreensShowBackOnTopAppBar.contains(navBackStackEntry?.destination?.route)
         !ScreensShowBottomNavigation.contains(navBackStackEntry?.destination?.route)
     }
     val shouldSearchOnTopAppBar = remember(navBackStackEntry) {
         ScreensShowSearchOnTopAppBar.contains(navBackStackEntry?.destination?.route)
     }
     val shouldTopAppBar = remember(navBackStackEntry) {
-//        navBackStackEntry?.destination?.route != SEARCH_BY_TEXT_ROUTE
         !ScreensNotShowTopAppBar.contains(navBackStackEntry?.destination?.route)
-
     }
 
-    if (showSettingsDialog) {
-        com.dhp.musicplayer.feature.settings.SettingsDialog(
-            onDismiss = { onSettingsDismissed() },
-        )
+    val shouldSettingButton = remember(navBackStackEntry) {
+        !ScreensNotShowSettingButton.contains(navBackStackEntry?.destination?.route)
     }
 
     val density = LocalDensity.current
@@ -208,6 +183,7 @@ internal fun App(
                     ),
                     showBackButton = shouldBackOnTopAppBar,
                     showSearchButton = shouldSearchOnTopAppBar,
+                    showSettingButton = shouldSettingButton,
                     onBackClick = { appState.navController.navigateUp() },
                     onSearchClick = { appState.navController.navigateToSearchByText() },
                     onSettingClick = { onTopAppBarActionClick() },

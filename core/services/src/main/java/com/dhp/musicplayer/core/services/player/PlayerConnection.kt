@@ -38,7 +38,9 @@ class PlayerConnection(
 ) : Player.Listener {
 
     val player = binder.player
-    private val exoPlayerService = binder.service
+    val service = binder.service
+    val playerCache = service.playerCache
+    val downloadCache = service.downloadCache
 
     private val _currentMediaItem = MutableStateFlow(player.currentMediaItem)
     val currentMediaItem: StateFlow<MediaItem?> = _currentMediaItem
@@ -212,7 +214,7 @@ class PlayerConnection(
     }
 
     fun toggleLike(song: Song) {
-        exoPlayerService.toggleLike(song = song)
+        service.toggleLike(song = song)
     }
 
     fun dispose() {

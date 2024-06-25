@@ -13,3 +13,6 @@ val LastTimeUserCancelFlexibleUpdateKey = longPreferencesKey("lastTimeUserCancel
 val ApiConfigKey = stringPreferencesKey("apiConfigKey")
 val DarkThemeConfigKey = stringPreferencesKey("darkThemeConfig")
 val DynamicThemeKey = booleanPreferencesKey("dynamicTheme")
+
+val MaxImageCacheSizeKey = intPreferencesKey("maxImageCacheSize")
+val MaxSongCacheSizeKey = intPreferencesKey("maxSongCacheSize")

@@ -54,6 +54,7 @@ import com.dhp.musicplayer.core.domain.repository.NetworkMusicRepository
 import com.dhp.musicplayer.core.model.music.PersistQueueMedia
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.R
+import com.dhp.musicplayer.core.services.di.DownloadCache
 import com.dhp.musicplayer.core.services.di.PlayerCache
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.services.extensions.mediaItems
@@ -77,7 +78,11 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
 
     @Inject
     @PlayerCache
-    lateinit var cache: SimpleCache
+    lateinit var playerCache: SimpleCache
+
+    @Inject
+    @DownloadCache
+    lateinit var downloadCache: SimpleCache
 
     @Inject
     lateinit var musicRepository: MusicRepository
@@ -272,14 +277,21 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
         DefaultMediaSourceFactory(createDataSourceFactory(this))
 
     private fun createCacheDataSource(): DataSource.Factory {
-        return CacheDataSource.Factory().setCache(cache).apply {
-            setUpstreamDataSourceFactory(
-                DefaultHttpDataSource.Factory()
-                    .setConnectTimeoutMs(16000)
-                    .setReadTimeoutMs(8000)
-                    .setUserAgent("Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0")
-            )
-        }
+        return CacheDataSource.Factory()
+            .setCache(downloadCache).apply {
+                setUpstreamDataSourceFactory(
+                    CacheDataSource.Factory()
+                        .setCache(playerCache)
+                        .setUpstreamDataSourceFactory(
+                            DefaultHttpDataSource.Factory()
+                                .setConnectTimeoutMs(16000)
+                                .setReadTimeoutMs(8000)
+                                .setUserAgent("Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0")
+                        )
+                )
+            }
+            .setCacheWriteDataSinkFactory(null)
+            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
     }
 
     private fun createDataSourceFactory(context: Context): DataSource.Factory {
@@ -309,7 +321,13 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
                 dataSpec
             } else {
                 val videoId = dataSpec.key ?: error("A key must be set")
-                if (cache.isCached(videoId, dataSpec.position, chunkLength)) {
+                if (downloadCache.isCached(
+                        videoId,
+                        dataSpec.position,
+                        if (dataSpec.length >= 0) dataSpec.length else 1
+                    ) ||
+                    playerCache.isCached(videoId, dataSpec.position, chunkLength)
+                ) {
                     Logg.d("Service: cache")
                     dataSpec
                 } else {

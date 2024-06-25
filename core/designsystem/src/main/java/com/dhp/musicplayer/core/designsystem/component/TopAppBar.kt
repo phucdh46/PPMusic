@@ -42,6 +42,7 @@ fun TopAppBar(
     title: String,
     showBackButton: Boolean = true,
     showSearchButton: Boolean = false,
+    showSettingButton: Boolean = true,
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
     onBackClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
@@ -91,8 +92,10 @@ fun TopAppBar(
                     Icon(imageVector = IconApp.Search, contentDescription = null)
                 }
             }
-            IconButton(onClick = { onSettingClick() }) {
-                Icon(imageVector = IconApp.Settings, contentDescription = null)
+            AnimatedVisibility(visible = showSettingButton) {
+                IconButton(onClick = { onSettingClick() }) {
+                    Icon(imageVector = IconApp.Settings, contentDescription = null)
+                }
             }
         }
     }

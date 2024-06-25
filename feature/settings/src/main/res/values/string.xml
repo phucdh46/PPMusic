@@ -10,4 +10,25 @@
     <string name="feature_settings_dark_mode_config_light">Light</string>
     <string name="feature_settings_dark_mode_config_dark">Dark</string>
 
+    <string name="setting_top_theme">Theme</string>
+    <string name="setting_top_theme_app">App theme</string>
+    <string name="setting_top_theme_app_description">Change the app theme. </string>
+    <string name="setting_dynamic_theme_title">Dynamic theme</string>
+    <string name="setting_dynamic_theme_description">Change the app theme follow current playing song. </string>
+
+    <string name="setting_cache_title">Cache</string>
+    <string name="setting_download_cache_title">Download cache</string>
+    <string name="setting_song_cache_title">Song cache</string>
+    <string name="setting_image_cache_title">Song cache</string>
+    <string name="setting_cache_title_dialog">Set max size:</string>
+    <string name="setting_text_confirm_clean_cache_dialog">Do you want to clean the cache?</string>
+
+    <string name="setting_top_others">Others</string>
+    <string name="setting_top_others_version">App version</string>
+
+    <string name="size_used">%s used</string>
+
+    <string name="max_cache_size">Max cache size</string>
+    <string name="unlimited">Unlimited</string>
+    <string name="cancel_button">Cancel</string>
 </resources>
