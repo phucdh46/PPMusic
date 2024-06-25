@@ -24,6 +24,7 @@ import com.dhp.musicplayer.feature.search.mood_genres_detail.navigation.navigate
 import com.dhp.musicplayer.feature.search.search_by_text.navigation.searchScreenByText
 import com.dhp.musicplayer.feature.search.search_result.navigation.navigateToSearchResult
 import com.dhp.musicplayer.feature.search.search_result.navigation.searchResultScreen
+import com.dhp.musicplayer.feature.settings.settingsScreen
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.utils.showSnackBar
 
@@ -164,5 +165,7 @@ fun NavHost(
             onBackClick = { navController.navigateUp() },
             showSnackBar = appState::showSnackBar,
         )
+
+        settingsScreen()
     }
 }

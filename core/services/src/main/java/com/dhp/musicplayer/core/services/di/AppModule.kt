@@ -8,6 +8,9 @@ import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
+import com.dhp.musicplayer.core.datastore.MaxSongCacheSizeKey
+import com.dhp.musicplayer.core.datastore.dataStore
+import com.dhp.musicplayer.core.datastore.get
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,7 +48,10 @@ object AppModule {
         val constructor = {
             SimpleCache(
                 context.filesDir.resolve("exoplayercache"),
-                LeastRecentlyUsedCacheEvictor(1024 * 1024 * 1024L),
+                when (val cacheSize = context.dataStore[MaxSongCacheSizeKey] ?: 1024) {
+                    -1 -> NoOpCacheEvictor()
+                    else -> LeastRecentlyUsedCacheEvictor(cacheSize * 1024 * 1024L)
+                },
                 databaseProvider
             )
         }

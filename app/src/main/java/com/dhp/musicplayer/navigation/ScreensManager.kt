@@ -16,6 +16,7 @@ import com.dhp.musicplayer.feature.search.main.navigation.SEARCH_ROUTE
 import com.dhp.musicplayer.feature.search.mood_genres_detail.navigation.MOOD_AND_GENRES_ROUTE
 import com.dhp.musicplayer.feature.search.search_by_text.navigation.SEARCH_BY_TEXT_ROUTE
 import com.dhp.musicplayer.feature.search.search_result.navigation.SEARCH_RESULT_ROUTE
+import com.dhp.musicplayer.feature.settings.SETTINGS_ROUTE
 
 fun NavGraphBuilder.composableAnimation(
     route: String,
@@ -72,4 +73,5 @@ val ScreensShowBottomNavigation = listOf(FOR_YOU_ROUTE, SEARCH_ROUTE, LIBRARY_RO
 val ScreensShowBackOnTopAppBar = listOf(SEARCH_BY_TEXT_ROUTE, LOCAL_PLAYLIST_DETAIL_ROUTE)
 val ScreensShowSearchOnTopAppBar = listOf(FOR_YOU_ROUTE, SEARCH_ROUTE, LIBRARY_ROUTE)
 val ScreensNotShowTopAppBar = listOf(SEARCH_BY_TEXT_ROUTE, LOCAL_PLAYLIST_DETAIL_ROUTE, ONLINE_PLAYLIST_DETAIL_ROUTE, SEARCH_RESULT_ROUTE, MOOD_AND_GENRES_ROUTE, LIBRARY_SONGS_DETAIL_ROUTE)
+val ScreensNotShowSettingButton = listOf(SETTINGS_ROUTE)
 

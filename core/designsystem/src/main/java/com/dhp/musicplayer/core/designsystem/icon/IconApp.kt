@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.Bedtime
+import androidx.compose.material.icons.rounded.CleaningServices
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DownloadForOffline
@@ -60,6 +61,7 @@ object IconApp {
     val Favorite = Icons.Rounded.Favorite
     val FavoriteBorder = Icons.Rounded.FavoriteBorder
     val PhoneAndroid = Icons.Rounded.PhoneAndroid
+    val CleaningServices = Icons.Rounded.CleaningServices
 
     val NextPlan = Icons.AutoMirrored.Rounded.NextPlan
     val PlaylistAdd = Icons.AutoMirrored.Rounded.PlaylistAdd
