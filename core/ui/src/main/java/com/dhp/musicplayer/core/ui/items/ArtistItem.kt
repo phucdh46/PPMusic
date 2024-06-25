@@ -64,7 +64,7 @@ fun ArtistItem(
         ) {
             Text(
                 text = name ?: "",
-                style = typography.titleMedium,
+                style = typography.bodyMedium,
                 maxLines = if (alternative) 1 else 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -72,7 +72,7 @@ fun ArtistItem(
             subscribersCount?.let {
                 Text(
                     text = subscribersCount,
-                    style = typography.bodyMedium,
+                    style = typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier

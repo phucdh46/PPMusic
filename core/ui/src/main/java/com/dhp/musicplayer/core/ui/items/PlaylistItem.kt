@@ -108,7 +108,7 @@ fun PlaylistItem(
         ) {
             Text(
                 text = name ?: "",
-                style = typography.titleMedium,
+                style = typography.bodyMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -116,7 +116,7 @@ fun PlaylistItem(
             channelName?.let {
                 Text(
                     text = channelName,
-                    style = typography.bodyMedium,
+                    style = typography.bodySmall,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )

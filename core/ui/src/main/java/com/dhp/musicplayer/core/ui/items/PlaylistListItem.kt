@@ -93,7 +93,7 @@ fun ListItem(
             Text(
                 text = subtitle,
                 color = MaterialTheme.colorScheme.secondary,
-                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -133,9 +133,8 @@ inline fun ListItem(
                 .padding(horizontal = 6.dp)
         ) {
             Text(
-                text = title.orEmpty(),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
+                text = title,
+                style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -234,9 +233,8 @@ fun GridItem(
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = title.orEmpty(),
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Bold,
+            text = title,
+            style = MaterialTheme.typography.bodyMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Start,
@@ -247,8 +245,8 @@ fun GridItem(
             badges()
 
             Text(
-                text = subtitle.orEmpty(),
-                style = MaterialTheme.typography.bodyMedium,
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.secondary,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,

@@ -55,8 +55,8 @@ fun AlbumItem(
 
         ItemInfoContainer {
             Text(
-                text = title ?: "",
-                style = typography.titleMedium,
+                text = title.orEmpty(),
+                style = typography.bodyMedium,
                 maxLines = if (alternative) 1 else 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -65,7 +65,7 @@ fun AlbumItem(
                 authors?.let {
                     Text(
                         text = authors,
-                        style = typography.titleMedium,
+                        style = typography.bodyMedium,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -75,7 +75,7 @@ fun AlbumItem(
             year?.let {
                 Text(
                     text = year,
-                    style = typography.bodyMedium,
+                    style = typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier

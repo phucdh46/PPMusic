@@ -163,7 +163,7 @@ fun MoodAndGenresButton(
     ) {
         Text(
             text = title,
-            style = typography.labelLarge,
+            style = typography.labelMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
