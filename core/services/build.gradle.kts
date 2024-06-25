@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:datastore"))
     implementation(project(":core:network"))
+    implementation(project(":core:designsystem"))
 
     api(libs.media3.exoplayer)
     implementation(libs.media3.okhttp)

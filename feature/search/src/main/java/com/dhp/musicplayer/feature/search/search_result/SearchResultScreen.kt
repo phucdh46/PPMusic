@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.ChipsRow
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.constant.ResultNavigationKey
@@ -33,6 +34,7 @@ import com.dhp.musicplayer.core.model.music.Album
 import com.dhp.musicplayer.core.model.music.Artist
 import com.dhp.musicplayer.core.model.music.Playlist
 import com.dhp.musicplayer.core.model.music.Song
+import com.dhp.musicplayer.core.network.innertube.InnertubeApiService
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.ui.LocalMenuState
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
@@ -41,9 +43,7 @@ import com.dhp.musicplayer.core.ui.extensions.getSubTitleMusic
 import com.dhp.musicplayer.core.ui.extensions.getThumbnail
 import com.dhp.musicplayer.core.ui.extensions.getTitleMusic
 import com.dhp.musicplayer.core.ui.items.SongItem
-import com.dhp.musicplayer.core.network.innertube.InnertubeApiService
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
-import com.dhp.musicplayer.feature.search.R
 import com.dhp.musicplayer.feature.search.search_by_text.SearchToolbar
 import kotlinx.coroutines.launch
 

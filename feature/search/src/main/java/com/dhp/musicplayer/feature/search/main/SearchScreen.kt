@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.TextTitle
 import com.dhp.musicplayer.core.designsystem.constant.MoodAndGenresButtonHeight
 import com.dhp.musicplayer.core.designsystem.extensions.drawOneSideBorder
@@ -38,7 +39,6 @@ import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.EmptyList
 import com.dhp.musicplayer.core.ui.common.ErrorScreen
 import com.dhp.musicplayer.core.ui.items.TextPlaceholder
-import com.dhp.musicplayer.feature.search.R
 
 @Composable
 fun SearchScreen(

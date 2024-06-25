@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.TopAppBarDetailScreen
 import com.dhp.musicplayer.core.designsystem.extensions.shimmer
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
@@ -30,7 +31,6 @@ import com.dhp.musicplayer.core.ui.common.ErrorScreen
 import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
 import com.dhp.musicplayer.core.ui.items.TextPlaceholder
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
-import com.dhp.musicplayer.feature.playlist.R
 import com.dhp.musicplayer.feature.playlist.local.SongListDetailScreen
 
 @OptIn(ExperimentalMaterial3Api::class)

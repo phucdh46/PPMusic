@@ -36,7 +36,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.dhp.musicplayer.R
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.BottomSheetMenu
 import com.dhp.musicplayer.core.designsystem.component.NavigationBar
 import com.dhp.musicplayer.core.designsystem.component.NavigationBarItem
@@ -179,7 +179,7 @@ internal fun App(
                     title = stringResource(
                         id = destination?.titleTextId ?: getAppBarTitle(
                             navBackStackEntry?.destination?.route
-                        ) ?: R.string.default_tile_top_app_bar
+                        ) ?: R.string.top_app_bar_default_tile
                     ),
                     showBackButton = shouldBackOnTopAppBar,
                     showSearchButton = shouldSearchOnTopAppBar,
@@ -254,7 +254,7 @@ internal fun App(
                                     contentDescription = null,
                                 )
                             },
-                            label = { Text(stringResource(destination.iconTextId)) },
+                            label = { Text(stringResource(destination.iconLabelTextId)) },
                         )
                     }
                 }

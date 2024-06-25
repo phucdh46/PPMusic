@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
-import com.dhp.musicplayer.feature.settings.R
 import com.dhp.musicplayer.feature.settings.items.SettingSwitchItem
 import com.dhp.musicplayer.feature.settings.items.SettingTextItem
 import com.dhp.musicplayer.feature.settings.items.SettingTopTitleItem
@@ -25,12 +25,12 @@ internal fun SettingThemeSection(
     Column(modifier) {
         SettingTopTitleItem(
             modifier = Modifier.fillMaxWidth(),
-            text = R.string.setting_top_theme,
+            text = R.string.setting_theme_title,
         )
 
         SettingTextItem(
             modifier = Modifier.fillMaxWidth(),
-            title = stringResource(id = R.string.setting_top_theme_app),
+            title = stringResource(id = R.string.setting_app_theme_title),
             description = darkThemeConfig.toString(context),
             onClick = onClickAppTheme,
         )

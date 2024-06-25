@@ -1,9 +1,10 @@
 package com.dhp.musicplayer.utils
 
 import androidx.compose.material3.SnackbarDuration
-import com.dhp.musicplayer.R
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.ui.AppState
 import com.dhp.musicplayer.feature.artist.list_songs.navigation.LIST_SONGS_ROUTE
+import com.dhp.musicplayer.feature.settings.SETTINGS_ROUTE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -12,7 +13,8 @@ import kotlinx.coroutines.plus
 
 fun getAppBarTitle(route: String?): Int? {
     return when (route) {
-        LIST_SONGS_ROUTE -> R.string.list_songs_title
+        LIST_SONGS_ROUTE -> R.string.list_songs_screen_title
+        SETTINGS_ROUTE -> R.string.settings_title
         else -> null
     }
 }

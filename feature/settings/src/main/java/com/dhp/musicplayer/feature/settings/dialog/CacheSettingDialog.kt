@@ -7,7 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.dhp.musicplayer.feature.settings.R
+import com.dhp.musicplayer.core.designsystem.R
 
 @Composable
 fun CacheSettingDialog(

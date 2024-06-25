@@ -37,7 +37,7 @@ import com.dhp.musicplayer.core.designsystem.constant.PlayListItemHeight
 import com.dhp.musicplayer.core.designsystem.constant.ThumbnailCornerRadius
 import com.dhp.musicplayer.core.model.music.Album
 import com.dhp.musicplayer.core.model.music.PlaylistWithSongs
-import com.dhp.musicplayer.core.ui.R
+import com.dhp.musicplayer.core.designsystem.R
 
 @Composable
 fun DefaultListItem(

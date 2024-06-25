@@ -1,7 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">PPMusic</string>
+
+    <!--Navigation-->
+    <string name="home_screen_title">Home</string>
+    <string name="search_screen_title">Search</string>
+    <string name="library_screen_title">Library</string>
+
+    <!-- In-App update -->
+    <string name="in_app_update_message_downloaded">The update will be installed after restarting the application</string>
+    <string name="in_app_update_restart_button_text">RESTART</string>
+
+    <!--top app bar-->
+    <string name="list_songs_screen_title">Songs</string>
+    <string name="top_app_bar_default_tile"> </string>
+
+    <!--dialog-->
     <string name="error_message">An error occurred. Please try again.</string>
     <string name="cancel_button_dialog">Cancel</string>
     <string name="confirm_button_dialog">Confirm</string>
     <string name="done_button_dialog">Done</string>
+    <string name="create_playlist_title">Create playlist</string>
+    <string name="title_rename_dialog">Rename</string>
+    <string name="title_delete_dialog">Delete</string>
+
+    <!--artist-->
+    <string name="artist_songs_title">Songs</string>
+    <string name="artist_albums_title">Albums</string>
+    <string name="artist_single_title">Singles</string>
+    <string name="view_all">View all</string>
+
+    <!--empty-->
+    <string name="empty_songs">There are no songs</string>
+    <string name="empty_playlists">There are no playlists</string>
+
+    <!--home-->
+    <string name="home_songs_title">You might also like</string>
+    <string name="home_albums_title">Recommended albums</string>
+    <string name="home_artists_title">Similar Artists</string>
+    <string name="home_playlists_title">Recommended Playlists</string>
+
+    <!--library-->
+    <string name="library_songs_tab">Songs</string>
+    <string name="library_playlists_tab">Playlists</string>
+    <string name="hint_rename_playlist_dialog">Enter the playlist name</string>
+    <string name="message_delete_playlist_dialog">Do you really want to delete this playlist: %1$s?</string>
+    <string name="edit_menu_dialog">Edit</string>
+    <string name="delete_menu_dialog">Delete</string>
+
+    <string name="library_favourites_title">Favourites</string>
+    <string name="library_favourites_subtitle">My favorite songs</string>
+    <string name="library_downloaded_title">Downloaded</string>
+    <string name="library_downloaded_subtitle">The songs you downloaded recently</string>
+    <string name="library_device_songs_title">Device Songs</string>
+    <string name="library_device_songs_subtitle">Song storage on device</string>
+    <string name="slash">/</string>
+
+    <!--permission-->
+    <string name="permission_not_available">Read file and media permission not available</string>
+    <string name="permission_denied">The read file and media permission is important for this app.
+ Please grant the permission.</string>
+    <string name="permission_grant_button">Grant permission</string>
+    <string name="permission_go_to_settings_button">Go to settings</string>
+
+    <!--message snack bar-->
+    <string name="rename_playlist_success_message">Playlist renamed successfully</string>
+    <string name="delete_playlist_success_message">Playlist "%s" deleted successfully</string>
+    <string name="create_playlist_add">Add </string>
+    <string name="create_playlist_to_playlist"> to playlist</string>
+    <string name="add_to_playlist_success">Added "%s" to "%s"</string>
+    <string name="add_to_playlist_exists">The song "%s" already exists in the playlist "%s"</string>
+
+    <!-- menu media item-->
+    <string name="sleep_timer_message_stop">Do you want to stop the sleep timer?</string>
+    <string name="sleep_timer_stop_confirm_text">Stop</string>
+    <string name="sleep_timer_stop_cancel_text">No</string>
+    <string name="set_sleep_timer_title">Set sleep timer</string>
+    <string name="sleep_timer_enter_hours_text">Enter hours</string>
+    <string name="sleep_timer_enter_hours_hint">Invalid hour (0–23)</string>
+    <string name="sleep_timer_enter_minutes_text">Enter minutes</string>
+    <string name="sleep_timer_enter_minutes_hint">Invalid minute (0–59)</string>
+    <string name="sleep_timer_enter_confirm_text">Set</string>
+    <string name="sleep_timer_enter_cancel_text">Cancel</string>
+    <string name="sleep_timer_title">Sleep timer</string>
+    <string name="sleep_timer_turn_off_title">Turn off sleep timer</string>
+    <string name="menu_play_next">Play next</string>
+    <string name="menu_enqueue">Enqueue</string>
+    <string name="menu_add_to_playlist">Add to playlist</string>
+    <string name="menu_remove_from_playlist">Remove from playlist</string>
+    <string name="menu_remove_download">Remove Download</string>
+    <string name="menu_downloading">Downloading</string>
+    <string name="menu_download">Download</string>
+
+    <!--thumbnail-->
+    <string name="network_error">A network error has occurred</string>
+    <string name="format_not_found">Couldn\"t find a playable audio format</string>
+    <string name="unplayable_exception">The original video source of this song has been deleted</string>
+    <string name="login_required_exception">This song cannot be played due to server restrictions</string>
+    <string name="video_id_mismatch_exception">The returned video id doesn\"t match the requested one</string>
+    <string name="unknown_error">An unknown playback error has occurred</string>
+
+    <!--lyric-->
+    <string name="lyric_get_data_error">An error has occurred while fetching the synchronized lyrics</string>
+    <string name="lyric_get_data_not_available">Lyrics are not available for this song</string>
+    <string name="lyric_text_auto_mode">Auto</string>
+
+    <!-- player queue-->
+    <string name="player_queue_text">Queue</string>
+
+    <!--playlist-->
+    <string name="playlist_text_play_button">Play</string>
+    <string name="playlist_text_shuffle_button">Shuffle</string>
+
+    <!--Search-->
+    <string name="empty_moon_and_genres">There are moon and genres</string>
+    <string name="empty_recent_searches">There are no recent searches</string>
+    <string name="filter_all">All</string>
+    <string name="filter_songs">Songs</string>
+    <string name="filter_videos">Videos</string>
+    <string name="filter_albums">Albums</string>
+    <string name="filter_artists">Artists</string>
+    <string name="filter_playlists">Playlists</string>
+    <string name="filter_community_playlists">Community playlists</string>
+    <string name="filter_featured_playlists">Featured playlists</string>
+
+    <!--Setting-->
+    <string name="settings_title">Settings</string>
+    <string name="settings_theme_system_default">System default</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="setting_theme_title">Theme</string>
+    <string name="setting_app_theme_title">App theme</string>
+    <string name="setting_dynamic_theme_title">Dynamic theme</string>
+    <string name="setting_dynamic_theme_description">Change the app theme follow current playing song. </string>
+    <string name="setting_cache_title">Cache</string>
+    <string name="setting_download_cache_title">Download cache</string>
+    <string name="setting_song_cache_title">Song cache</string>
+    <string name="setting_image_cache_title">Song cache</string>
+    <string name="setting_cache_title_dialog">Set max size:</string>
+    <string name="setting_text_confirm_clean_cache_dialog">Do you want to clean the cache?</string>
+    <string name="setting_top_others">Others</string>
+    <string name="setting_top_others_version">App version</string>
+    <string name="setting_cache_size_used_text">%s used</string>
+    <string name="setting_cache_unlimited_option">Unlimited</string>
+    <string name="settings_confirm_dialog_button_text">OK</string>
+    <string name="settings_cancel_button_text">Cancel</string>
+
+    <!--services-->
+    <string name="service_download_channel_name">Download</string>
+    <string name="service_music_channel_name">Player Notification</string>
+    <string name="android_auto_songs_title">Songs</string>
+    <string name="android_auto_playlists_title">Playlists</string>
+    <string name="android_auto_liked_songs_title">Liked songs</string>
+    <string name="android_auto_downloaded_songs_title">Downloaded songs</string>
+    <string name="android_auto_action_like">Like</string>
+    <string name="android_auto_action_remove_like">Remove like</string>
+    <string name="android_auto_repeat_mode_off">Repeat mode off</string>
+    <string name="android_auto_repeat_mode_one">Repeat current song</string>
+    <string name="android_auto_repeat_mode_all">Repeat queue</string>
+
+    <!--plurals-->
+    <plurals name="n_playlist">
+        <item quantity="one">%d playlist</item>
+        <item quantity="other">%d playlists</item>
+    </plurals>
+
+    <plurals name="n_song">
+        <item quantity="one">%d song</item>
+        <item quantity="other">%d songs</item>
+    </plurals>
 </resources>

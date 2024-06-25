@@ -14,7 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import com.dhp.musicplayer.core.model.music.Song
-import com.dhp.musicplayer.core.ui.R
+import com.dhp.musicplayer.core.designsystem.R
 
 @Composable
 fun DeviceSongItem(

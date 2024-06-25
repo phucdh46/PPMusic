@@ -54,6 +54,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.dhp.musicplayer.core.common.extensions.move
 import com.dhp.musicplayer.core.common.extensions.toSongsWithBitmap
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.Artwork
 import com.dhp.musicplayer.core.designsystem.component.LoadingFiveLinesCenter
 import com.dhp.musicplayer.core.designsystem.extensions.marquee
@@ -176,7 +177,7 @@ internal fun QueueHeaderSection(
 
         Text(
             modifier = Modifier.weight(1f),
-            text = stringResource(R.string.player_queue_next_text),
+            text = stringResource(R.string.player_queue_text),
             style = MaterialTheme.typography.bodyLarge.bold().center(),
             color = MaterialTheme.colorScheme.onSurface,
         )

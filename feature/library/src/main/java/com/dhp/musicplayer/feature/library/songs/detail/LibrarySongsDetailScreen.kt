@@ -19,9 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.core.common.extensions.toEnum
 import com.dhp.musicplayer.core.common.utils.Logg
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.TopAppBarDetailScreen
 import com.dhp.musicplayer.core.model.settings.LibrarySongsDetailType
-import com.dhp.musicplayer.feature.library.R
 import com.dhp.musicplayer.feature.library.songs.device_songs.DeviceSongsScreen
 import com.dhp.musicplayer.feature.library.songs.downloaded.DownloadSongsScreen
 import com.dhp.musicplayer.feature.library.songs.favourites.FavouritesScreen
@@ -47,17 +47,17 @@ fun LibrarySongsDetailScreen(
     ) {
         when (type.toEnum(LibrarySongsDetailType.FAVOURITE)) {
             LibrarySongsDetailType.FAVOURITE -> {
-                title = stringResource(id = R.string.title_library_favourites)
+                title = stringResource(id = R.string.library_favourites_title)
                 FavouritesScreen(showSnackBar = showSnackBar)
             }
 
             LibrarySongsDetailType.DOWNLOADED -> {
-                title = stringResource(id = R.string.title_library_downloaded)
+                title = stringResource(id = R.string.library_downloaded_title)
                 DownloadSongsScreen(showSnackBar = showSnackBar)
             }
 
             LibrarySongsDetailType.DEVICE_SONGS -> {
-                title = stringResource(id = R.string.title_library_device_songs)
+                title = stringResource(id = R.string.library_device_songs_title)
                 DeviceSongsScreen(
                     showMessage = showSnackBar
                 )

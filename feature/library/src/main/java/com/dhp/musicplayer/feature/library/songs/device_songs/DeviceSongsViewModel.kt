@@ -13,9 +13,9 @@ import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.bitMapToString
 import com.dhp.musicplayer.core.common.extensions.isAtLeastAndroid29
 import com.dhp.musicplayer.core.common.extensions.toContentUri
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.domain.repository.MusicRepository
 import com.dhp.musicplayer.core.model.music.Song
-import com.dhp.musicplayer.feature.library.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
 import com.dhp.musicplayer.core.common.utils.Logg
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.extensions.verticalFadingEdge
 import com.dhp.musicplayer.core.network.kugou.KuGou
 import com.dhp.musicplayer.core.network.kugou.findCurrentLineIndex

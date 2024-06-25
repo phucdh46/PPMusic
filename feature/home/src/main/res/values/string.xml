@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="home_songs_title">You might also like</string>
-    <string name="home_albums_title">Recommended albums</string>
-    <string name="home_artists_title">Similar Artists</string>
-    <string name="home_playlists_title">Recommended Playlists</string>
-</resources>

@@ -7,11 +7,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.domain.repository.MusicRepository
 import com.dhp.musicplayer.core.model.music.PlaylistWithSongs
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.model.music.SongPlaylistMap
-import com.dhp.musicplayer.feature.playlist.R
 import com.dhp.musicplayer.feature.playlist.local.navigation.LOCAL_PLAYLIST_ID_ARG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext

@@ -11,7 +11,7 @@ import com.dhp.musicplayer.core.model.music.Music
 import com.dhp.musicplayer.core.model.music.Playlist
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.common.extensions.toContentUri
-import com.dhp.musicplayer.core.ui.R
+import com.dhp.musicplayer.core.designsystem.R
 import java.io.IOException
 
 fun Song.getBitmap(context: Context): Bitmap? {

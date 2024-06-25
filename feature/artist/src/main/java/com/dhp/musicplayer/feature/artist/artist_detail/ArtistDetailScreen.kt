@@ -73,7 +73,7 @@ import com.dhp.musicplayer.core.ui.items.AlbumItem
 import com.dhp.musicplayer.core.ui.items.SongItem
 import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
 import com.dhp.musicplayer.core.ui.items.TextPlaceholder
-import com.dhp.musicplayer.feature.artist.R
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -17,10 +17,10 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import com.dhp.musicplayer.core.common.extensions.toContentUri
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.domain.repository.MusicRepository
 import com.dhp.musicplayer.core.domain.repository.NetworkMusicRepository
 import com.dhp.musicplayer.core.model.music.Song
-import com.dhp.musicplayer.core.services.R
 import com.dhp.musicplayer.core.services.download.DownloadUtil
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.services.extensions.toggleRepeatMode
@@ -113,14 +113,14 @@ class MediaLibrarySessionCallback
                     PlaybackService.ROOT -> listOf(
                         browsableMediaItem(
                             PlaybackService.SONG,
-                            context.getString(R.string.songs),
+                            context.getString(R.string.android_auto_songs_title),
                             null,
                             drawableUri(R.drawable.music_note),
                             MediaMetadata.MEDIA_TYPE_PLAYLIST
                         ),
                         browsableMediaItem(
                             PlaybackService.PLAYLIST,
-                            context.getString(R.string.playlists),
+                            context.getString(R.string.android_auto_playlists_title),
                             null,
                             drawableUri(R.drawable.playlist),
                             MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS
@@ -136,7 +136,7 @@ class MediaLibrarySessionCallback
                         listOf(
                             browsableMediaItem(
                                 "${PlaybackService.PLAYLIST}/${PlaybackService.LIKED}",
-                                context.getString(R.string.liked_songs),
+                                context.getString(R.string.android_auto_liked_songs_title),
                                 context.resources.getQuantityString(
                                     R.plurals.n_song,
                                     likedSongCount,
@@ -147,7 +147,7 @@ class MediaLibrarySessionCallback
                             ),
                             browsableMediaItem(
                                 "${PlaybackService.PLAYLIST}/${PlaybackService.DOWNLOADED}",
-                                context.getString(R.string.downloaded_songs),
+                                context.getString(R.string.android_auto_downloaded_songs_title),
                                 context.resources.getQuantityString(
                                     R.plurals.n_song,
                                     downloadedSongCount,

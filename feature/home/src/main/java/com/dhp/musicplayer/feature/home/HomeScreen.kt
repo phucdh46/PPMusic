@@ -62,6 +62,7 @@ import com.dhp.musicplayer.core.ui.items.TextPlaceholder
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.dhp.musicplayer.core.designsystem.R
 
 @Composable
 internal fun ForYouScreen(

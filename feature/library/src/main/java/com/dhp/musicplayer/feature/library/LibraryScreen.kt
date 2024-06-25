@@ -17,6 +17,7 @@ import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.feature.library.playlists.LibraryPlaylistsScreen
 import com.dhp.musicplayer.feature.library.songs.LibrarySongsScreen
 import kotlinx.coroutines.launch
+import com.dhp.musicplayer.core.designsystem.R
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -27,8 +28,8 @@ fun LibraryScreen(
 
     ) {
     val tabTitles = listOf(
-        stringResource(R.string.title_tabs_songs),
-        stringResource(R.string.title_tabs_playlists)
+        stringResource(R.string.library_songs_tab),
+        stringResource(R.string.library_playlists_tab)
     )
     val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()

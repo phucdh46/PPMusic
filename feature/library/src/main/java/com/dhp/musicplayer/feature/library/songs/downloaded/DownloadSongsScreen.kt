@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
 import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
@@ -39,7 +40,6 @@ import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.EmptyList
 import com.dhp.musicplayer.core.ui.items.SongItem
 import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
-import com.dhp.musicplayer.feature.library.R
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
 
 

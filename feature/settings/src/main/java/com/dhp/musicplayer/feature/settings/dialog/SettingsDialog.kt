@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import com.dhp.musicplayer.feature.settings.R
+import com.dhp.musicplayer.core.designsystem.R
 
 @Composable
 fun SettingsDialog(
@@ -43,7 +43,7 @@ fun SettingsDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = title ?: stringResource(R.string.feature_settings_title),
+                    text = title ?: stringResource(R.string.settings_title),
                     style = MaterialTheme.typography.titleMedium,
                 )
             }
@@ -54,7 +54,7 @@ fun SettingsDialog(
         },
         confirmButton = {
             Text(
-                text = stringResource(R.string.feature_settings_dismiss_dialog_button_text),
+                text = stringResource(R.string.settings_confirm_dialog_button_text),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
@@ -68,7 +68,7 @@ fun SettingsDialog(
         dismissButton = {
             onConfirm?.let {
                 Text(
-                    text = stringResource(R.string.cancel_button),
+                    text = stringResource(R.string.settings_cancel_button_text),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                     modifier = Modifier
