@@ -153,7 +153,7 @@ fun SongItem(
             ) {
                 Text(
                     text = title.orEmpty(),
-                    style = typography.titleMedium,
+                    style = typography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -161,7 +161,7 @@ fun SongItem(
                     badges()
                     Text(
                         text = subtitle.orEmpty(),
-                        style = typography.bodyMedium,
+                        style = typography.bodySmall,
                         maxLines = 1,
                         overflow = TextOverflow.Clip,
                         modifier = Modifier

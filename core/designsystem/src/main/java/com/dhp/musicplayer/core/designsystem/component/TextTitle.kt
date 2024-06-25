@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.dhp.musicplayer.core.designsystem.theme.bold
 
 @Composable
 fun TextTitle(
@@ -13,8 +14,8 @@ fun TextTitle(
     text: String
 ) {
     Text(
-        text = text.uppercase(),
-        style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary),
+        text = text,
+        style = MaterialTheme.typography.titleMedium.bold(),
         modifier = modifier.padding(8.dp)
     )
 }

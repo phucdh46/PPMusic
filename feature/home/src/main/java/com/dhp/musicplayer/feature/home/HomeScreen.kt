@@ -175,7 +175,7 @@ internal fun ForYouScreen(
                 .verticalScroll(scrollState)
         ) {
 
-            TextTitle(text = stringResource(R.string.home_songs_title).uppercase())
+            TextTitle(text = stringResource(R.string.home_songs_title))
             LazyHorizontalGrid(
                 state = quickPicksLazyGridState,
                 rows = GridCells.Fixed(4),
@@ -232,7 +232,7 @@ internal fun ForYouScreen(
             }
 
             album?.let { album ->
-                TextTitle(text = stringResource(R.string.home_albums_title).uppercase())
+                TextTitle(text = stringResource(R.string.home_albums_title))
                 LazyRow() {
                     items(
                         items = album,
@@ -253,7 +253,7 @@ internal fun ForYouScreen(
             }
 
             artist?.let { artists ->
-                TextTitle(text = stringResource(R.string.home_artists_title).uppercase())
+                TextTitle(text = stringResource(R.string.home_artists_title))
                 LazyRow {
                     items(
                         items = artists,

@@ -41,7 +41,7 @@ fun TextIconButton(
                 imageVector = imageVector, contentDescription = null,
                 modifier = Modifier.size(ButtonDefaults.IconSize)
             )
-            Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
+            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
             Text(text = text)
         }
     }

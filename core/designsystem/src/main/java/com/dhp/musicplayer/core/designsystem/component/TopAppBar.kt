@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.dhp.musicplayer.core.designsystem.constant.TopBarHeight
 import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.designsystem.theme.bold
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,8 +80,7 @@ fun TopAppBar(
             }
             Text(
                 text = title.uppercase(),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium.bold(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(horizontal = 8.dp)

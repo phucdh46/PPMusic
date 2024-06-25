@@ -55,7 +55,7 @@ fun AddSongToPlaylist(
     if (showAddPlaylistDialog) {
         TextFieldDialog(
 //            icon = { Icon(imageVector = IconApp.PlaylistAdd, contentDescription = null) },
-            title = { Text(text = stringResource(R.string.create_playlist)) },
+            title = { Text(text = stringResource(R.string.create_playlist), style = MaterialTheme.typography.titleMedium) },
             onDismiss = { showAddPlaylistDialog = false },
             onDone = { playlistName ->
                 viewModel.createPlaylist(playlistName)
@@ -100,7 +100,7 @@ fun AddSongToPlaylist(
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         TextIconButton(
-                            text = "Add",
+                            text = "Create",
                             imageVector = IconApp.Add,
                             onClick = {
                                 showAddPlaylistDialog = true

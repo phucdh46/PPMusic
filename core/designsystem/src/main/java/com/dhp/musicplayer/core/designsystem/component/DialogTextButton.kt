@@ -30,7 +30,7 @@ fun DialogTextButton(
 
     Text(
         text = text,
-        style = typography.bodyMedium.copy(color = textColor),
+        style = typography.labelMedium.copy(color = textColor),
         modifier = modifier
             .clip(RoundedCornerShape(36.dp))
             .background(primaryColor)

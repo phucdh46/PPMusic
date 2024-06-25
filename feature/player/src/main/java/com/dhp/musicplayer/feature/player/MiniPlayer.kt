@@ -50,6 +50,7 @@ import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImage
 import com.dhp.musicplayer.core.designsystem.constant.MiniPlayerHeight
 import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.designsystem.theme.bold
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.extensions.toSong
 import com.dhp.musicplayer.core.services.player.PlayerConnection
@@ -196,7 +197,7 @@ private fun MiniPlayerTextContent(audio: Song, modifier: Modifier = Modifier) {
             audio.title,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
+            style = MaterialTheme.typography.bodyMedium.bold()
         )
         Text(
             audio.artistsText.orEmpty(),

@@ -53,6 +53,7 @@ import androidx.navigation.NavController
 import com.dhp.musicplayer.core.designsystem.constant.ResultNavigationKey
 import com.dhp.musicplayer.core.designsystem.constant.TopBarHeight
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.designsystem.theme.bold
 import com.dhp.musicplayer.core.model.music.SearchHistory
 import com.dhp.musicplayer.core.ui.common.EmptyList
 import com.dhp.musicplayer.feature.search.R
@@ -341,7 +342,7 @@ fun SearchHistoryList(
                     Text(
                         modifier = Modifier.padding(16.dp),
                         text = "Recent",
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.titleMedium.bold()
                     )
                 }
                 items(

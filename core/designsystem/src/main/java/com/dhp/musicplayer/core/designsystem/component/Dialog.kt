@@ -87,7 +87,7 @@ fun TextFieldDialog(
         title = title,
         buttons = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(android.R.string.cancel))
+                Text(text = stringResource(android.R.string.cancel), style = typography.labelMedium)
             }
 
             TextButton(
@@ -97,7 +97,7 @@ fun TextFieldDialog(
                     onDone(textFieldValue.text)
                 }
             ) {
-                Text(text = stringResource(android.R.string.ok))
+                Text(text = stringResource(android.R.string.ok), style = typography.labelMedium)
             }
         }
     ) {
