@@ -1,10 +1,11 @@
 package com.dhp.musicplayer.feature.settings
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,21 +23,24 @@ import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.rememberEnumPreference
 import com.dhp.musicplayer.core.ui.common.rememberPreference
 import com.dhp.musicplayer.feature.settings.dialog.AppThemeSettingDialog
+import com.dhp.musicplayer.feature.settings.section.SettingAudioSection
 import com.dhp.musicplayer.feature.settings.section.SettingCacheSection
 import com.dhp.musicplayer.feature.settings.section.SettingOthersSection
+import com.dhp.musicplayer.feature.settings.section.SettingPlayerSection
 import com.dhp.musicplayer.feature.settings.section.SettingThemeSection
 
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
-    ) {
+) {
     val settingsUiState by viewModel.settingsUiState.collectAsState()
     Box(modifier = Modifier.fillMaxSize()) {
-        when(settingsUiState) {
+        when (settingsUiState) {
             is UiState.Success -> {
                 SettingsScreen(userEditableSettings = (settingsUiState as UiState.Success<UserEditableSettings>).data)
             }
-            else -> { }
+
+            else -> {}
         }
     }
 }
@@ -73,26 +77,37 @@ fun SettingsScreen(
         )
     }
 
-    Column(
+    LazyColumn(
+        state = rememberLazyListState(),
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(LocalWindowInsets.current),
     ) {
-        SettingThemeSection(
-            modifier = Modifier.fillMaxWidth(),
-            darkThemeConfig = appTheme,
-            onClickAppTheme = { showSettingsDialog = true },
-            dynamicColor = dynamicTheme,
-            onDynamicColorChange = onDynamicThemeChange,
-        )
+        item {
+            SettingThemeSection(
+                modifier = Modifier.fillMaxWidth(),
+                darkThemeConfig = appTheme,
+                onClickAppTheme = { showSettingsDialog = true },
+                dynamicColor = dynamicTheme,
+                onDynamicColorChange = onDynamicThemeChange,
+            )
 
-        SettingCacheSection(
-            modifier = Modifier.fillMaxWidth(),
-        )
+            SettingPlayerSection(
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-        SettingOthersSection(
-            modifier = Modifier.fillMaxWidth(),
-            versionName = versionName.orEmpty(),
-        )
+            SettingAudioSection(
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            SettingCacheSection(
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            SettingOthersSection(
+                modifier = Modifier.fillMaxWidth(),
+                versionName = versionName.orEmpty(),
+            )
+        }
     }
 }

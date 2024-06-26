@@ -5,9 +5,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.database.SQLException
+import android.media.AudioDeviceCallback
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
 import android.net.Uri
 import android.os.Binder
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import androidx.annotation.OptIn
 import androidx.core.net.toUri
 import androidx.datastore.preferences.core.edit
@@ -43,17 +48,22 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
+import com.dhp.musicplayer.core.common.extensions.collectLatest
 import com.dhp.musicplayer.core.common.utils.Logg
 import com.dhp.musicplayer.core.datastore.PersistentQueueDataKey
+import com.dhp.musicplayer.core.datastore.PersistentQueueEnableKey
 import com.dhp.musicplayer.core.datastore.RelatedMediaIdKey
 import com.dhp.musicplayer.core.datastore.RepeatModeKey
+import com.dhp.musicplayer.core.datastore.ResumePlaybackWhenDeviceConnectedKey
+import com.dhp.musicplayer.core.datastore.SkipSilenceKey
 import com.dhp.musicplayer.core.datastore.dataStore
 import com.dhp.musicplayer.core.datastore.get
+import com.dhp.musicplayer.core.datastore.getValueByKey
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.domain.repository.MusicRepository
 import com.dhp.musicplayer.core.domain.repository.NetworkMusicRepository
 import com.dhp.musicplayer.core.model.music.PersistQueueMedia
 import com.dhp.musicplayer.core.model.music.Song
-import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.services.di.DownloadCache
 import com.dhp.musicplayer.core.services.di.PlayerCache
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
@@ -100,6 +110,9 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
     private val binder = MusicBinder()
     private val mainScope = CoroutineScope(Dispatchers.Main) + Job()
     private val ioScope = CoroutineScope(Dispatchers.IO) + Job()
+
+    private var audioManager: AudioManager? = null
+    private var audioDeviceCallback: AudioDeviceCallback? = null
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession? =
         mediaLibrarySession
@@ -151,6 +164,7 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
         mediaLibrarySessionCallback.apply {
             toggleLike = { player.currentMediaItem?.toSong()?.let { toggleLike(it) } }
         }
+        player.skipSilenceEnabled = dataStore.get(SkipSilenceKey, false)
         player.addListener(this)
         player.addAnalyticsListener(PlaybackStatsListener(false, this))
         player.repeatMode = dataStore.get(RepeatModeKey, Player.REPEAT_MODE_OFF)
@@ -163,11 +177,60 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
             Logg.d("ServiceQueue: restoreQueue")
             restoreQueue()
         }
+
+        this@PlaybackService.getValueByKey(ResumePlaybackWhenDeviceConnectedKey, false)
+            .collectLatest(ioScope) {
+                withContext(Dispatchers.Main) {
+                    maybeResumePlaybackWhenDeviceConnected(it)
+                }
+            }
+        this@PlaybackService.getValueByKey(SkipSilenceKey, false).collectLatest(ioScope) {
+            withContext(Dispatchers.Main) {
+                player.skipSilenceEnabled = it
+            }
+        }
+    }
+
+    private fun maybeResumePlaybackWhenDeviceConnected(isEnable: Boolean) {
+        if (isEnable) {
+            if (audioManager == null) {
+                audioManager = getSystemService(AUDIO_SERVICE) as AudioManager?
+            }
+
+            audioDeviceCallback = object : AudioDeviceCallback() {
+                private fun canPlayMusic(audioDeviceInfo: AudioDeviceInfo): Boolean {
+                    if (!audioDeviceInfo.isSink) return false
+
+                    return audioDeviceInfo.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
+                            audioDeviceInfo.type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+                            audioDeviceInfo.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES ||
+                            audioDeviceInfo.type == AudioDeviceInfo.TYPE_USB_HEADSET
+                }
+
+                override fun onAudioDevicesAdded(addedDevices: Array<AudioDeviceInfo>) {
+                    if (!player.isPlaying && addedDevices.any(::canPlayMusic)) {
+                        player.play()
+                    }
+                }
+
+                override fun onAudioDevicesRemoved(removedDevices: Array<AudioDeviceInfo>) = Unit
+            }
+
+            audioManager?.registerAudioDeviceCallback(
+                audioDeviceCallback,
+                Handler(Looper.getMainLooper())
+            )
+
+        } else {
+            audioManager?.unregisterAudioDeviceCallback(audioDeviceCallback)
+            audioDeviceCallback = null
+        }
     }
 
     private fun restoreQueue() {
         runBlocking {
             try {
+                if (!dataStore.get(PersistentQueueEnableKey, true)) return@runBlocking
                 val queueJson = dataStore[PersistentQueueDataKey]
                 val persistQueueMedia = queueJson?.let {
                     Json.decodeFromString(PersistQueueMedia.serializer(), queueJson)
@@ -408,6 +471,7 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
 
     private fun saveQueue() {
         runBlocking {
+            if (!dataStore.get(PersistentQueueEnableKey, true)) return@runBlocking
             val queue = PersistQueueMedia(
                 items = player.mediaItems.map { it.toSong() },
                 mediaItemIndex = player.currentMediaItemIndex,
