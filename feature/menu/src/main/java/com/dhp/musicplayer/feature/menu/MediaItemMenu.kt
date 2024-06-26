@@ -6,22 +6,17 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,9 +29,6 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,14 +40,12 @@ import androidx.media3.exoplayer.offline.DownloadService
 import com.dhp.musicplayer.core.common.extensions.formatAsDuration
 import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.designsystem.R
-import com.dhp.musicplayer.core.designsystem.component.ConfirmationDialog
 import com.dhp.musicplayer.core.designsystem.component.DebouncedIconButton
-import com.dhp.musicplayer.core.designsystem.component.DefaultDialog
-import com.dhp.musicplayer.core.designsystem.component.DialogTextButton
 import com.dhp.musicplayer.core.designsystem.component.Menu
 import com.dhp.musicplayer.core.designsystem.component.MenuEntry
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.constant.px
+import com.dhp.musicplayer.core.designsystem.dialog.ConfirmDialog
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.download.ExoDownloadService
@@ -83,7 +73,8 @@ fun MediaItemMenu(
     val download by LocalDownloadUtil.current.getDownload(mediaItem.mediaId)
         .collectAsState(initial = null)
     val song = mediaItem.toSong()
-    val isFavourite by mediaItemMenuViewModel.isFavoriteSong(mediaItem.mediaId).collectAsState(initial = false)
+    val isFavourite by mediaItemMenuViewModel.isFavoriteSong(mediaItem.mediaId)
+        .collectAsState(initial = false)
     MediaItemMenu(
         modifier = modifier,
         mediaItem = mediaItem,
@@ -191,98 +182,31 @@ fun MediaItemMenu(
                 }
                 if (isShowingTurnOffSleepTimerDialog) {
                     if (sleepTimerMillisLeft != null) {
-                        ConfirmationDialog(
-                            text = stringResource(R.string.sleep_timer_message_stop),
-                            cancelText = stringResource(R.string.sleep_timer_stop_cancel_text),
-                            confirmText = stringResource(R.string.sleep_timer_stop_confirm_text),
+                        ConfirmDialog(
                             onDismiss = { isShowingTurnOffSleepTimerDialog = false },
                             onConfirm = {
                                 playerConnection?.cancelSleepTimer()
                                 menuMediaState = MenuMediaState.DEFAULT
-                            }
+                            },
+                            title = stringResource(id = R.string.sleep_timer_title),
+                            message = stringResource(R.string.sleep_timer_message_stop),
+                            confirmText = stringResource(R.string.sleep_timer_stop_confirm_text),
+                            cancelText = stringResource(R.string.sleep_timer_stop_cancel_text),
                         )
                     }
                 }
 
                 if (isShowingSleepTimerDialog) {
-                    DefaultDialog(
-                        onDismiss = { isShowingSleepTimerDialog = false }
-                    ) {
-                        var hoursText by remember { mutableStateOf(TextFieldValue()) }
-                        var minutesText by remember { mutableStateOf(TextFieldValue()) }
-                        BasicText(
-                            text = stringResource(R.string.set_sleep_timer_title),
-                            style = typography.titleMedium,
-                            modifier = Modifier
-                                .padding(vertical = 8.dp, horizontal = 24.dp)
-                        )
-
-                        fun filterValidInput(input: String, max: Int): String {
-                            val number = input.toIntOrNull()
-                            return when {
-                                number == null -> ""
-                                number < 0 -> "0"
-                                number > max -> max.toString()
-                                else -> input
-                            }
-                        }
-                        OutlinedTextField(
-                            value = hoursText,
-                            onValueChange = {
-                                val filteredHoursText = filterValidInput(it.text, 23)
-                                hoursText = TextFieldValue(
-                                    text = filteredHoursText,
-                                    selection = TextRange(filteredHoursText.length)
-                                )
-                            },
-                            label = { Text(text = stringResource(R.string.sleep_timer_enter_hours_text)) },
-                            placeholder = { Text(text = stringResource(R.string.sleep_timer_enter_hours_hint)) },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            singleLine = true
-                        )
-
-                        OutlinedTextField(
-                            value = minutesText,
-                            onValueChange = {
-                                val filteredMinutesText = filterValidInput(it.text, 59)
-                                minutesText = TextFieldValue(
-                                    text = filteredMinutesText,
-                                    selection = TextRange(filteredMinutesText.length)
-                                )
-                            },
-                            label = { Text(text = stringResource(R.string.sleep_timer_enter_minutes_text)) },
-                            placeholder = { Text(text = stringResource(R.string.sleep_timer_enter_minutes_hint)) },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            singleLine = true
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp)
-                        ) {
-                            DialogTextButton(
-                                text = stringResource(R.string.sleep_timer_enter_cancel_text),
-                                onClick = { isShowingSleepTimerDialog = false }
+                    SetSleepTimerDialog(
+                        onDismiss = { isShowingSleepTimerDialog = false },
+                        onConfirm = { timeSleep ->
+                            playerConnection?.startSleepTimer(
+                                (timeSleep) * 60 * 1000L
                             )
-                            val timeSleep = (hoursText.text.toIntOrNull()
-                                ?: 0) * 60 + (minutesText.text.toIntOrNull() ?: 0)
-
-                            DialogTextButton(
-                                text = stringResource(R.string.sleep_timer_enter_confirm_text),
-                                enabled = timeSleep > 0,
-                                primary = true,
-                                onClick = {
-                                    playerConnection?.startSleepTimer(
-                                        (timeSleep) * 60 * 1000L
-                                    )
-                                    isShowingSleepTimerDialog = false
-                                    menuMediaState = MenuMediaState.DEFAULT
-                                }
-                            )
-                        }
-                    }
+                            menuMediaState = MenuMediaState.DEFAULT
+                        },
+                        title = stringResource(id = R.string.set_sleep_timer_title),
+                    )
                 }
 
                 Menu {

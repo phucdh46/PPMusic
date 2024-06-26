@@ -35,6 +35,7 @@ fun SettingsDialog(
 
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
         modifier = Modifier.widthIn(max = configuration.screenWidthDp.dp - 80.dp),
         onDismissRequest = { onDismiss() },
         title = {

@@ -34,10 +34,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
 import com.dhp.musicplayer.core.designsystem.R
-import com.dhp.musicplayer.core.designsystem.component.TextFieldDialog
 import com.dhp.musicplayer.core.designsystem.component.TextIconButton
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.services.extensions.toSong
+import com.dhp.musicplayer.core.designsystem.dialog.TextInputDialog
 import com.dhp.musicplayer.core.ui.items.PlaylistListItem
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -54,13 +54,12 @@ fun AddSongToPlaylist(
         mutableStateOf(false)
     }
     if (showAddPlaylistDialog) {
-        TextFieldDialog(
-//            icon = { Icon(imageVector = IconApp.PlaylistAdd, contentDescription = null) },
-            title = { Text(text = stringResource(R.string.create_playlist_title), style = MaterialTheme.typography.titleMedium) },
+        TextInputDialog(
             onDismiss = { showAddPlaylistDialog = false },
-            onDone = { playlistName ->
+            onConfirm = { playlistName ->
                 viewModel.createPlaylist(playlistName)
-            }
+            },
+            title = stringResource(R.string.create_playlist_title)
         )
     }
     val context = LocalContext.current

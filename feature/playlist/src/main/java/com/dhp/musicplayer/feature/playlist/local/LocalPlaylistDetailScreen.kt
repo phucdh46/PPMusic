@@ -65,11 +65,11 @@ import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.common.extensions.toSongsWithBitmap
 import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.Artwork
-import com.dhp.musicplayer.core.designsystem.component.ConfirmationDialog
-import com.dhp.musicplayer.core.designsystem.component.TextFieldDialog
 import com.dhp.musicplayer.core.designsystem.component.TopAppBarDetailScreen
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.constant.px
+import com.dhp.musicplayer.core.designsystem.dialog.ConfirmDialog
+import com.dhp.musicplayer.core.designsystem.dialog.TextInputDialog
 import com.dhp.musicplayer.core.designsystem.extensions.marquee
 import com.dhp.musicplayer.core.designsystem.extensions.shimmer
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
@@ -170,19 +170,13 @@ fun LocalPlaylistDetailScreen(
     }
 
     if (isRenaming) {
-        TextFieldDialog(
-            hintText = stringResource(id = R.string.hint_rename_playlist_dialog),
-            title = {
-                Text(
-                    text = stringResource(R.string.title_rename_dialog).uppercase(),
-                    style = typography.titleMedium
-                )
-            },
-            initialTextInput = playlistWithSongs.playlist.name,
+        TextInputDialog(
             onDismiss = { isRenaming = false },
-            onDone = { text ->
-                onEditPlaylist(text)
-            }
+            onConfirm = { playlistName ->
+                onEditPlaylist(playlistName)
+            },
+            title = stringResource(R.string.title_rename_dialog),
+            initText = playlistWithSongs.playlist.name
         )
     }
 
@@ -191,21 +185,16 @@ fun LocalPlaylistDetailScreen(
     }
 
     if (isDeleting) {
-        ConfirmationDialog(
-            text = stringResource(
-                id = R.string.message_delete_playlist_dialog,
-                playlistWithSongs.playlist.name
-            ),
+        ConfirmDialog(
             onDismiss = { isDeleting = false },
             onConfirm = {
                 onDeletePlaylist()
             },
-            title = {
-                Text(
-                    text = stringResource(id = R.string.title_delete_dialog),
-                    style = typography.titleMedium
-                )
-            },
+            title = stringResource(id = R.string.title_delete_dialog),
+            message = stringResource(
+                id = R.string.message_delete_playlist_dialog,
+                playlistWithSongs.playlist.name
+            )
         )
     }
 
