@@ -40,9 +40,11 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.dhp.musicplayer.core.designsystem.component.ConfirmationDialog
-import com.dhp.musicplayer.core.designsystem.component.TextFieldDialog
+import com.dhp.musicplayer.core.datastore.PlaylistViewTypeKey
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.constant.GridThumbnailHeight
+import com.dhp.musicplayer.core.designsystem.dialog.ConfirmDialog
+import com.dhp.musicplayer.core.designsystem.dialog.TextInputDialog
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.model.settings.LibraryViewType
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
@@ -51,9 +53,7 @@ import com.dhp.musicplayer.core.ui.common.HideOnScrollFAB
 import com.dhp.musicplayer.core.ui.common.rememberEnumPreference
 import com.dhp.musicplayer.core.ui.items.PlaylistGridItem
 import com.dhp.musicplayer.core.ui.items.PlaylistListItem
-import com.dhp.musicplayer.core.datastore.PlaylistViewTypeKey
 import com.dhp.musicplayer.feature.library.LibraryViewModel
-import com.dhp.musicplayer.core.designsystem.R
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -75,13 +75,12 @@ fun LibraryPlaylistsScreen(
     val lazyGridState = rememberLazyGridState()
 
     if (showAddPlaylistDialog) {
-        TextFieldDialog(
-//            icon = { Icon(imageVector = IconApp.PlaylistAdd, contentDescription = null) },
-            title = { Text(text = stringResource(R.string.create_playlist_title)) },
+        TextInputDialog(
             onDismiss = { showAddPlaylistDialog = false },
-            onDone = { playlistName ->
+            onConfirm = { playlistName ->
                 viewModel.createPlaylist(playlistName)
-            }
+            },
+            title = stringResource(R.string.create_playlist_title)
         )
     }
     var currentSelectPlaylist by rememberSaveable {
@@ -92,23 +91,18 @@ fun LibraryPlaylistsScreen(
     }
 
     if (isRenaming) {
-        TextFieldDialog(
-            hintText = stringResource(R.string.hint_rename_playlist_dialog),
-            title = {
-                Text(
-                    text = stringResource(R.string.title_rename_dialog).uppercase(),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            },
-            initialTextInput = currentSelectPlaylist?.name ?: "",
+
+        TextInputDialog(
             onDismiss = { isRenaming = false },
-            onDone = { text ->
+            onConfirm = { playlistName ->
                 currentSelectPlaylist?.let {
-                    viewModel.updatePlaylist(text, it) { message ->
+                    viewModel.updatePlaylist(playlistName, it) { message ->
                         showMessage(message)
                     }
                 }
-            }
+            },
+            title = stringResource(R.string.title_rename_dialog),
+            initText = currentSelectPlaylist?.name
         )
     }
 
@@ -117,11 +111,7 @@ fun LibraryPlaylistsScreen(
     }
 
     if (isDeleting) {
-        ConfirmationDialog(
-            text = stringResource(
-                id = R.string.message_delete_playlist_dialog,
-                currentSelectPlaylist?.name ?: ""
-            ),
+        ConfirmDialog(
             onDismiss = { isDeleting = false },
             onConfirm = {
                 currentSelectPlaylist?.let {
@@ -130,12 +120,11 @@ fun LibraryPlaylistsScreen(
                     }
                 }
             },
-            title = {
-                Text(
-                    text = stringResource(id = R.string.title_delete_dialog).uppercase(),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            },
+            title = stringResource(id = R.string.title_delete_dialog),
+            message = stringResource(
+                id = R.string.message_delete_playlist_dialog,
+                currentSelectPlaylist?.name ?: ""
+            )
         )
     }
 
