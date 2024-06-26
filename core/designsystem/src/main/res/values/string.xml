@@ -17,6 +17,7 @@
 
     <!--dialog-->
     <string name="error_message">An error occurred. Please try again.</string>
+    <string name="error_message_paging_albums">Error</string>
     <string name="cancel_button_dialog">Cancel</string>
     <string name="confirm_button_dialog">Confirm</string>
     <string name="done_button_dialog">Done</string>
