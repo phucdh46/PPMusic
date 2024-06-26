@@ -13,6 +13,9 @@ val LastTimeUserCancelFlexibleUpdateKey = longPreferencesKey("lastTimeUserCancel
 val ApiConfigKey = stringPreferencesKey("apiConfigKey")
 val DarkThemeConfigKey = stringPreferencesKey("darkThemeConfig")
 val DynamicThemeKey = booleanPreferencesKey("dynamicTheme")
+val PersistentQueueEnableKey = booleanPreferencesKey("PersistentQueueEnable")
+val ResumePlaybackWhenDeviceConnectedKey = booleanPreferencesKey("ResumePlaybackWhenDeviceConnected")
+val SkipSilenceKey = booleanPreferencesKey("SkipSilence")
 
 val MaxImageCacheSizeKey = intPreferencesKey("maxImageCacheSize")
 val MaxSongCacheSizeKey = intPreferencesKey("maxSongCacheSize")

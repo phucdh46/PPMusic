@@ -7,11 +7,21 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import com.dhp.musicplayer.core.common.extensions.toEnum
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlin.properties.ReadOnlyProperty
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "DataStore")
+
+fun <T> Context.getValueByKey(key: Preferences.Key<T>, defaultValue: T): Flow<T> {
+    return dataStore.data.distinctUntilChanged()
+        .map {
+            it[key] ?: defaultValue
+        }.distinctUntilChanged()
+}
 
 operator fun <T> DataStore<Preferences>.get(key: Preferences.Key<T>): T? =
     runBlocking(Dispatchers.IO) {

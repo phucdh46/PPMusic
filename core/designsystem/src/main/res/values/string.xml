@@ -134,6 +134,16 @@
     <string name="setting_app_theme_title">App theme</string>
     <string name="setting_dynamic_theme_title">Dynamic theme</string>
     <string name="setting_dynamic_theme_description">Change the app theme follow current playing song. </string>
+    <string name="setting_player_title">Player</string>
+    <string name="setting_player_persistent_title">Persistent queue</string>
+    <string name="setting_player_persistent_description">Save and restore playing songs</string>
+    <string name="setting_player_resume_title">Resume playback</string>
+    <string name="setting_player_resume_description">Plugging in headphones or connecting a Bluetooth device will resume playback</string>
+    <string name="setting_audio_title">Audio</string>
+    <string name="setting_audio_skip_silence_title">Skip silence</string>
+    <string name="setting_audio_skip_silence_description">Skip silent parts during playback</string>
+    <string name="setting_audio_equalizer_title">Equalizer</string>
+    <string name="setting_audio_equalizer_description">Access the EQ (equalizer)</string>
     <string name="setting_cache_title">Cache</string>
     <string name="setting_download_cache_title">Download cache</string>
     <string name="setting_song_cache_title">Song cache</string>
