@@ -5,7 +5,6 @@ plugins {
 
 android {
     namespace = "com.dhp.musicplayer.feature.home"
-
 }
 
 dependencies {
@@ -13,7 +12,4 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:domain"))
     implementation(project(":feature:menu"))
-
-    implementation(libs.accompanist.swiperefresh)
-
 }
