@@ -4,8 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.dhp.musicplayer.core.designsystem.animation.composableWithoutAnimation
 import com.dhp.musicplayer.feature.library.songs.detail.LibrarySongsDetailScreen
 
 const val LIBRARY_SONGS_DETAIL_TYPE_ARG = "list_songs_playlistId"
@@ -30,7 +30,7 @@ fun NavGraphBuilder.librarySongsDetailScreen(
     onBackClick: () -> Unit,
     showSnackBar: (String) -> Unit,
 ) {
-    composable(
+    composableWithoutAnimation(
         route = LIBRARY_SONGS_DETAIL_ROUTE,
         arguments = listOf(
             navArgument(LIBRARY_SONGS_DETAIL_TYPE_ARG) {

@@ -79,6 +79,7 @@ internal fun ForYouScreen(
 
     Box(
         modifier = modifier
+            .fillMaxSize()
             .windowInsetsPadding(LocalWindowInsets.current)
             .background(MaterialTheme.colorScheme.background)
     ) {

@@ -1,5 +1,6 @@
 package com.dhp.musicplayer.feature.settings
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,12 +31,13 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
     ) {
     val settingsUiState by viewModel.settingsUiState.collectAsState()
-
-    when(settingsUiState) {
-        is UiState.Success -> {
-            SettingsScreen(userEditableSettings = (settingsUiState as UiState.Success<UserEditableSettings>).data)
+    Box(modifier = Modifier.fillMaxSize()) {
+        when(settingsUiState) {
+            is UiState.Success -> {
+                SettingsScreen(userEditableSettings = (settingsUiState as UiState.Success<UserEditableSettings>).data)
+            }
+            else -> { }
         }
-        else -> { }
     }
 }
 
@@ -72,7 +74,9 @@ fun SettingsScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().windowInsetsPadding(LocalWindowInsets.current),
+        modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(LocalWindowInsets.current),
     ) {
         SettingThemeSection(
             modifier = Modifier.fillMaxWidth(),

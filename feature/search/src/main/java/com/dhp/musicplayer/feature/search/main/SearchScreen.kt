@@ -68,9 +68,9 @@ fun SearchScreen(
             }
 
             is UiState.Loading -> {
-                Column(modifier = Modifier.fillMaxSize()) {
+                Column(modifier = Modifier.fillMaxSize().padding(vertical = 16.dp)) {
                     TextPlaceholder()
-                    repeat(4) {
+                    repeat(5) {
                         Row {
                             Box(
                                 modifier = Modifier

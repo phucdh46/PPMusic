@@ -4,8 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.dhp.musicplayer.core.designsystem.animation.composableWithoutAnimation
 import com.dhp.musicplayer.feature.search.mood_genres_detail.MoodAndGenresDetailScreen
 
 const val MOOD_AND_GENRES_BROWSE_ID_ARG = "mood_and_genres_browse_id"
@@ -33,7 +33,7 @@ fun NavGraphBuilder.moodAndGenresDetailScreen(
     navigateToAlbumDetail: (browseId: String?) -> Unit,
     navigateToArtistDetail: (browseId: String?) -> Unit,
 ) {
-    composable(
+    composableWithoutAnimation(
         route = MOOD_AND_GENRES_ROUTE,
         arguments = listOf(
             navArgument(MOOD_AND_GENRES_BROWSE_ID_ARG) {

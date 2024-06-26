@@ -23,6 +23,7 @@ dependencies {
 
     implementation(libs.palette)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
 
     testImplementation(libs.androidx.ui.test.junit4)
 //    testImplementation(libs.hilt.android.testing)

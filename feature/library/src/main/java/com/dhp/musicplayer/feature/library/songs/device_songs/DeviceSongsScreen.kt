@@ -125,30 +125,32 @@ fun DeviceSongsScreen(
         viewModel.getDeviceMusic()
     }
     val uiState by viewModel.uiState.collectAsState()
-    when (uiState) {
-        is UiState.Loading -> {
-            Column(
-                modifier = Modifier
-                    .windowInsetsPadding(LocalWindowInsets.current)
-                    .fillMaxSize()
-                    .padding(8.dp)
-            ) {
-                repeat(7) {
-                    SongItemPlaceholder()
+    Box(modifier = Modifier.fillMaxSize()) {
+        when (uiState) {
+            is UiState.Loading -> {
+                Column(
+                    modifier = Modifier
+                        .windowInsetsPadding(LocalWindowInsets.current)
+                        .fillMaxSize()
+                        .padding(8.dp)
+                ) {
+                    repeat(7) {
+                        SongItemPlaceholder()
+                    }
                 }
             }
-        }
 
-        is UiState.Success<List<Song>> -> {
-            val songs = (uiState as UiState.Success<List<Song>>).data
-            DeviceSongsScreen(
-                modifier = modifier,
-                songs = songs,
-                showMessage = showMessage
-            )
-        }
+            is UiState.Success<List<Song>> -> {
+                val songs = (uiState as UiState.Success<List<Song>>).data
+                DeviceSongsScreen(
+                    modifier = modifier,
+                    songs = songs,
+                    showMessage = showMessage
+                )
+            }
 
-        else -> {}
+            else -> {}
+        }
     }
 }
 

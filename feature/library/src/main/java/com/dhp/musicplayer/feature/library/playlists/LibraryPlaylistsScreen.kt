@@ -91,7 +91,6 @@ fun LibraryPlaylistsScreen(
     }
 
     if (isRenaming) {
-
         TextInputDialog(
             onDismiss = { isRenaming = false },
             onConfirm = { playlistName ->
@@ -176,130 +175,133 @@ fun LibraryPlaylistsScreen(
         }
     }
 
-    if (playlistWithSongs.isEmpty()) {
-        EmptyList(text = stringResource(id = R.string.empty_playlists), floatContent = {
-            FloatingActionButton(
-                modifier = Modifier
-                    .windowInsetsPadding(LocalWindowInsets.current.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
-                    .padding(16.dp)
-                    .align(Alignment.BottomEnd),
-                onClick = { showAddPlaylistDialog = true }
-            ) {
-                Icon(
-                    imageVector = IconApp.Add,
-                    contentDescription = null
-                )
-            }
-        })
-    } else {
-        Box(
-            modifier = Modifier
-                .windowInsetsPadding(LocalWindowInsets.current)
-                .fillMaxSize()
-        ) {
-            when (viewType) {
-                LibraryViewType.LIST -> {
-                    LazyColumn(
-                        state = lazyListState,
-//                    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
-                    ) {
-                        item(
-                            key = "header",
-                            contentType = "CONTENT_TYPE_HEADER"
-                        ) {
-                            headerContent()
-                        }
-
-                        items(
-                            playlistWithSongs,
-                            key = { it.playlist.id },
-//                        contentType = { CONTENT_TYPE_PLAYLIST }
-                        ) { playlistPreview ->
-                            var expanded by remember { mutableStateOf(false) }
-                            PlaylistListItem(
-                                playlistWithSongs = playlistPreview,
-                                trailingContent = {
-                                    Box {
-                                        IconButton(
-                                            onClick = { expanded = true }
-                                        ) {
-                                            Icon(
-                                                imageVector = IconApp.MoreVert,
-                                                contentDescription = null
-                                            )
-                                        }
-                                        DropdownMenu(
-                                            expanded = expanded,
-                                            onDismissRequest = { expanded = false }) {
-                                            DropdownMenuItem(
-                                                text = { Text(text = stringResource(id = R.string.edit_menu_dialog)) },
-                                                onClick = {
-                                                    currentSelectPlaylist = playlistPreview.playlist
-                                                    isRenaming = true
-                                                    expanded = false
-                                                }
-                                            )
-                                            DropdownMenuItem(
-                                                text = { Text(text = stringResource(id = R.string.delete_menu_dialog)) },
-                                                onClick = {
-                                                    currentSelectPlaylist = playlistPreview.playlist
-                                                    isDeleting = true
-                                                    expanded = false
-                                                }
-                                            )
-                                        }
-                                    }
-
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        navigateToLocalPlaylistDetail(playlistPreview.playlist.id)
-                                    }
-                                    .animateItemPlacement()
-                            )
-                        }
-                    }
-
-                    HideOnScrollFAB(
-                        lazyListState = lazyListState,
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (playlistWithSongs.isEmpty()) {
+            EmptyList(text = stringResource(id = R.string.empty_playlists), floatContent = {
+                FloatingActionButton(
+                    modifier = Modifier
+                        .windowInsetsPadding(LocalWindowInsets.current.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
+                        .padding(16.dp)
+                        .align(Alignment.BottomEnd),
+                    onClick = { showAddPlaylistDialog = true }
+                ) {
+                    Icon(
                         imageVector = IconApp.Add,
-                        onClick = {
-                            showAddPlaylistDialog = true
-                        }
+                        contentDescription = null
                     )
                 }
-
-                LibraryViewType.GRID -> {
-                    LazyVerticalGrid(
-                        state = lazyGridState,
-                        columns = GridCells.Adaptive(minSize = GridThumbnailHeight + 24.dp),
-//                        columns = GridCells.Fixed(3),
+            })
+        } else {
+            Box(
+                modifier = Modifier
+                    .windowInsetsPadding(LocalWindowInsets.current)
+                    .fillMaxSize()
+            ) {
+                when (viewType) {
+                    LibraryViewType.LIST -> {
+                        LazyColumn(
+                            state = lazyListState,
 //                    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
-                    ) {
-                        item(
-                            key = "header",
-                            span = { GridItemSpan(maxLineSpan) },
-                            contentType = "CONTENT_TYPE_HEADER"
                         ) {
-                            headerContent()
+                            item(
+                                key = "header",
+                                contentType = "CONTENT_TYPE_HEADER"
+                            ) {
+                                headerContent()
+                            }
+
+                            items(
+                                playlistWithSongs,
+                                key = { it.playlist.id },
+//                        contentType = { CONTENT_TYPE_PLAYLIST }
+                            ) { playlistPreview ->
+                                var expanded by remember { mutableStateOf(false) }
+                                PlaylistListItem(
+                                    playlistWithSongs = playlistPreview,
+                                    trailingContent = {
+                                        Box {
+                                            IconButton(
+                                                onClick = { expanded = true }
+                                            ) {
+                                                Icon(
+                                                    imageVector = IconApp.MoreVert,
+                                                    contentDescription = null
+                                                )
+                                            }
+                                            DropdownMenu(
+                                                expanded = expanded,
+                                                onDismissRequest = { expanded = false }) {
+                                                DropdownMenuItem(
+                                                    text = { Text(text = stringResource(id = R.string.edit_menu_dialog)) },
+                                                    onClick = {
+                                                        currentSelectPlaylist =
+                                                            playlistPreview.playlist
+                                                        isRenaming = true
+                                                        expanded = false
+                                                    }
+                                                )
+                                                DropdownMenuItem(
+                                                    text = { Text(text = stringResource(id = R.string.delete_menu_dialog)) },
+                                                    onClick = {
+                                                        currentSelectPlaylist =
+                                                            playlistPreview.playlist
+                                                        isDeleting = true
+                                                        expanded = false
+                                                    }
+                                                )
+                                            }
+                                        }
+
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            navigateToLocalPlaylistDetail(playlistPreview.playlist.id)
+                                        }
+                                        .animateItemPlacement()
+                                )
+                            }
                         }
 
-                        items(
-                            playlistWithSongs,
-                            key = { it.playlist },
+                        HideOnScrollFAB(
+                            lazyListState = lazyListState,
+                            imageVector = IconApp.Add,
+                            onClick = {
+                                showAddPlaylistDialog = true
+                            }
+                        )
+                    }
+
+                    LibraryViewType.GRID -> {
+                        LazyVerticalGrid(
+                            state = lazyGridState,
+                            columns = GridCells.Adaptive(minSize = GridThumbnailHeight + 24.dp),
+//                        columns = GridCells.Fixed(3),
+//                    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
+                        ) {
+                            item(
+                                key = "header",
+                                span = { GridItemSpan(maxLineSpan) },
+                                contentType = "CONTENT_TYPE_HEADER"
+                            ) {
+                                headerContent()
+                            }
+
+                            items(
+                                playlistWithSongs,
+                                key = { it.playlist },
 //                        contentType = { CONTENT_TYPE_PLAYLIST }
-                        ) { playlistPreview ->
-                            PlaylistGridItem(
-                                playlistWithSongs = playlistPreview,
-                                fillMaxWidth = true,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .combinedClickable(
-                                        onClick = {
-                                            navigateToLocalPlaylistDetail(playlistPreview.playlist.id)
-                                        },
-                                        onLongClick = {
+                            ) { playlistPreview ->
+                                PlaylistGridItem(
+                                    playlistWithSongs = playlistPreview,
+                                    fillMaxWidth = true,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .combinedClickable(
+                                            onClick = {
+                                                navigateToLocalPlaylistDetail(playlistPreview.playlist.id)
+                                            },
+                                            onLongClick = {
 //                                        menuState.show {
 //                                            PlaylistMenu(
 //                                                playlist = playlist,
@@ -307,20 +309,21 @@ fun LibraryPlaylistsScreen(
 //                                                onDismiss = menuState::dismiss
 //                                            )
 //                                        }
-                                        }
-                                    )
-                                    .animateItemPlacement()
-                            )
+                                            }
+                                        )
+                                        .animateItemPlacement()
+                                )
+                            }
                         }
-                    }
 
-                    HideOnScrollFAB(
-                        lazyGridState = lazyGridState,
-                        imageVector = IconApp.Add,
-                        onClick = {
-                            showAddPlaylistDialog = true
-                        }
-                    )
+                        HideOnScrollFAB(
+                            lazyGridState = lazyGridState,
+                            imageVector = IconApp.Add,
+                            onClick = {
+                                showAddPlaylistDialog = true
+                            }
+                        )
+                    }
                 }
             }
         }

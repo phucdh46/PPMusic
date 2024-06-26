@@ -4,8 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.dhp.musicplayer.core.designsystem.animation.composableWithoutAnimation
 import com.dhp.musicplayer.feature.artist.artist_detail.ArtistDetailScreen
 
 const val ARTIST_DETAIL_BROWSE_ID_ARG = "artist_detail_playlist_id"
@@ -29,7 +29,7 @@ fun NavGraphBuilder.artistDetailScreen(
     navigateToListAlbums: (browseId: String?, params: String?) -> Unit,
     onShowMessage: (String) -> Unit
 ) {
-    composable(
+    composableWithoutAnimation(
         route = ARTIST_DETAIL_ROUTE,
         arguments = listOf(
             navArgument(ARTIST_DETAIL_BROWSE_ID_ARG) {

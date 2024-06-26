@@ -3,7 +3,7 @@ package com.dhp.musicplayer.feature.search.search_by_text.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
+import com.dhp.musicplayer.core.designsystem.animation.composableWithoutAnimation
 import com.dhp.musicplayer.feature.search.search_by_text.SearchByTextScreen
 
 const val SEARCH_QUERY = "query"
@@ -23,7 +23,7 @@ fun NavGraphBuilder.searchScreenByText(
     navController: NavController,
     navigateToSearchResult: (query: String) -> Unit,
 ) {
-    composable(route = SEARCH_BY_TEXT_ROUTE) {
+    composableWithoutAnimation(route = SEARCH_BY_TEXT_ROUTE) {
         SearchByTextScreen(
             navController = navController,
             navigateToSearchResult = navigateToSearchResult,

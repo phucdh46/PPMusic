@@ -4,8 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.dhp.musicplayer.core.designsystem.animation.composableWithoutAnimation
 import com.dhp.musicplayer.feature.playlist.online.OnlinePlaylistScreen
 
 const val ONLINE_PLAYLIST_ID_ARG = "playlistId"
@@ -32,7 +32,7 @@ fun NavGraphBuilder.onlinePlaylistDetailScreen(
     onBackClick: () -> Unit,
     onShowMessage: (String) -> Unit
 ) {
-    composable(
+    composableWithoutAnimation(
         route = ONLINE_PLAYLIST_DETAIL_ROUTE,
         arguments = listOf(
             navArgument(ONLINE_PLAYLIST_ID_ARG) {

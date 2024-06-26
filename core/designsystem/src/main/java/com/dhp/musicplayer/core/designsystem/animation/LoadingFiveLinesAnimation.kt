@@ -1,4 +1,4 @@
-package com.dhp.musicplayer.core.designsystem.component
+package com.dhp.musicplayer.core.designsystem.animation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing

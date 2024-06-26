@@ -4,7 +4,7 @@ package com.dhp.musicplayer.feature.library.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
+import com.dhp.musicplayer.core.designsystem.animation.composableWithoutAnimation
 import com.dhp.musicplayer.feature.library.LibraryScreen
 
 const val LIBRARY_ROUTE = "library_route"
@@ -18,7 +18,7 @@ fun NavGraphBuilder.libraryScreen(
     navigateToLocalPlaylistDetail: (Long) -> Unit,
     navigateToLibrarySongsDetail: (String) -> Unit
 ) {
-    composable(
+    composableWithoutAnimation(
         route = LIBRARY_ROUTE
     ) {
         LibraryScreen(
