@@ -4,8 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.dhp.musicplayer.core.designsystem.animation.composableWithoutAnimation
 import com.dhp.musicplayer.feature.playlist.local.LocalPlaylistDetailScreen
 
 
@@ -31,7 +31,7 @@ fun NavGraphBuilder.localPlaylistDetailScreen(
     onBackClick: () -> Unit,
     onShowMessage: (String) -> Unit
 ) {
-    composable(
+    composableWithoutAnimation(
         route = LOCAL_PLAYLIST_DETAIL_ROUTE,
         arguments = listOf(
             navArgument(LOCAL_PLAYLIST_ID_ARG) {

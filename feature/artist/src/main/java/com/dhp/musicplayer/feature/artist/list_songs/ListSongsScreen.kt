@@ -44,39 +44,41 @@ fun ListSongsScreen(
 ) {
     val playerConnection = LocalPlayerConnection.current
     val uiState by viewModel.pagingData.collectAsState()
-
-    when (uiState) {
-        is UiState.Loading -> {
-            Column(
-                modifier = Modifier
-                    .windowInsetsPadding(LocalWindowInsets.current)
-                    .padding(8.dp)
-            ) {
-                repeat(7) {
-                    SongItemPlaceholder()
+    Box(modifier = Modifier.fillMaxSize()) {
+        when (uiState) {
+            is UiState.Loading -> {
+                Column(
+                    modifier = Modifier
+                        .windowInsetsPadding(LocalWindowInsets.current)
+                        .padding(8.dp)
+                ) {
+                    repeat(7) {
+                        SongItemPlaceholder()
+                    }
                 }
             }
+
+            is UiState.Success -> {
+                val lazyPagingItems =
+                    (uiState as UiState.Success<Flow<PagingData<Song>>>).data.collectAsLazyPagingItems()
+                ListSongsScreen(
+                    lazyPagingItems = lazyPagingItems,
+                    onItemClick = { item ->
+                        playerConnection?.stopRadio()
+                        playerConnection?.forcePlay(item)
+                        playerConnection?.addRadio(item.radioEndpoint)
+                    },
+                    onShowMessage = onShowMessage
+                )
+            }
+
+            is UiState.Error -> {
+                ErrorScreen(onRetry = { })
+            }
+
+            else -> {}
         }
 
-        is UiState.Success -> {
-            val lazyPagingItems =
-                (uiState as UiState.Success<Flow<PagingData<Song>>>).data.collectAsLazyPagingItems()
-            ListSongsScreen(
-                lazyPagingItems = lazyPagingItems,
-                onItemClick = { item ->
-                    playerConnection?.stopRadio()
-                    playerConnection?.forcePlay(item)
-                    playerConnection?.addRadio(item.radioEndpoint)
-                },
-                onShowMessage = onShowMessage
-            )
-        }
-
-        is UiState.Error -> {
-            ErrorScreen(onRetry = { })
-        }
-
-        else -> {}
     }
 }
 

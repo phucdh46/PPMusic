@@ -4,8 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.dhp.musicplayer.core.designsystem.animation.composableWithoutAnimation
 import com.dhp.musicplayer.feature.search.search_result.SearchResultScreen
 
 
@@ -31,7 +31,7 @@ fun NavGraphBuilder.searchResultScreen(
     navigateToAlbumDetail: (browseId: String?) -> Unit,
     navigateToArtistDetail: (browseId: String?) -> Unit,
 ) {
-    composable(
+    composableWithoutAnimation(
         route = SEARCH_RESULT_ROUTE,
         arguments = listOf(
             navArgument(SEARCH_RESULT_QUERY_ARG) {

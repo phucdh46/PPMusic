@@ -2,6 +2,7 @@ package com.dhp.musicplayer.feature.library
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -35,7 +36,7 @@ fun LibraryScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier.windowInsetsPadding(LocalWindowInsets.current)
+        modifier = Modifier.fillMaxSize().windowInsetsPadding(LocalWindowInsets.current)
     ) {
         TabRow(
             selectedTabIndex = pagerState.currentPage,

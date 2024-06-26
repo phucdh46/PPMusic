@@ -56,7 +56,7 @@ import com.dhp.musicplayer.core.common.extensions.move
 import com.dhp.musicplayer.core.common.extensions.toSongsWithBitmap
 import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.Artwork
-import com.dhp.musicplayer.core.designsystem.component.LoadingFiveLinesCenter
+import com.dhp.musicplayer.core.designsystem.animation.LoadingFiveLinesCenter
 import com.dhp.musicplayer.core.designsystem.extensions.marquee
 import com.dhp.musicplayer.core.designsystem.theme.bold
 import com.dhp.musicplayer.core.designsystem.theme.center
@@ -106,7 +106,7 @@ fun Queue(
         reorderItemState.onDragMoved(from.index, to.index)
     }
 
-    Column(modifier) {
+    Column(modifier.fillMaxSize()) {
         QueueHeaderSection(
             modifier = Modifier
                 .padding(

@@ -4,8 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.dhp.musicplayer.core.designsystem.animation.composableWithoutAnimation
 import com.dhp.musicplayer.feature.artist.list_songs.ListSongsScreen
 
 const val LIST_SONGS_BROWSE_ID_ARG = "list_songs_playlistId"
@@ -31,7 +31,7 @@ fun NavController.navigateToListSongs(
 fun NavGraphBuilder.listSongsScreen(
     onShowMessage: (String) -> Unit
 ) {
-    composable(
+    composableWithoutAnimation(
         route = LIST_SONGS_ROUTE,
         arguments = listOf(
             navArgument(LIST_SONGS_BROWSE_ID_ARG) {

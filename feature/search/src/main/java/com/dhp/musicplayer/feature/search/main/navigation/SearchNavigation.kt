@@ -3,7 +3,7 @@ package com.dhp.musicplayer.feature.search.main.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
+import com.dhp.musicplayer.core.designsystem.animation.composableWithoutAnimation
 import com.dhp.musicplayer.feature.search.main.SearchScreen
 
 
@@ -15,7 +15,7 @@ fun NavGraphBuilder.searchScreen(
     navigateToMoodAndGenresDetail: (browseId: String?, params: String?) -> Unit,
 
     ) {
-    composable(route = SEARCH_ROUTE) {
+    composableWithoutAnimation(route = SEARCH_ROUTE) {
         SearchScreen(
             navigateToMoodAndGenresDetail = navigateToMoodAndGenresDetail
         )
