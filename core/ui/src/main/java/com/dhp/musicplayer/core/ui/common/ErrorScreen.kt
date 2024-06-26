@@ -21,11 +21,12 @@ import com.dhp.musicplayer.core.designsystem.R
 
 @Composable
 fun ErrorScreen(
+    modifier: Modifier = Modifier,
     errorMessage: String = stringResource(id = R.string.error_message),
     onRetry: (() -> Unit)? = null
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),

@@ -22,9 +22,11 @@ import com.dhp.musicplayer.core.designsystem.R
 
 @Composable
 fun EmptyList(
-    text: String, floatContent: (@Composable BoxScope.() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    text: String,
+    floatContent: (@Composable BoxScope.() -> Unit)? = null,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,

@@ -98,56 +98,59 @@ fun LocalPlaylistDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val maxWidth = maxWidth
-        Column {
-            TopAppBarDetailScreen(
-                onBackClick = onBackClick,
-            )
-            when (uiState) {
-                is UiState.Loading -> {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(maxWidth)
-                                .shimmer()
-                        )
-                        TextPlaceholder()
-                        TextPlaceholder()
-                        repeat(3) {
-                            SongItemPlaceholder()
-                        }
+        TopAppBarDetailScreen(
+            onBackClick = onBackClick,
+        )
+        when (uiState) {
+            is UiState.Loading -> {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .windowInsetsPadding(LocalWindowInsets.current)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(maxWidth)
+                            .shimmer()
+                    )
+                    TextPlaceholder()
+                    TextPlaceholder()
+                    repeat(3) {
+                        SongItemPlaceholder()
                     }
                 }
+            }
 
-                is UiState.Success -> {
-                    LocalPlaylistDetailScreen(
-                        playlistWithSongs = (uiState as UiState.Success).data,
-                        onEditPlaylist = { name ->
-                            viewModel.updatePlaylist(name) { message ->
-                                onShowMessage(message)
-                            }
-                        },
-                        onDeletePlaylist = {
-                            viewModel.deletePlaylist()
-                            onBackClick()
-                        },
-                        onRemoveFromPlaylist = { index, song ->
-                            viewModel.removeSongInPlaylist(index, song)
-                        },
-                        onShowMessage = onShowMessage,
-                        onBackClick = onBackClick,
-                    )
-                }
+            is UiState.Success -> {
+                LocalPlaylistDetailScreen(
+                    playlistWithSongs = (uiState as UiState.Success).data,
+                    onEditPlaylist = { name ->
+                        viewModel.updatePlaylist(name) { message ->
+                            onShowMessage(message)
+                        }
+                    },
+                    onDeletePlaylist = {
+                        viewModel.deletePlaylist()
+                        onBackClick()
+                    },
+                    onRemoveFromPlaylist = { index, song ->
+                        viewModel.removeSongInPlaylist(index, song)
+                    },
+                    onShowMessage = onShowMessage,
+                    onBackClick = onBackClick,
+                )
+            }
 
-                is UiState.Empty -> {
-                    EmptyList(text = stringResource(id = R.string.empty_songs))
-                }
+            is UiState.Empty -> {
+                EmptyList(
+                    text = stringResource(id = R.string.empty_songs),
+                    modifier = Modifier.windowInsetsPadding(LocalWindowInsets.current)
+                )
+            }
 
-                is UiState.Error -> {
-                    ErrorScreen()
-                }
+            is UiState.Error -> {
+                ErrorScreen(modifier = Modifier.windowInsetsPadding(LocalWindowInsets.current))
             }
         }
     }

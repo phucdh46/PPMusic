@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +27,7 @@ import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.model.music.PlaylistDisplay
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.ui.LocalMenuState
+import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.EmptyList
 import com.dhp.musicplayer.core.ui.common.ErrorScreen
 import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
@@ -43,45 +45,48 @@ fun OnlinePlaylistScreen(
     val uiState by viewModel.uiState.collectAsState()
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val maxWidth = maxWidth
-        Column {
-            TopAppBarDetailScreen(
-                onBackClick = onBackClick,
-            )
-            when (uiState) {
-                UiState.Loading -> {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(maxWidth)
-                                .shimmer()
-                        )
-                        TextPlaceholder()
-                        TextPlaceholder()
-                        repeat(3) {
-                            SongItemPlaceholder()
-                        }
+        TopAppBarDetailScreen(
+            onBackClick = onBackClick,
+        )
+        when (uiState) {
+            UiState.Loading -> {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(LocalWindowInsets.current)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(maxWidth)
+                            .shimmer()
+                    )
+                    TextPlaceholder()
+                    TextPlaceholder()
+                    repeat(3) {
+                        SongItemPlaceholder()
                     }
                 }
+            }
 
-                is UiState.Success -> {
-                    OnlinePlaylistScreen(
-                        playlistDisplay = (uiState as UiState.Success).data,
-                        onBackClick = onBackClick,
-                        onShowMessage = onShowMessage,
-                    )
-                }
+            is UiState.Success -> {
+                OnlinePlaylistScreen(
+                    playlistDisplay = (uiState as UiState.Success).data,
+                    onBackClick = onBackClick,
+                    onShowMessage = onShowMessage,
+                )
+            }
 
-                is UiState.Empty -> {
-                    EmptyList(text = stringResource(id = R.string.empty_songs))
-                }
+            is UiState.Empty -> {
+                EmptyList(
+                    text = stringResource(id = R.string.empty_songs),
+                    modifier = Modifier.windowInsetsPadding(LocalWindowInsets.current)
+                )
+            }
 
-                is UiState.Error -> {
-                    ErrorScreen()
-                }
+            is UiState.Error -> {
+                ErrorScreen(modifier = Modifier.windowInsetsPadding(LocalWindowInsets.current))
             }
         }
     }
