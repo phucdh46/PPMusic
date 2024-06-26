@@ -2,7 +2,6 @@ package com.dhp.musicplayer.core.ui.common
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.dhp.musicplayer.core.ui.items.AlbumItemError
@@ -13,6 +12,7 @@ import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
 @Composable
 fun <T : Any> HandlePagingStates(
     lazyPagingItems: LazyPagingItems<T>,
+    onErrorInitPage: (() -> Unit)? = null,
 ) {
     when {
         lazyPagingItems.loadState.refresh is LoadState.Loading -> {
@@ -20,13 +20,24 @@ fun <T : Any> HandlePagingStates(
                 SongItemPlaceholder()
             }
         }
+
+        lazyPagingItems.loadState.refresh is LoadState.Error -> {
+            onErrorInitPage?.invoke()
+            ErrorScreen(onRetry = {
+                lazyPagingItems.refresh()
+            })
+        }
+
         lazyPagingItems.loadState.append is LoadState.Loading -> {
             repeat(3) {
                 SongItemPlaceholder()
             }
         }
+
         lazyPagingItems.loadState.append is LoadState.Error -> {
-            SongErrorPagingItem()
+            SongErrorPagingItem(onRetry = {
+                lazyPagingItems.retry()
+            })
         }
     }
 }
@@ -45,6 +56,13 @@ fun <T : Any> HandlePagingAlbumsStates(
                 }
             }
         }
+
+        lazyPagingItems.loadState.refresh is LoadState.Error -> {
+            ErrorScreen(onRetry = {
+                lazyPagingItems.refresh()
+            })
+        }
+
         lazyPagingItems.loadState.append is LoadState.Loading -> {
             Row {
                 repeat(2) {
@@ -52,8 +70,11 @@ fun <T : Any> HandlePagingAlbumsStates(
                 }
             }
         }
+
         lazyPagingItems.loadState.append is LoadState.Error -> {
-            AlbumItemError()
+            AlbumItemError(onRetry = {
+                lazyPagingItems.retry()
+            })
         }
     }
 }

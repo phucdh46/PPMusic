@@ -1,11 +1,17 @@
 package com.dhp.musicplayer.core.ui.items
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,12 +22,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.constant.AlbumThumbnailSizeDp
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
-import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.extensions.shimmer
-
 import kotlin.random.Random
 
 @Composable
@@ -51,24 +55,26 @@ fun SongItemPlaceholder(
 @Composable
 fun SongErrorPagingItem(
     modifier: Modifier = Modifier,
-    message: String = stringResource(id = R.string.error_message),
-    thumbnailSizeDp: Dp = Dimensions.thumbnails.song,
+    errorMessage: String = stringResource(id = R.string.error_message),
+    onRetry: (() -> Unit)? = null,
 ) {
-
-    ItemContainer(
-        alternative = false,
-        thumbnailSizeDp = thumbnailSizeDp,
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(8.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Text(
-            text = message,
-            fontSize = 18.sp,
-            color = MaterialTheme.colorScheme.errorContainer,
-            style = MaterialTheme.typography.titleMedium
+            text = errorMessage, style = MaterialTheme.typography.bodyMedium
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        onRetry?.let {
+            Button(onClick = onRetry, modifier = Modifier.clickable { onRetry() }) {
+                Text(text = "Retry", style = MaterialTheme.typography.labelMedium)
+            }
+        }
     }
 }
 
@@ -90,29 +96,25 @@ fun TextPlaceholder(
 fun AlbumItemError(
     modifier: Modifier = Modifier,
     thumbnailSizeDp: Dp = AlbumThumbnailSizeDp,
-    alternative: Boolean = false,
-    message: String = stringResource(id = R.string.error_message),
+    errorMessage: String = stringResource(id = R.string.error_message_paging_albums),
+    onRetry: (() -> Unit)? = null
 ) {
-
-    ItemContainer(
-        alternative = alternative,
-        thumbnailSizeDp = thumbnailSizeDp,
+    Column(
         modifier = modifier
+            .size(thumbnailSizeDp)
+            .background(MaterialTheme.colorScheme.background)
+            .padding(8.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            modifier = Modifier
-                .size(thumbnailSizeDp)
-                .clip(RoundedCornerShape(8.dp))
-                .shimmer()
+        Text(
+            text = errorMessage, style = MaterialTheme.typography.bodyMedium
         )
-
-        ItemInfoContainer {
-            Text(
-                text = message,
-                fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.errorContainer,
-                style = MaterialTheme.typography.titleMedium
-            )
+        Spacer(modifier = Modifier.height(8.dp))
+        onRetry?.let {
+            Button(onClick = onRetry, modifier = Modifier.clickable { onRetry() }) {
+                Text(text = "Retry", style = MaterialTheme.typography.labelMedium)
+            }
         }
     }
 }
@@ -125,9 +127,7 @@ fun AlbumItemPlaceholder(
 ) {
 
     ItemContainer(
-        alternative = alternative,
-        thumbnailSizeDp = thumbnailSizeDp,
-        modifier = modifier
+        alternative = alternative, thumbnailSizeDp = thumbnailSizeDp, modifier = modifier
     ) {
         Box(
             modifier = Modifier

@@ -19,12 +19,12 @@ class ListMusicPagingSource<T : Innertube.Item>(
 
     ) : PagingSource<String, T>() {
     override fun getRefreshKey(state: PagingState<String, T>): String {
-        return state.anchorPosition.toString()
+        return ""
     }
 
     override suspend fun load(params: LoadParams<String>): LoadResult<String, T> {
         val currentPageNumber = params.key
-        val itemPage = if (currentPageNumber == null) {
+        val itemPage = if (currentPageNumber.isNullOrEmpty()) {
             InnertubeApiService.getInstance(context).itemsPage(
                 body = BrowseBody(
                     browseId = browseId,
@@ -41,12 +41,16 @@ class ListMusicPagingSource<T : Innertube.Item>(
             )
         }
         val nextKey = itemPage?.getOrNull()?.continuation
-        val data = itemPage?.getOrNull()?.items ?: emptyList()
 
-        return LoadResult.Page(
-            prevKey = null,
-            nextKey = nextKey,
-            data = data
-        )
+        return if (itemPage?.isSuccess == true) {
+            LoadResult.Page(
+                prevKey = null,
+                nextKey = nextKey,
+                data = itemPage.getOrNull()?.items ?: emptyList()
+            )
+        } else {
+            val throwable = itemPage?.exceptionOrNull() ?: NullPointerException()
+            LoadResult.Error(throwable)
+        }
     }
 }

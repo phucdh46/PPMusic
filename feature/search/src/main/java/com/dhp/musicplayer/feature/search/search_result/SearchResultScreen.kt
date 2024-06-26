@@ -8,8 +8,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -38,6 +41,7 @@ import com.dhp.musicplayer.core.network.innertube.InnertubeApiService
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.ui.LocalMenuState
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
+import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.HandlePagingStates
 import com.dhp.musicplayer.core.ui.extensions.getSubTitleMusic
 import com.dhp.musicplayer.core.ui.extensions.getThumbnail
@@ -76,7 +80,8 @@ fun SearchResultScreen(
         navController.popBackStack()
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(LocalWindowInsets.current.only(
+        WindowInsetsSides.Bottom))) {
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
         SearchToolbar(
             onBackClick = { navController.navigateUp() },
@@ -205,7 +210,9 @@ fun SearchResultScreen(
                 }
             }
             item {
-                HandlePagingStates(lazyPagingItems = lazyPagingItems)
+                HandlePagingStates(lazyPagingItems = lazyPagingItems,
+                    onErrorInitPage = viewModel::onErrorInitPage,
+                )
             }
         }
     }
