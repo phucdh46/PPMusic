@@ -2,14 +2,22 @@ package com.dhp.musicplayer.core.data.repository
 
 import com.dhp.musicplayer.core.data.model.asEntity
 import com.dhp.musicplayer.core.data.model.asExternalModel
+import com.dhp.musicplayer.core.database.dao.AlbumDao
+import com.dhp.musicplayer.core.database.dao.ArtistDao
 import com.dhp.musicplayer.core.database.dao.FavoriteDao
 import com.dhp.musicplayer.core.database.dao.PlaylistDao
 import com.dhp.musicplayer.core.database.dao.SearchHistoryDao
 import com.dhp.musicplayer.core.database.dao.SongDao
+import com.dhp.musicplayer.core.database.model.SongAlbumRelated
+import com.dhp.musicplayer.core.database.model.SongArtistRelated
+import com.dhp.musicplayer.core.database.model.SongWithSongRelated
 import com.dhp.musicplayer.core.domain.repository.MusicRepository
+import com.dhp.musicplayer.core.model.music.Album
+import com.dhp.musicplayer.core.model.music.Artist
 import com.dhp.musicplayer.core.model.music.Playlist
 import com.dhp.musicplayer.core.model.music.PlaylistPreview
 import com.dhp.musicplayer.core.model.music.PlaylistWithSongs
+import com.dhp.musicplayer.core.model.music.RelatedPage
 import com.dhp.musicplayer.core.model.music.SearchHistory
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.model.music.SongPlaylistMap
@@ -21,6 +29,8 @@ import javax.inject.Inject
 
 class MusicRepositoryImpl @Inject constructor(
     private val songDao: SongDao,
+    private val albumDao: AlbumDao,
+    private val artistDao: ArtistDao,
     private val playlistDao: PlaylistDao,
     private val favoriteDao: FavoriteDao,
     private val searchHistoryDao: SearchHistoryDao
@@ -122,5 +132,41 @@ class MusicRepositoryImpl @Inject constructor(
                 !song.isOffline
             }
         }
+    }
+
+    override fun insertRelatedSong(songId: String, relatedSongId: String) {
+       songDao.insertRelatedSong(SongWithSongRelated(songId = songId, relatedSongId = relatedSongId))
+    }
+
+    override fun getRelatedSongs(songId: String): Flow<RelatedPage?> {
+        return songDao.getSongWithRelatedPage(songId).map { it?.asExternalModel() }
+    }
+
+    override suspend fun clearAllSongRelated() {
+        songDao.clearAllSongRelated()
+    }
+
+    override fun insert(album: Album): Long {
+        return albumDao.insert(album.asEntity())
+    }
+
+    override fun insertRelatedAlbum(songId: String, albumId: String) {
+        albumDao.insertSongAlbumRelated(SongAlbumRelated(songId = songId, albumId = albumId))
+    }
+
+    override suspend fun clearAllAlbumRelated() {
+        albumDao.clearSongAlbumRelated()
+    }
+
+    override fun insert(artist: Artist): Long {
+        return artistDao.insert(artist.asEntity())
+    }
+
+    override fun insertRelatedArtist(songId: String, artistId: String) {
+       artistDao.insertSongArtistRelated(SongArtistRelated(songId = songId, artistId = artistId))
+    }
+
+    override suspend fun clearAllArtistRelated() {
+        artistDao.clearSongArtistRelated()
     }
 }

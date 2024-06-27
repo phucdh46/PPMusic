@@ -24,6 +24,8 @@
     <string name="create_playlist_title">Create playlist</string>
     <string name="title_rename_dialog">Rename</string>
     <string name="title_delete_dialog">Delete</string>
+    <string name="get_api_key_error_message">An error occurred while retrieving data from the server. Please try again later.</string>
+    <string name="get_api_key_error_button_retry">Retry</string>
 
     <!--artist-->
     <string name="artist_songs_title">Songs</string>
@@ -147,7 +149,7 @@
     <string name="setting_cache_title">Cache</string>
     <string name="setting_download_cache_title">Download cache</string>
     <string name="setting_song_cache_title">Song cache</string>
-    <string name="setting_image_cache_title">Song cache</string>
+    <string name="setting_image_cache_title">Image cache</string>
     <string name="setting_cache_title_dialog">Set max size:</string>
     <string name="setting_text_confirm_clean_cache_dialog">Do you want to clean the cache?</string>
     <string name="setting_top_others">Others</string>

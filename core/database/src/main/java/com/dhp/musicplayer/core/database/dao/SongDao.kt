@@ -6,6 +6,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.dhp.musicplayer.core.database.model.SongEntity
+import com.dhp.musicplayer.core.database.model.SongWithSongRelated
+import com.dhp.musicplayer.core.database.model.SongWithRelatedPage
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -20,4 +22,13 @@ interface SongDao {
     @Query("SELECT * FROM Song")
     fun getAllSongs(): Flow<List<SongEntity>>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertRelatedSong(songWithSongRelated: SongWithSongRelated)
+
+    @Transaction
+    @Query("SELECT * FROM Song WHERE id = :songId")
+    fun getSongWithRelatedPage(songId: String): Flow<SongWithRelatedPage?>
+
+    @Query("DELETE FROM SongWithSongRelated")
+    suspend fun clearAllSongRelated()
 }

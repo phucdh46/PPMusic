@@ -8,6 +8,6 @@ import javax.inject.Inject
 class GetApiKeyUseCase @Inject constructor(
     private val appRepository: AppRepository, 
 ) {
-    suspend operator fun invoke(): ApiResponse<ApiKey> =
+    suspend operator fun invoke(): ApiResponse<ApiKey>? =
         appRepository.getKey()
 }

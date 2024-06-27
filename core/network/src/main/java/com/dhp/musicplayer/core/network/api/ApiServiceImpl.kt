@@ -11,7 +11,9 @@ import javax.inject.Inject
 class ApiServiceImpl @Inject constructor(
     @AppHttpClient private val client: HttpClient
 ): ApiService {
-    override suspend fun getKey(): ApiResponse<KeyResponse> {
-        return client.get("/key").body<ApiResponse<KeyResponse>>()
+    override suspend fun getKey(): Result<ApiResponse<KeyResponse>> {
+        return kotlin.runCatching {
+            client.get("/key").body<ApiResponse<KeyResponse>>()
+        }
     }
 }

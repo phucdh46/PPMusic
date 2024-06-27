@@ -25,6 +25,7 @@ fun DefaultDialog(
     isError: Boolean = false,
     confirmText: String? = null,
     cancelText: String? = null,
+    disableDismiss: Boolean = false,
     content: @Composable() (() -> Unit)? = null,
 ) {
     val configuration = LocalConfiguration.current
@@ -33,7 +34,9 @@ fun DefaultDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
         modifier = Modifier.widthIn(max = configuration.screenWidthDp.dp - 80.dp),
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = {
+            if (!disableDismiss) onDismiss()
+        },
         title = {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -69,7 +72,7 @@ fun DefaultDialog(
             }
         },
         dismissButton = {
-            onConfirm?.let {
+            if (!disableDismiss && onConfirm != null) {
                 TextButton(
                     onClick = onDismiss,
                     modifier = Modifier

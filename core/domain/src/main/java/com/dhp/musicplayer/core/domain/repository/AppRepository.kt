@@ -5,5 +5,5 @@ import com.dhp.musicplayer.core.model.settings.ApiKey
 import dagger.Component
 
 interface AppRepository {
-    suspend fun getKey() : ApiResponse<ApiKey>
+    suspend fun getKey() : ApiResponse<ApiKey>?
 }

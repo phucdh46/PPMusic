@@ -448,13 +448,15 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
         val mediaItem =
             eventTime.timeline.getWindow(eventTime.windowIndex, Timeline.Window()).mediaItem
         val totalPlayTimeMs = playbackStats.totalPlayTimeMs
-        if (totalPlayTimeMs > 60000) {
+        if (totalPlayTimeMs > 180000) {
             mainScope.launch {
                 try {
                     if (mediaItem.mediaId.toLongOrNull() == null) {
-                        Logg.d("onPlaybackStatsReady > 30000: ${mediaItem.mediaId}")
                         dataStore.edit { dataStore ->
                             dataStore[RelatedMediaIdKey] = mediaItem.mediaId
+                        }
+                        ioScope.launch {
+                            musicRepository.insert(mediaItem.toSong())
                         }
                     }
                 } catch (_: SQLException) {
