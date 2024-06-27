@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.TextTitle
 import com.dhp.musicplayer.core.designsystem.constant.AlbumThumbnailSizeDp
 import com.dhp.musicplayer.core.designsystem.constant.ArtistThumbnailSizeDp
@@ -62,7 +63,6 @@ import com.dhp.musicplayer.core.ui.items.SongItem
 import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
 import com.dhp.musicplayer.core.ui.items.TextPlaceholder
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
-import com.dhp.musicplayer.core.designsystem.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,7 +74,7 @@ internal fun ForYouScreen(
     navigateToArtistDetail: (browseId: String) -> Unit,
     onShowMessage: (String) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState(UiState.Loading)
     val playerConnection = LocalPlayerConnection.current
 
     Box(
@@ -114,16 +114,16 @@ internal fun ForYouScreen(
                 val isRefreshing by viewModel.isRefreshing.collectAsState()
                 PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { viewModel.refresh() }) {
                     ForYouScreen(
-                        songs = related?.songs ?: emptyList(),
+                        songs = related?.songs,
                         onItemClicked = { song ->
                             playerConnection?.stopRadio()
                             playerConnection?.forcePlay(song)
                             playerConnection?.addRadio(song.radioEndpoint)
                         },
                         modifier = modifier,
-                        album = related?.albums,
-                        artist = related?.artists,
-                        playlist = related?.playlists,
+                        albums = related?.albums,
+                        artists = related?.artists,
+                        playlists = related?.playlists,
                         onPlaylistItemClick = navigateToPlaylistDetail,
                         onAlbumItemClick = navigateToAlbumDetail,
                         onArtistItemClick = navigateToArtistDetail,
@@ -135,7 +135,6 @@ internal fun ForYouScreen(
 
             else -> {}
         }
-
     }
 }
 
@@ -143,12 +142,12 @@ internal fun ForYouScreen(
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 internal fun ForYouScreen(
-    songs: List<Song>,
+    songs: List<Song>?,
     onItemClicked: (Song) -> Unit,
     modifier: Modifier = Modifier,
-    album: List<Album>?,
-    artist: List<Artist>?,
-    playlist: List<Playlist>?,
+    albums: List<Album>?,
+    artists: List<Artist>?,
+    playlists: List<Playlist>?,
     onPlaylistItemClick: (browseId: String) -> Unit,
     onAlbumItemClick: (browseId: String) -> Unit,
     onArtistItemClick: (browseId: String) -> Unit,
@@ -175,25 +174,44 @@ internal fun ForYouScreen(
                 .verticalScroll(scrollState)
         ) {
 
-            TextTitle(text = stringResource(R.string.home_songs_title))
-            LazyHorizontalGrid(
-                state = quickPicksLazyGridState,
-                rows = GridCells.Fixed(4),
-                flingBehavior = rememberSnapFlingBehavior(SnapLayoutInfoProvider(lazyGridState = quickPicksLazyGridState)),
-//                contentPadding = endPaddingValues,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height((Dimensions.thumbnails.song + Dimensions.itemsVerticalPadding * 2) * 4)
-            ) {
-                items(songs, key = { it.id }) { song ->
-                    SongItem(
-                        song = song,
-                        thumbnailSizePx = Dimensions.thumbnails.song.px,
-                        thumbnailSizeDp = Dimensions.thumbnails.song,
-                        trailingContent = {
-                            Box {
-                                IconButton(
-                                    onClick = {
+            if (!songs.isNullOrEmpty()) {
+                TextTitle(text = stringResource(R.string.home_songs_title))
+                LazyHorizontalGrid(
+                    state = quickPicksLazyGridState,
+                    rows = GridCells.Fixed(4),
+                    flingBehavior = rememberSnapFlingBehavior(SnapLayoutInfoProvider(lazyGridState = quickPicksLazyGridState)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height((Dimensions.thumbnails.song + Dimensions.itemsVerticalPadding * 2) * 4)
+                ) {
+                    items(songs, key = { it.id }) { song ->
+                        SongItem(
+                            song = song,
+                            thumbnailSizePx = Dimensions.thumbnails.song.px,
+                            thumbnailSizeDp = Dimensions.thumbnails.song,
+                            trailingContent = {
+                                Box {
+                                    IconButton(
+                                        onClick = {
+                                            menuState.show {
+                                                MediaItemMenu(
+                                                    onDismiss = menuState::dismiss,
+                                                    mediaItem = song.asMediaItem(),
+                                                    onShowMessageAddSuccess = onShowMessage
+                                                )
+                                            }
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = IconApp.MoreVert,
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            },
+                            modifier = Modifier
+                                .combinedClickable(
+                                    onLongClick = {
                                         menuState.show {
                                             MediaItemMenu(
                                                 onDismiss = menuState::dismiss,
@@ -201,41 +219,23 @@ internal fun ForYouScreen(
                                                 onShowMessageAddSuccess = onShowMessage
                                             )
                                         }
+                                    },
+                                    onClick = {
+                                        onItemClicked(song)
                                     }
-                                ) {
-                                    Icon(
-                                        imageVector = IconApp.MoreVert,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        },
-                        modifier = Modifier
-                            .combinedClickable(
-                                onLongClick = {
-                                    menuState.show {
-                                        MediaItemMenu(
-                                            onDismiss = menuState::dismiss,
-                                            mediaItem = song.asMediaItem(),
-                                            onShowMessageAddSuccess = onShowMessage
-                                        )
-                                    }
-                                },
-                                onClick = {
-                                    onItemClicked(song)
-                                }
-                            )
-                            .animateItemPlacement()
-                            .width(itemInHorizontalGridWidth)
-                    )
+                                )
+                                .animateItemPlacement()
+                                .width(itemInHorizontalGridWidth)
+                        )
+                    }
                 }
             }
 
-            album?.let { album ->
+            if (!albums.isNullOrEmpty()) {
                 TextTitle(text = stringResource(R.string.home_albums_title))
                 LazyRow() {
                     items(
-                        items = album,
+                        items = albums,
                         key = { it.id }
                     ) { album ->
                         AlbumItem(
@@ -252,7 +252,7 @@ internal fun ForYouScreen(
                 }
             }
 
-            artist?.let { artists ->
+            if (!artists.isNullOrEmpty()) {
                 TextTitle(text = stringResource(R.string.home_artists_title))
                 LazyRow {
                     items(
@@ -273,7 +273,7 @@ internal fun ForYouScreen(
                 }
             }
 
-            playlist?.let { playlists ->
+            if (!playlists.isNullOrEmpty()) {
                 TextTitle(
                     text = stringResource(R.string.home_playlists_title).uppercase(),
                     modifier = Modifier
@@ -297,7 +297,6 @@ internal fun ForYouScreen(
                     }
                 }
             }
-
         }
     }
 }

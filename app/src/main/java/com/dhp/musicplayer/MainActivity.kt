@@ -13,16 +13,23 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -34,8 +41,10 @@ import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.intent
 import com.dhp.musicplayer.core.datastore.DynamicThemeKey
 import com.dhp.musicplayer.core.designsystem.R
+import com.dhp.musicplayer.core.designsystem.dialog.DefaultDialog
 import com.dhp.musicplayer.core.designsystem.extractThemeColor
 import com.dhp.musicplayer.core.designsystem.theme.ColorSaver
+import com.dhp.musicplayer.core.designsystem.theme.ComposeTheme
 import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
 import com.dhp.musicplayer.core.model.settings.UserData
 import com.dhp.musicplayer.core.services.download.DownloadUtil
@@ -170,12 +179,31 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            com.dhp.musicplayer.core.designsystem.theme.ComposeTheme(
+            val getApiKeyError by viewModel.getApiKeyError.collectAsState()
+
+            ComposeTheme(
                 darkTheme = darkTheme,
                 themeColor = themeColor,
                 enableDynamicTheme = enableDynamicTheme,
             ) {
-                App(appState = appState, playerConnection, downloadUtil)
+                if (getApiKeyError) {
+                    DefaultDialog(
+                        onDismiss = { },
+                        onConfirm = { viewModel.getApiKey() },
+                        title = stringResource(id = R.string.app_name),
+                        confirmText = stringResource(id = R.string.get_api_key_error_button_retry),
+                        disableDismiss = true,
+                        content = {
+                            Text(
+                                text = stringResource(id = R.string.get_api_key_error_message),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
+                    )
+                } else {
+                    App(appState = appState, playerConnection, downloadUtil)
+                }
             }
         }
     }

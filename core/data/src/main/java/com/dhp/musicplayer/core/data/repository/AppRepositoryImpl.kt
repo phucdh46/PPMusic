@@ -11,10 +11,11 @@ import javax.inject.Inject
 class AppRepositoryImpl @Inject constructor(
     private val apiService: ApiService
 ) : AppRepository {
-    override suspend fun getKey(): ApiResponse<ApiKey> {
-        return convertApiResponse(apiService.getKey()) {
-            it?.asExternalModel()
+    override suspend fun getKey(): ApiResponse<ApiKey>? {
+        return apiService.getKey().getOrNull()?.let {
+            convertApiResponse(it) {
+                it?.asExternalModel()
+            }
         }
     }
-
 }

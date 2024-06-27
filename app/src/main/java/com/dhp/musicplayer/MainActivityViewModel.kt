@@ -7,18 +7,17 @@ import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.toEnum
 import com.dhp.musicplayer.core.common.model.isSuccess
-import com.dhp.musicplayer.core.common.utils.Logg
-import com.dhp.musicplayer.core.domain.repository.AppRepository
-import com.dhp.musicplayer.core.domain.user_case.GetApiKeyUseCase
-import com.dhp.musicplayer.core.model.settings.ApiKey
-import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
-import com.dhp.musicplayer.core.model.settings.UserData
 import com.dhp.musicplayer.core.datastore.ApiConfigKey
 import com.dhp.musicplayer.core.datastore.DarkThemeConfigKey
 import com.dhp.musicplayer.core.datastore.dataStore
 import com.dhp.musicplayer.core.datastore.get
+import com.dhp.musicplayer.core.domain.user_case.GetApiKeyUseCase
+import com.dhp.musicplayer.core.model.settings.ApiKey
+import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
+import com.dhp.musicplayer.core.model.settings.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -34,17 +33,19 @@ class MainActivityViewModel @Inject constructor(
     private val getApiKeyUseCase: GetApiKeyUseCase,
 ) : ViewModel() {
 
+    private val _getApiKeyError: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val getApiKeyError: StateFlow<Boolean> = _getApiKeyError
+
     init {
-        initConfig()
+        getApiKey()
     }
 
-    private fun initConfig() {
+    fun getApiKey() {
         viewModelScope.launch(Dispatchers.IO) {
             if (application.dataStore[ApiConfigKey] != null) return@launch
             val result = getApiKeyUseCase()
-            if (result.isSuccess()) {
+            if (result?.isSuccess() == true) {
                 result.result?.let { key ->
-                    Logg.d("getKey: ${key}")
                     val keyString = try {
                         Json.encodeToString(ApiKey.serializer(), key)
                     } catch (e: Exception) {
@@ -55,7 +56,10 @@ class MainActivityViewModel @Inject constructor(
                             it[ApiConfigKey] = string
                         }
                     }
+                    _getApiKeyError.value = false
                 }
+            } else {
+                _getApiKeyError.value = true
             }
         }
     }
