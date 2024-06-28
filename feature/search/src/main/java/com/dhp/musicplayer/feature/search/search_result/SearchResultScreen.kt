@@ -21,7 +21,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -47,6 +50,7 @@ import com.dhp.musicplayer.core.ui.extensions.getSubTitleMusic
 import com.dhp.musicplayer.core.ui.extensions.getThumbnail
 import com.dhp.musicplayer.core.ui.extensions.getTitleMusic
 import com.dhp.musicplayer.core.ui.items.SongItem
+import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
 import com.dhp.musicplayer.feature.search.search_by_text.SearchToolbar
 import kotlinx.coroutines.launch
@@ -80,8 +84,15 @@ fun SearchResultScreen(
         navController.popBackStack()
     }
 
-    Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(LocalWindowInsets.current.only(
-        WindowInsetsSides.Bottom))) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(
+                LocalWindowInsets.current.only(
+                    WindowInsetsSides.Bottom
+                )
+            )
+    ) {
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
         SearchToolbar(
             onBackClick = { navController.navigateUp() },
@@ -107,13 +118,10 @@ fun SearchResultScreen(
 
         ChipsRow(
             chips = listOf(
-//                null to stringResource(R.string.filter_all),
                 musicApiService.filterSong to stringResource(R.string.filter_songs),
-//                Config.FILTER_VIDEO to stringResource(R.string.filter_videos),
                 musicApiService.filterAlbum to stringResource(R.string.filter_albums),
                 musicApiService.filterArtist to stringResource(R.string.filter_artists),
                 musicApiService.filterCommunityPlaylist to stringResource(R.string.filter_community_playlists),
-//                Config.FILTER_FEATURED_PLAYLIST to stringResource(R.string.filter_featured_playlists)
             ),
             currentValue = searchFilter,
             onValueUpdate = {
@@ -126,25 +134,68 @@ fun SearchResultScreen(
             },
             modifier = Modifier
         )
-        LazyColumn(state = lazyListState) {
-            items(count = lazyPagingItems.itemCount) { index ->
-                val item = lazyPagingItems[index]
-                item?.let {
-                    SongItem(
-                        id = item.key,
-                        thumbnailUrl = getThumbnail(item),
-                        title = getTitleMusic(item),
-                        subtitle = getSubTitleMusic(item),
-                        duration = getSubTitleMusic(item),
-                        isOffline = false,
-                        bitmap = null,
-                        thumbnailSizeDp = Dimensions.thumbnails.song,
-                        trailingContent = {
-                            when (item) {
-                                is Song -> {
-                                    Box {
-                                        IconButton(
-                                            onClick = {
+        var isCorrectFilter by remember { mutableStateOf(true) }
+        isCorrectFilter = try {
+            when (searchFilter) {
+                musicApiService.filterSong -> (lazyPagingItems[0] as? Song) != null
+                musicApiService.filterAlbum -> (lazyPagingItems[0] as? Album) != null
+                musicApiService.filterArtist -> (lazyPagingItems[0] as? Artist) != null
+                musicApiService.filterCommunityPlaylist -> (lazyPagingItems[0] as? Playlist) != null
+                else -> (lazyPagingItems[0] as? Song) != null
+            }
+        } catch (e: Exception) {
+            true
+        }
+        if (!isCorrectFilter) {
+            viewModel.resetSearchFilter()
+            repeat(7) {
+                SongItemPlaceholder()
+            }
+        } else {
+            LazyColumn(state = lazyListState) {
+                items(count = lazyPagingItems.itemCount) { index ->
+                    val item = lazyPagingItems[index]
+                    item?.let {
+                        SongItem(
+                            id = item.key,
+                            thumbnailUrl = getThumbnail(item),
+                            title = getTitleMusic(item),
+                            subtitle = getSubTitleMusic(item),
+                            duration = getSubTitleMusic(item),
+                            isOffline = false,
+                            bitmap = null,
+                            thumbnailSizeDp = Dimensions.thumbnails.song,
+                            trailingContent = {
+                                when (item) {
+                                    is Song -> {
+                                        Box {
+                                            IconButton(
+                                                onClick = {
+                                                    menuState.show {
+                                                        MediaItemMenu(
+                                                            onDismiss = menuState::dismiss,
+                                                            mediaItem = item.asMediaItem(),
+                                                            onShowMessageAddSuccess = onShowMessage
+                                                        )
+                                                    }
+                                                }
+                                            ) {
+                                                Icon(
+                                                    imageVector = IconApp.MoreVert,
+                                                    contentDescription = null
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    else -> {}
+                                }
+                            },
+                            modifier = Modifier
+                                .combinedClickable(
+                                    onLongClick = {
+                                        when (item) {
+                                            is Song -> {
                                                 menuState.show {
                                                     MediaItemMenu(
                                                         onDismiss = menuState::dismiss,
@@ -153,66 +204,43 @@ fun SearchResultScreen(
                                                     )
                                                 }
                                             }
-                                        ) {
-                                            Icon(
-                                                imageVector = IconApp.MoreVert,
-                                                contentDescription = null
-                                            )
-                                        }
-                                    }
-                                }
 
-                                else -> {}
-                            }
-                        },
-                        modifier = Modifier
-                            .combinedClickable(
-                                onLongClick = {
-                                    when (item) {
-                                        is Song -> {
-                                            menuState.show {
-                                                MediaItemMenu(
-                                                    onDismiss = menuState::dismiss,
-                                                    mediaItem = item.asMediaItem(),
-                                                    onShowMessageAddSuccess = onShowMessage
-                                                )
+                                            else -> {}
+                                        }
+                                    },
+                                    onClick = {
+                                        when (item) {
+                                            is Song -> {
+                                                playerConnection?.stopRadio()
+                                                playerConnection?.forcePlay(item)
+                                                playerConnection?.addRadio(item.radioEndpoint)
+                                            }
+
+                                            is Album -> {
+                                                navigateToAlbumDetail(item.key)
+                                            }
+
+                                            is Playlist -> {
+                                                navigateToPlaylistDetail(item.key)
+
+                                            }
+
+                                            is Artist -> {
+                                                navigateToArtistDetail(item.key)
                                             }
                                         }
-
-                                        else -> {}
                                     }
-                                },
-                                onClick = {
-                                    when (item) {
-                                        is Song -> {
-                                            playerConnection?.stopRadio()
-                                            playerConnection?.forcePlay(item)
-                                            playerConnection?.addRadio(item.radioEndpoint)
-                                        }
-
-                                        is Album -> {
-                                            navigateToAlbumDetail(item.key)
-                                        }
-
-                                        is Playlist -> {
-                                            navigateToPlaylistDetail(item.key)
-
-                                        }
-
-                                        is Artist -> {
-                                            navigateToArtistDetail(item.key)
-                                        }
-                                    }
-                                }
-                            )
-                            .animateItemPlacement(),
+                                )
+                                .animateItemPlacement(),
+                        )
+                    }
+                }
+                item {
+                    HandlePagingStates(
+                        lazyPagingItems = lazyPagingItems,
+                        onErrorInitPage = viewModel::onErrorInitPage,
                     )
                 }
-            }
-            item {
-                HandlePagingStates(lazyPagingItems = lazyPagingItems,
-                    onErrorInitPage = viewModel::onErrorInitPage,
-                )
             }
         }
     }
