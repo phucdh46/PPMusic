@@ -48,10 +48,10 @@ class NetworkMusicRepositoryImpl @Inject constructor(
     override suspend fun player(id: String, idDownload: Boolean): PlayerMedia? {
         val result =
             InnertubeApiService.getInstance(context).player(PlayerBody(videoId = id))?.getOrNull()
-        return if (idDownload) {
+        return if (!idDownload) {
             result?.asExternalModel()
         } else {
-            result?.asExternalDownloadModel(context)
+            result?.asExternalDownloadModel()
         }
     }
 
