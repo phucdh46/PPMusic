@@ -77,11 +77,7 @@ fun SearchResultScreen(
     val menuState = LocalMenuState.current
 
     BackHandler {
-        navController.previousBackStackEntry?.savedStateHandle?.set(
-            ResultNavigationKey.SEARCH_RESULT_KEY,
-            searchQuery
-        )
-        navController.popBackStack()
+        handleBackWithResult(result = searchQuery.orEmpty(), navController = navController)
     }
 
     Column(
@@ -95,24 +91,18 @@ fun SearchResultScreen(
     ) {
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
         SearchToolbar(
-            onBackClick = { navController.navigateUp() },
+            onBackClick = {
+                handleBackWithResult(result = searchQuery.orEmpty(), navController = navController)
+            },
             onSearchQueryChanged = {},
             onSearchTriggered = {},
             searchQuery = searchQuery ?: "",
             onSearchBarClick = {
-                navController.previousBackStackEntry?.savedStateHandle?.set(
-                    ResultNavigationKey.SEARCH_RESULT_KEY,
-                    searchQuery
-                )
-                navController.popBackStack()
+                handleBackWithResult(result = searchQuery.orEmpty(), navController = navController)
             },
             readOnly = true,
             trailingIconClick = {
-                navController.previousBackStackEntry?.savedStateHandle?.set(
-                    ResultNavigationKey.SEARCH_RESULT_KEY,
-                    ""
-                )
-                navController.popBackStack()
+                handleBackWithResult(result = "", navController = navController)
             }
         )
 
@@ -244,4 +234,12 @@ fun SearchResultScreen(
             }
         }
     }
+}
+
+private fun handleBackWithResult(result: String, navController: NavController) {
+    navController.previousBackStackEntry?.savedStateHandle?.set(
+        ResultNavigationKey.SEARCH_RESULT_KEY,
+        result
+    )
+    navController.popBackStack()
 }
