@@ -69,7 +69,7 @@ class DownloadUtil @Inject constructor(
 
         val urlResult = runCatching {
             if (playerResponse?.status == "OK") {
-                playerResponse.url ?: throw PlayableFormatNotFoundException()
+                playerResponse.urlDownload ?: throw PlayableFormatNotFoundException()
 
             } else {
                 throw PlaybackException(
