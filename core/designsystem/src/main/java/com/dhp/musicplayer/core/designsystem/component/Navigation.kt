@@ -16,6 +16,7 @@ fun NavigationBar(
     androidx.compose.material3.NavigationBar(
         modifier = modifier,
         contentColor = NavigationDefaults.navigationContentColor(),
+        containerColor = MaterialTheme.colorScheme.background,
         tonalElevation = 0.dp,
         content = content,
     )
