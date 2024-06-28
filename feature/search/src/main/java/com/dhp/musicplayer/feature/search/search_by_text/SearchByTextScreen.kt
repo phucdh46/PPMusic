@@ -20,15 +20,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -160,14 +158,16 @@ fun SearchSuggestionsList(
                 modifier = Modifier
                     .clickable(onClick = { onItemSuggestionClick(it) })
                     .fillMaxWidth()
-                    .padding(all = 8.dp)
+                    .padding(all = 4.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconButton(onClick = { }) {
-                        Icon(imageVector = IconApp.Search, contentDescription = null)
-                    }
+                    Icon(
+                        imageVector = IconApp.Search,
+                        contentDescription = null,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
 
                     Text(
                         text = it,
@@ -182,7 +182,6 @@ fun SearchSuggestionsList(
                         Icon(imageVector = IconApp.NorthWest, contentDescription = null)
                     }
                 }
-                HorizontalDivider()
             }
         }
     }
@@ -232,7 +231,6 @@ private fun SearchTextField(
     onSearchBarClick: () -> Unit = {},
     trailingIconClick: (() -> Unit)? = null,
 ) {
-
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val onSearchExplicitlyTriggered = {
@@ -249,22 +247,57 @@ private fun SearchTextField(
     }
 
     Box(modifier = Modifier) {
-        TextField(
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant
-            ),
-            readOnly = readOnly,
-            leadingIcon = {
-                Icon(
-                    imageVector = IconApp.Search,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface,
+        Surface(
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            shape = RoundedCornerShape(32.dp),
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .padding(end = 16.dp)
+                .height(TopBarHeight)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                BasicTextField(
+                    value = TextFieldValue(
+                        text = searchQuery,
+                        selection = TextRange(searchQuery.length)
+                    ),
+                    onValueChange = {
+                        if ("\n" !in it.text) onSearchQueryChanged(it.text)
+                    },
+                    interactionSource = source,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .focusRequester(focusRequester)
+                        .onKeyEvent {
+                            if (it.key == Key.Enter) {
+                                onSearchExplicitlyTriggered()
+                                true
+                            } else {
+                                false
+                            }
+                        }
+                        .padding(start = 16.dp)
+                        .testTag("searchTextField"),
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.titleMedium.bold()
+                        .copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                    readOnly = readOnly,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Search,
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            onSearchExplicitlyTriggered()
+                        },
+                    ),
+                    maxLines = 1,
                 )
-            },
-            trailingIcon = {
                 if (searchQuery.isNotEmpty()) {
                     IconButton(
                         onClick = {
@@ -278,41 +311,8 @@ private fun SearchTextField(
                         )
                     }
                 }
-
-            },
-            onValueChange = {
-                if ("\n" !in it.text) onSearchQueryChanged(it.text)
-            },
-            interactionSource = source,
-
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester)
-                .onKeyEvent {
-                    if (it.key == Key.Enter) {
-                        onSearchExplicitlyTriggered()
-                        true
-                    } else {
-                        false
-                    }
-                }
-                .testTag("searchTextField"),
-            shape = RoundedCornerShape(32.dp),
-            value = TextFieldValue(
-                text = searchQuery,
-                selection = TextRange(searchQuery.length)
-            ),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search,
-            ),
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    onSearchExplicitlyTriggered()
-                },
-            ),
-            maxLines = 1,
-            singleLine = true,
-        )
+            }
+        }
     }
     LaunchedEffect(searchQuery) {
         focusRequester.requestFocus()
@@ -341,11 +341,17 @@ fun SearchHistoryList(
                     .fillMaxSize()
             ) {
                 stickyHeader {
-                    Text(
-                        modifier = Modifier.padding(16.dp),
-                        text = "Recent",
-                        style = MaterialTheme.typography.titleMedium.bold()
-                    )
+                    Row(
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.background)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                            text = "Recent",
+                            style = MaterialTheme.typography.titleMedium.bold()
+                        )
+                    }
                 }
                 items(
                     searchHistories,
@@ -355,14 +361,16 @@ fun SearchHistoryList(
                         modifier = Modifier
                             .clickable(onClick = { onItemClick(it.query) })
                             .fillMaxWidth()
-                            .padding(all = 8.dp)
+                            .padding(all = 4.dp)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            IconButton(onClick = { }) {
-                                Icon(imageVector = IconApp.History, contentDescription = null)
-                            }
+                            Icon(
+                                imageVector = IconApp.History,
+                                contentDescription = null,
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
 
                             Text(
                                 text = it.query,
@@ -380,7 +388,6 @@ fun SearchHistoryList(
                                 Icon(imageVector = IconApp.Close, contentDescription = null)
                             }
                         }
-                        HorizontalDivider()
                     }
                 }
             }
