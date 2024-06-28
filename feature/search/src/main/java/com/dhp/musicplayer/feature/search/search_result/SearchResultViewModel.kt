@@ -46,6 +46,10 @@ class SearchResultViewModel @Inject constructor(
         }
     }
 
+    fun resetSearchFilter() {
+        filterMapSearchResult[searchFilter.value] = null
+    }
+
     fun updateSearchFilter(params: String) {
         _searchFilter.value = params
     }
