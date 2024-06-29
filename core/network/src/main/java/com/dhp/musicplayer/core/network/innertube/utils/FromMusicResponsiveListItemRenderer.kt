@@ -30,7 +30,9 @@ fun Innertube.SongItem.Companion.from(
             ?.text
             ?.runs
             ?.getOrNull(0)
-            ?.let(Innertube::Info),
+            ?.let{runs ->
+                Innertube.Info(runs, true)
+            },
         authors = renderer
             .flexColumns
             .getOrNull(1)

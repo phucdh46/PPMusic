@@ -748,9 +748,13 @@ object Innertube {
         val endpoint: T?
     ) {
         @Suppress("UNCHECKED_CAST")
-        constructor(run: Runs.Run) : this(
+        constructor(run: Runs.Run, isSongItem: Boolean = false) : this(
             name = run.text,
-            endpoint = tryOrNull { run.navigationEndpoint?.getEndpoint(run.navigationEndpoint.endpoint) as? T? }
+            endpoint = if (isSongItem) {
+                tryOrNull { run.navigationEndpoint?.getEndpoint(run.navigationEndpoint.endpoint) as? T? }
+            } else {
+                (run.navigationEndpoint?.endpoint as? T?)
+            }
         )
     }
 
