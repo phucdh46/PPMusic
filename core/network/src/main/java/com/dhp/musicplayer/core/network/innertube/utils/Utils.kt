@@ -47,7 +47,7 @@ fun List<Runs.Run>.oddElements() = filterIndexed { index, _ ->
     index % 2 == 0
 }
 
-suspend fun Result<Innertube.PlaylistOrAlbumPage>.completed(context: Context): Result<Innertube.PlaylistOrAlbumPage>? {
+/*suspend fun Result<Innertube.PlaylistOrAlbumPage>.completed(context: Context): Result<Innertube.PlaylistOrAlbumPage>? {
     var playlistPage = getOrNull() ?: return null
 
     while (playlistPage.songsPage?.continuation != null) {
@@ -65,7 +65,7 @@ suspend fun Result<Innertube.PlaylistOrAlbumPage>.completed(context: Context): R
     }
 
     return Result.success(playlistPage)
-}
+}*/
 
 infix operator fun <T : Innertube.Item> Innertube.ItemsPage<T>?.plus(other: Innertube.ItemsPage<T>) =
     other.copy(

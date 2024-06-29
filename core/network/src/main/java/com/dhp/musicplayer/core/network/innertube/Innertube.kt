@@ -3,6 +3,7 @@ package com.dhp.musicplayer.core.network.innertube
 import android.annotation.SuppressLint
 import android.util.Log
 import com.dhp.musicplayer.core.common.utils.Logg
+import com.dhp.musicplayer.core.common.utils.tryOrNull
 import com.dhp.musicplayer.core.network.innertube.model.BrowseResult
 import com.dhp.musicplayer.core.network.innertube.model.Context
 import com.dhp.musicplayer.core.network.innertube.model.Context.Companion.clientDefaultAndroid
@@ -24,10 +25,12 @@ import com.dhp.musicplayer.core.network.innertube.model.bodies.PlayerBody
 import com.dhp.musicplayer.core.network.innertube.model.bodies.SearchBody
 import com.dhp.musicplayer.core.network.innertube.model.bodies.SearchSuggestionsBody
 import com.dhp.musicplayer.core.network.innertube.model.bodies.runCatchingNonCancellable
+import com.dhp.musicplayer.core.network.innertube.model.response.AlbumResponse
 import com.dhp.musicplayer.core.network.innertube.model.response.BrowseResponse
 import com.dhp.musicplayer.core.network.innertube.model.response.ContinuationResponse
 import com.dhp.musicplayer.core.network.innertube.model.response.NextResponse
 import com.dhp.musicplayer.core.network.innertube.model.response.PlayerResponse
+import com.dhp.musicplayer.core.network.innertube.model.response.PlaylistResponse
 import com.dhp.musicplayer.core.network.innertube.model.response.SearchResponse
 import com.dhp.musicplayer.core.network.innertube.model.response.SearchSuggestionsResponse
 import com.dhp.musicplayer.core.network.innertube.utils.findSectionByStrapline
@@ -49,7 +52,6 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.ByteReadChannel
@@ -261,125 +263,83 @@ class InnertubeApiService(val context: android.content.Context) {
         }
     }
 
-    suspend fun albumPage(body: BrowseBody): Result<Innertube.PlaylistOrAlbumPage>? {
-        return playlistPage(body.copy(
-            context = Context(client = clientDefaultWeb.copy(visitorData = config.visitorData))
-        ))?.map { album ->
-            album.url?.let { Url(it).parameters["list"] }?.let { playlistId ->
-                playlistPage(
-                    BrowseBody(browseId = "VL$playlistId").copy(
-                        context = Context(client = clientDefaultWeb.copy(visitorData = config.visitorData))
-                        ))?.getOrNull()?.let { playlist ->
-                    album.copy(songsPage = playlist.songsPage)
-                }
-            } ?: album
-        }?.map { album ->
-            val albumInfo = Innertube.Info(
-                name = album.title,
-                endpoint = NavigationEndpoint.Endpoint.Browse(
-                    browseId = body.browseId,
-                    params = body.params
+    suspend fun albumPage(body: BrowseBody) = runCatchingNonCancellable {
+        val response = client.post(browse) {
+            setBody(
+                body.copy(
+                    context = Context(client = clientDefaultWeb.copy(visitorData = config.visitorData))
                 )
             )
-
-            album.copy(
-                songsPage = album.songsPage?.copy(
-                    items = album.songsPage.items?.map { song ->
-                        song.copy(
-                            authors = song.authors ?: album.authors,
-                            album = albumInfo,
-                            thumbnail = album.thumbnail
-                        )
-                    }
-                )
-            )
-        }
+        }.body<AlbumResponse>()
+        val musicResponsiveHeaderRenderer = response.contents
+            ?.twoColumnBrowseResultsRenderer
+            ?.tabs?.firstOrNull()
+            ?.tabRenderer
+            ?.content
+            ?.sectionListRenderer
+            ?.contents?.firstOrNull()
+            ?.musicResponsiveHeaderRenderer
+        val musicShelfRenderer = response.contents
+            ?.twoColumnBrowseResultsRenderer
+            ?.secondaryContents
+            ?.sectionListRenderer
+            ?.contents?.firstOrNull()
+            ?.musicShelfRenderer
+        val title = musicResponsiveHeaderRenderer?.title?.runs?.firstOrNull()?.text
+        val subTitle = musicResponsiveHeaderRenderer?.secondSubtitle?.text
+        val thumbnail =
+            musicResponsiveHeaderRenderer?.thumbnail?.musicThumbnailRenderer?.thumbnail?.thumbnails?.firstOrNull()?.url
+        val songs = musicShelfRenderer.toSongsPage(thumbnail)
+        Innertube.PlaylistOrAlbumPage(
+            title = title,
+            year = subTitle,
+            url = thumbnail,
+            songsPage = songs,
+        )
     }
 
     suspend fun playlistPage(body: BrowseBody) = runCatchingNonCancellable {
         val response = client.post(browse) {
-            setBody( body.copy(
-                context = Context(client = clientDefaultWeb.copy(visitorData = config.visitorData))
-            ))
-            mask("contents.singleColumnBrowseResultsRenderer.tabs.tabRenderer.content.sectionListRenderer.contents(musicPlaylistShelfRenderer(continuations,contents.$musicResponsiveListItemRendererMask),musicCarouselShelfRenderer.contents.$musicTwoRowItemRendererMask),header.musicDetailHeaderRenderer(title,subtitle,thumbnail),microformat")
-        }.body<BrowseResponse>()
-
-        val musicDetailHeaderRenderer = response
-            .header
-            ?.musicDetailHeaderRenderer
-
-        val sectionListRendererContents = response
-            .contents
-            ?.singleColumnBrowseResultsRenderer
-            ?.tabs
-            ?.firstOrNull()
-            ?.tabRenderer
-            ?.content
+            setBody(
+                body.copy(
+                    context = Context(client = clientDefaultWeb.copy(visitorData = config.visitorData))
+                )
+            )
+        }.body<PlaylistResponse>()
+        val musicResponsiveHeaderRenderer = response.contents
+            ?.twoColumnBrowseResultsRenderer
+            ?.tabs?.firstOrNull()
+            ?.tabRenderer?.content
             ?.sectionListRenderer
-            ?.contents
-
-        val musicShelfRenderer = sectionListRendererContents
-            ?.firstOrNull()
+            ?.contents?.firstOrNull()
+            ?.musicResponsiveHeaderRenderer
+        val musicShelfRenderer = response.contents
+            ?.twoColumnBrowseResultsRenderer
+            ?.secondaryContents
+            ?.sectionListRenderer
+            ?.contents?.firstOrNull()
             ?.musicShelfRenderer
-
-        val musicCarouselShelfRenderer = sectionListRendererContents
-            ?.getOrNull(1)
-            ?.musicCarouselShelfRenderer
-
+        val title = musicResponsiveHeaderRenderer?.title?.runs?.firstOrNull()?.text
+        val subTitle = musicResponsiveHeaderRenderer?.secondSubtitle?.text
+        val thumbnail =
+            musicResponsiveHeaderRenderer?.thumbnail?.musicThumbnailRenderer?.thumbnail?.thumbnails?.firstOrNull()?.url
+        val songs = musicShelfRenderer.toSongsPage()
         Innertube.PlaylistOrAlbumPage(
-            title = musicDetailHeaderRenderer
-                ?.title
-                ?.text,
-            thumbnail = musicDetailHeaderRenderer
-                ?.thumbnail
-                ?.musicThumbnailRenderer
-                ?.thumbnail
-                ?.thumbnails
-                ?.firstOrNull(),
-            authors = musicDetailHeaderRenderer
-                ?.subtitle
-                ?.splitBySeparator()
-                ?.getOrNull(1)
-                ?.map(Innertube::Info),
-            year = musicDetailHeaderRenderer
-                ?.subtitle
-                ?.splitBySeparator()
-                ?.getOrNull(2)
-                ?.firstOrNull()
-                ?.text,
-            url = response
-                .microformat
-                ?.microformatDataRenderer
-                ?.urlCanonical,
-            songsPage = musicShelfRenderer
-                ?.toSongsPage(),
-            otherVersions = musicCarouselShelfRenderer
-                ?.contents
-                ?.mapNotNull(MusicCarouselShelfRenderer.Content::musicTwoRowItemRenderer)
-                ?.mapNotNull(Innertube.AlbumItem::from)
+            title = title,
+            year = subTitle,
+            url = thumbnail,
+            songsPage = songs,
         )
     }
 
-    suspend fun playlistPage(body: ContinuationBody) = runCatchingNonCancellable {
-        val response = client.post(browse) {
-            setBody( body.copy(
-                context = Context(client = clientDefaultWeb.copy(visitorData = config.visitorData))
-            ))
-            mask("continuationContents.musicPlaylistShelfContinuation(continuations,contents.$musicResponsiveListItemRendererMask)")
-        }.body<ContinuationResponse>()
-
-        response
-            .continuationContents
-            ?.musicShelfContinuation
-            ?.toSongsPage()
-    }
-
-    private fun MusicShelfRenderer?.toSongsPage() =
+    private fun MusicShelfRenderer?.toSongsPage(thumbnail: String? = null) =
         Innertube.ItemsPage(
             items = this
                 ?.contents
                 ?.mapNotNull(MusicShelfRenderer.Content::musicResponsiveListItemRenderer)
-                ?.mapNotNull(Innertube.SongItem::from),
+                ?.mapNotNull{
+                    Innertube.SongItem.from(it, thumbnail)
+                },
             continuation = this
                 ?.continuations
                 ?.firstOrNull()
@@ -790,7 +750,7 @@ object Innertube {
         @Suppress("UNCHECKED_CAST")
         constructor(run: Runs.Run) : this(
             name = run.text,
-            endpoint = run.navigationEndpoint?.endpoint as T?
+            endpoint = tryOrNull { run.navigationEndpoint?.getEndpoint(run.navigationEndpoint.endpoint) as? T? }
         )
     }
 
@@ -872,12 +832,9 @@ object Innertube {
 
     data class PlaylistOrAlbumPage(
         val title: String?,
-        val authors: List<Info<NavigationEndpoint.Endpoint.Browse>>?,
         val year: String?,
-        val thumbnail: Thumbnail?,
         val url: String?,
         val songsPage: ItemsPage<SongItem>?,
-        val otherVersions: List<AlbumItem>?
     )
 
     data class ItemsPage<T : Item>(

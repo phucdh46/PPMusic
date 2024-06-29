@@ -15,6 +15,15 @@ data class NavigationEndpoint(
             ?: browseEndpoint
             ?: searchEndpoint
 
+    fun getEndpoint(endpoint: Endpoint?): Endpoint? {
+        return when (endpoint) {
+            is Endpoint.Watch -> watchEndpoint
+            is Endpoint.Browse -> watchPlaylistEndpoint
+            is Endpoint.Search -> browseEndpoint
+            is Endpoint.WatchPlaylist -> searchEndpoint
+            else -> null
+        }
+    }
 
     @Serializable
     sealed class Endpoint {
