@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.common.utils.Logg
 import com.dhp.musicplayer.core.domain.repository.NetworkMusicRepository
 import com.dhp.musicplayer.core.model.music.PlaylistDisplay
 import com.dhp.musicplayer.feature.playlist.online.navigation.IS_ALBUM_ARG
@@ -46,7 +47,7 @@ class OnlinePlaylistViewModel @Inject constructor(
                     UiState.Success(
                         PlaylistDisplay(
                             name = result.title.orEmpty(),
-                            thumbnailUrl = result.thumbnail,
+                            thumbnailUrl = result.url,
                             songs = result.songsPage ?: emptyList(),
                             year = result.year
                         )

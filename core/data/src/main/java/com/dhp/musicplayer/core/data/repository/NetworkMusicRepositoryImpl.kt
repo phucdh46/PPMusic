@@ -25,7 +25,6 @@ import com.dhp.musicplayer.core.network.innertube.model.bodies.NextBody
 import com.dhp.musicplayer.core.network.innertube.model.bodies.PlayerBody
 import com.dhp.musicplayer.core.network.innertube.model.bodies.SearchBody
 import com.dhp.musicplayer.core.network.innertube.model.bodies.SearchSuggestionsBody
-import com.dhp.musicplayer.core.network.innertube.utils.completed
 import com.dhp.musicplayer.core.network.innertube.utils.from
 import com.dhp.musicplayer.core.network.innertube.utils.fromSearch
 import com.dhp.musicplayer.core.network.source.ListMusicPagingSource
@@ -57,12 +56,15 @@ class NetworkMusicRepositoryImpl @Inject constructor(
 
     override suspend fun albumPage(browseId: String): PlaylistOrAlbumPage? {
         return InnertubeApiService.getInstance(context).albumPage(BrowseBody(browseId = browseId))
-            ?.completed(context)?.getOrNull()?.asExternalModel()
+            //?.completed(context)
+            ?.getOrNull()?.asExternalModel()
     }
 
     override suspend fun playlistPage(browseId: String): PlaylistOrAlbumPage? {
         return InnertubeApiService.getInstance(context)
-            .playlistPage(BrowseBody(browseId = browseId))?.completed(context)?.getOrNull()
+            .playlistPage(BrowseBody(browseId = browseId))
+//            ?.completed(context)
+            ?.getOrNull()
             ?.asExternalModel()
     }
 

@@ -4,9 +4,24 @@ import com.dhp.musicplayer.core.network.innertube.Innertube
 import com.dhp.musicplayer.core.network.innertube.model.MusicResponsiveListItemRenderer
 import com.dhp.musicplayer.core.network.innertube.model.NavigationEndpoint
 import com.dhp.musicplayer.core.network.innertube.model.Runs
+import com.dhp.musicplayer.core.network.innertube.model.Thumbnail
 
 
-fun Innertube.SongItem.Companion.from(renderer: MusicResponsiveListItemRenderer): Innertube.SongItem? {
+fun Innertube.SongItem.Companion.from(
+    renderer: MusicResponsiveListItemRenderer,
+    thumbnailUrl: String? = null
+): Innertube.SongItem? {
+    val thumbnail = renderer
+        .thumbnail
+        ?.musicThumbnailRenderer
+        ?.thumbnail
+        ?.thumbnails
+        ?.firstOrNull()
+    val result = if (thumbnail == null && thumbnailUrl != null) Thumbnail(
+        url = thumbnailUrl,
+        height = null,
+        width = null
+    ) else thumbnail
     return Innertube.SongItem(
         info = renderer
             .flexColumns
@@ -40,11 +55,6 @@ fun Innertube.SongItem.Companion.from(renderer: MusicResponsiveListItemRenderer)
             ?.runs
             ?.firstOrNull()
             ?.let(Innertube::Info),
-        thumbnail = renderer
-            .thumbnail
-            ?.musicThumbnailRenderer
-            ?.thumbnail
-            ?.thumbnails
-            ?.firstOrNull()
+        thumbnail = result
     ).takeIf { it.info?.endpoint?.videoId != null }
 }
