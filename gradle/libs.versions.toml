@@ -38,7 +38,6 @@ room = "2.6.1"
 kotlinPlugin = "1.8.10"
 androidxCoreSplashscreen = "1.0.1"
 appUpdate = "2.1.0"
-reorderable = "0.9.6"
 pagingCompose = "3.3.0"
 pagingCommonAndroid = "3.3.0"
 appcompat = "1.7.0"
@@ -52,7 +51,6 @@ androidxComposeCompiler =  "1.5.8"
 
 kotlinxCoroutines = "1.7.3"
 androidxComposeConstraintLayout = "1.1.0-alpha12"
-reorderableVersion = "2.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -115,7 +113,6 @@ accompanist-permissions = { group = "com.google.accompanist", name = "accompanis
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashscreen" }
 app-update = { group = "com.google.android.play", name = "app-update", version.ref = "appUpdate" }
 app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "appUpdate" }
-reorderable = { group = "org.burnoutcrew.composereorderable", name = "reorderable", version.ref = "reorderable" }
 paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "pagingCompose" }
 paging-runtime-ktx = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "pagingCommonAndroid" }
 
@@ -127,7 +124,6 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "kotlinxCoroutines" }
 
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "androidxComposeConstraintLayout" }
-sh-reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderableVersion" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

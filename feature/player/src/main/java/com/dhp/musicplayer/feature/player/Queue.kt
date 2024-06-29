@@ -66,8 +66,9 @@ import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.feature.player.extensions.toOnlineAndLocalSong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import sh.calvin.reorderable.ReorderableItem
-import sh.calvin.reorderable.rememberReorderableLazyListState
+import com.dhp.musicplayer.core.designsystem.reorderable.ReorderableItem
+import com.dhp.musicplayer.core.designsystem.reorderable.ReorderableLazyListState
+import com.dhp.musicplayer.core.designsystem.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun Queue(
@@ -272,7 +273,7 @@ internal fun QueueCurrentItemSection(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun QueueListSection(
-    state: sh.calvin.reorderable.ReorderableLazyListState,
+    state: ReorderableLazyListState,
     lazyListState: LazyListState,
     queue: SnapshotStateList<Pair<Song, Bitmap?>>,
     currentMediaIndex: Int,
