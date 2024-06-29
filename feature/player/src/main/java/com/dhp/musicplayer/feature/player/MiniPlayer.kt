@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -47,6 +50,7 @@ import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.common.utils.Logg
 import com.dhp.musicplayer.core.designsystem.component.DebouncedIconButton
 import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImage
+import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImageMaxSize
 import com.dhp.musicplayer.core.designsystem.constant.MiniPlayerHeight
 import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
@@ -164,19 +168,24 @@ private fun RowScope.MiniPlayerContent(
             .padding(horizontal = 8.dp),
     ) {
         val size = maxHeight - 12.dp
-        if (song?.isOffline == true) {
-            Image(
-                bitmap = (song.getBitmap(LocalContext.current)
-                    ?: drawableToBitmap(LocalContext.current)).asImageBitmap(),
-                contentDescription = null,
-                modifier = Modifier.padding(8.dp)
-            )
-        } else {
-            LoadingShimmerImage(
-                thumbnailSizeDp = size,
-                thumbnailUrl = song?.thumbnailUrl?.thumbnail(size.px),
-                modifier = Modifier.size(48.dp)
-            )
+        Card(
+            modifier = Modifier.size(size),
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            if (song?.isOffline == true) {
+                Image(
+                    bitmap = (song.getBitmap(LocalContext.current)
+                        ?: drawableToBitmap(LocalContext.current)).asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier.padding(8.dp)
+                )
+            } else {
+                LoadingShimmerImageMaxSize(
+                    thumbnailUrl = song?.thumbnailUrl?.thumbnail(size.px),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(size)
+                )
+            }
         }
 
         if (!coverOnly && song != null) MiniPlayerPager(song = song) { song, _, pagerMod ->

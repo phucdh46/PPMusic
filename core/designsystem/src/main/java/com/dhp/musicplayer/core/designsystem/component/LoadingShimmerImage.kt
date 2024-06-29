@@ -112,6 +112,5 @@ fun ImageNotLoading(
             .build(),
         error = painterResource(id = R.drawable.logo_grayscale),
         contentDescription = null,
-        contentScale = ContentScale.Crop,
     )
 }
