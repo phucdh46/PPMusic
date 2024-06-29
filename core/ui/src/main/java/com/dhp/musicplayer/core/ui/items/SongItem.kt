@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.typography
@@ -27,6 +29,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
+import com.dhp.musicplayer.core.common.extensions.joinByBullet
 import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImageMaxSize
 import com.dhp.musicplayer.core.model.music.Song
@@ -47,7 +50,10 @@ fun SongItem(
         id = song.id,
         thumbnailUrl = song.thumbnailUrl?.thumbnail(thumbnailSizePx),
         title = song.title,
-        subtitle = song.artistsText,
+        subtitle = joinByBullet(
+            song.artistsText,
+            song.durationText
+        ),
         duration = song.durationText,
         isOffline = song.isOffline,
         bitmap = bitmap,
@@ -81,18 +87,23 @@ fun SongItem(
         duration = duration,
         thumbnailSizeDp = thumbnailSizeDp,
         thumbnailContent = {
-            if (bitmap != null) {
-                Image(
-                    bitmap = bitmap.asImageBitmap(),
-                    contentDescription = null
-                )
-            } else {
-                LoadingShimmerImageMaxSize(
-                    thumbnailUrl = thumbnailUrl,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
+            Card(
+                modifier = Modifier.size(thumbnailSizeDp),
+                shape = RoundedCornerShape(8.dp),
+            ) {
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = null
+                    )
+                } else {
+                    LoadingShimmerImageMaxSize(
+                        thumbnailUrl = thumbnailUrl,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(thumbnailSizeDp)
+                    )
+                }
             }
             onThumbnailContent?.invoke(this)
         },
