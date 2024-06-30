@@ -1,5 +1,6 @@
 package com.dhp.musicplayer.core.network.di
 
+import com.dhp.musicplayer.core.network.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,15 +30,13 @@ annotation class KuGouHttpClient
 @Module
 @InstallIn(SingletonComponent::class)
 class NetworkModules {
-    //    private val BASE_URL = "https://ktor-sample-production-6f10.up.railway.app/"
-    private val BASE_HOST = "ktor-sample-production-6f10.up.railway.app"
+    private val baseUrl = BuildConfig.API_BASE_URL
 
     @Singleton
     @Provides
     @AppHttpClient
     fun providesHttpClient() = HttpClient(OkHttp) {
         BrowserUserAgent()
-
         expectSuccess = true
 
         install(ContentNegotiation) {
@@ -50,7 +49,7 @@ class NetworkModules {
         }
 
         defaultRequest {
-            url(scheme = "https", host = BASE_HOST) {
+            url(scheme = "https", host = baseUrl) {
                 contentType(ContentType.Application.Json)
             }
         }
@@ -86,5 +85,4 @@ class NetworkModules {
             url("https://krcs.kugou.com")
         }
     }
-
 }
