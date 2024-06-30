@@ -201,59 +201,61 @@ fun LocalPlaylistDetailScreen(
         )
     }
 
-    SongListDetailScreen(
-        title = playlistWithSongs.playlist.name,
-        subTitle = pluralStringResource(
-            R.plurals.n_song,
-            playlistWithSongs.songs.size,
-            playlistWithSongs.songs.size
-        ),
-        songs = playlistWithSongs.songs,
-        onBackButton = onBackClick,
-        onMenuClick = {
-            menuState.show {
-                PlaylistMenu(
-                    onDismiss = menuState::dismiss,
-                    onEditPlaylist = { isRenaming = true },
-                    onDeletePlaylist = { isDeleting = true }
-                )
-            }
-        },
-        onLongClick = { index, song ->
-            menuState.show {
-                MediaItemMenu(
-                    onDismiss = menuState::dismiss,
-                    mediaItem = song.asMediaItem(),
-                    onRemoveSongFromPlaylist = { onRemoveFromPlaylist(index, song) },
-                    onShowMessageAddSuccess = onShowMessage
-                )
-            }
-        },
-        trailingContent = { index, song ->
-            Box {
-                IconButton(
-                    onClick = {
-                        menuState.show {
-                            MediaItemMenu(
-                                onDismiss = menuState::dismiss,
-                                mediaItem = song.asMediaItem(),
-                                onRemoveSongFromPlaylist = { onRemoveFromPlaylist(index, song) },
-                                onShowMessageAddSuccess = onShowMessage
-                            )
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = IconApp.MoreVert,
-                        contentDescription = null
+    BoxWithConstraints {
+        SongListDetailScreen(
+            title = playlistWithSongs.playlist.name,
+            subTitle = pluralStringResource(
+                R.plurals.n_song,
+                playlistWithSongs.songs.size,
+                playlistWithSongs.songs.size
+            ),
+            songs = playlistWithSongs.songs,
+            onBackButton = onBackClick,
+            onMenuClick = {
+                menuState.show {
+                    PlaylistMenu(
+                        onDismiss = menuState::dismiss,
+                        onEditPlaylist = { isRenaming = true },
+                        onDeletePlaylist = { isDeleting = true }
                     )
                 }
+            },
+            onLongClick = { index, song ->
+                menuState.show {
+                    MediaItemMenu(
+                        onDismiss = menuState::dismiss,
+                        mediaItem = song.asMediaItem(),
+                        onRemoveSongFromPlaylist = { onRemoveFromPlaylist(index, song) },
+                        onShowMessageAddSuccess = onShowMessage
+                    )
+                }
+            },
+            trailingContent = { index, song ->
+                Box {
+                    IconButton(
+                        onClick = {
+                            menuState.show {
+                                MediaItemMenu(
+                                    onDismiss = menuState::dismiss,
+                                    mediaItem = song.asMediaItem(),
+                                    onRemoveSongFromPlaylist = { onRemoveFromPlaylist(index, song) },
+                                    onShowMessageAddSuccess = onShowMessage
+                                )
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = IconApp.MoreVert,
+                            contentDescription = null
+                        )
+                    }
+                }
+            },
+            imageCoverLarge = {
+                CoverImagePlaylist(playlistWithSongs = playlistWithSongs, size = maxWidth)
             }
-        },
-        imageCoverLarge = {
-            CoverImagePlaylist(playlistWithSongs = playlistWithSongs, size = it)
-        }
-    )
+        )
+    }
 }
 
 @SuppressLint("FlowOperatorInvokedInComposition")
@@ -268,7 +270,7 @@ fun SongListDetailScreen(
     onMenuClick: (() -> Unit)? = null,
     onLongClick: (index: Int, song: Song) -> Unit,
     trailingContent: @Composable() ((index: Int, song: Song) -> Unit)? = null,
-    imageCoverLarge: @Composable (BoxWithConstraintsScope.(size: Dp) -> Unit)? = null
+    imageCoverLarge: @Composable (() -> Unit)? = null
 ) {
     val playerConnection = LocalPlayerConnection.current
     val lazyListState = rememberLazyListState()
@@ -368,7 +370,7 @@ private fun AlbumArtworkSection(
     url: String?,
     alpha: Float,
     color: Color,
-    imageCoverLarge: @Composable (BoxWithConstraintsScope.(size: Dp) -> Unit)? = null
+    imageCoverLarge: @Composable (() -> Unit)? = null
 ) {
     val titleStyle = typography.headlineSmall
     val summaryStyle = typography.bodyMedium

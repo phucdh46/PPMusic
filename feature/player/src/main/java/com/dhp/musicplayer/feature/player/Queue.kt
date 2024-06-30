@@ -33,11 +33,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -53,49 +50,33 @@ import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.dhp.musicplayer.core.common.extensions.move
-import com.dhp.musicplayer.core.common.extensions.toSongsWithBitmap
 import com.dhp.musicplayer.core.designsystem.R
-import com.dhp.musicplayer.core.designsystem.component.Artwork
 import com.dhp.musicplayer.core.designsystem.animation.LoadingFiveLinesCenter
+import com.dhp.musicplayer.core.designsystem.component.Artwork
 import com.dhp.musicplayer.core.designsystem.extensions.marquee
+import com.dhp.musicplayer.core.designsystem.reorderable.ReorderableItem
+import com.dhp.musicplayer.core.designsystem.reorderable.ReorderableLazyListState
+import com.dhp.musicplayer.core.designsystem.reorderable.rememberReorderableLazyListState
 import com.dhp.musicplayer.core.designsystem.theme.bold
 import com.dhp.musicplayer.core.designsystem.theme.center
 import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.services.extensions.toSong
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
-import com.dhp.musicplayer.feature.player.extensions.toOnlineAndLocalSong
+import com.dhp.musicplayer.core.ui.extensions.getBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.dhp.musicplayer.core.designsystem.reorderable.ReorderableItem
-import com.dhp.musicplayer.core.designsystem.reorderable.ReorderableLazyListState
-import com.dhp.musicplayer.core.designsystem.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun Queue(
     modifier: Modifier = Modifier,
     onClickDismiss: () -> Unit,
+    songsWithBitmaps: SnapshotStateList<Pair<Song, Bitmap?>>
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isPlaying.collectAsState()
     val scope = rememberCoroutineScope()
     val currentMediaIndex by playerConnection.currentMediaItemIndex.collectAsState()
     val currentMediaItem by playerConnection.currentMediaItem.collectAsState()
-
-    val windows by playerConnection.currentTimelineWindows.collectAsState()
-
-    val songsWithBitmaps = remember { mutableStateListOf<Pair<Song, Bitmap?>>() }
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        launch(Dispatchers.IO) {
-            songsWithBitmaps.apply {
-                clear()
-                val temp =
-                    windows.map { it.mediaItem.toOnlineAndLocalSong(context) }.toSongsWithBitmap()
-                addAll(temp)
-            }
-        }
-    }
-
     val lazyListState = rememberLazyListState()
     val reorderItemState = rememberReorderItemState { fromIndex, toIndex ->
         playerConnection.player.moveMediaItem(
@@ -207,7 +188,10 @@ internal fun QueueCurrentItemSection(
             .clickable { onClickHolder.invoke() },
     ) {
         val (artwork, title, artist, icon) = createRefs()
-
+        val context = LocalContext.current
+        val bitmap = if (song.isOffline) {
+            song.getBitmap(context)
+        } else null
         Card(
             modifier = Modifier
                 .size(56.dp)
@@ -221,6 +205,7 @@ internal fun QueueCurrentItemSection(
             Artwork(
                 modifier = Modifier.fillMaxSize(),
                 url = song.thumbnailUrl,
+                bitmap = bitmap
             )
         }
 

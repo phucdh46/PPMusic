@@ -8,14 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
-import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
-import coil.request.ImageRequest
 import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.extensions.shimmer
 
@@ -97,20 +94,4 @@ fun LoadingShimmerImageMaxSize(
             }
         }
     }
-}
-
-@Composable
-fun ImageNotLoading(
-    modifier: Modifier = Modifier,
-    url: String?
-) {
-    AsyncImage(
-        modifier = modifier,
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(url)
-            .crossfade(true)
-            .build(),
-        error = painterResource(id = R.drawable.logo_grayscale),
-        contentDescription = null,
-    )
 }

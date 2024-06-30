@@ -1,8 +1,6 @@
 package com.dhp.musicplayer.core.ui.common
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,28 +21,35 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.designsystem.component.Artwork
+import com.dhp.musicplayer.core.designsystem.constant.Dimensions
+import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.model.music.Song
+import com.dhp.musicplayer.core.ui.extensions.drawableToBitmap
+import com.dhp.musicplayer.core.ui.extensions.getBitmap
 import kotlin.math.absoluteValue
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HorizontalPagerThumbnail(
     songs: List<Song>,
     index: Int,
     onSwipeArtwork: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    imageCoverLarge: @Composable (BoxWithConstraintsScope.(size: Dp) -> Unit)? = null
 ) {
+    val context = LocalContext.current
     val dummyPagerCount = songs.size + 2
 //    val dummyPagerCount = songs.size
     val pagerState = rememberPagerState(initialPage = index + 1) { dummyPagerCount }
 //    val pagerState = rememberPagerState(initialPage = index ) { dummyPagerCount }
     var lastPlayedIndex by remember { mutableIntStateOf(index) }
-
+    val (thumbnailSizeDp, thumbnailSizePx) = Dimensions.thumbnails.player.song.let {
+        it to (it - 16.dp).px
+    }
     LaunchedEffect(index) {
         snapshotFlow { index }.collect {
             lastPlayedIndex = it
@@ -132,8 +137,10 @@ fun HorizontalPagerThumbnail(
             Box(Modifier.fillMaxSize()) {
                 Artwork(
                     modifier = Modifier.fillMaxWidth(),
-                    url = song?.thumbnailUrl,
-                    imageCoverLarge = imageCoverLarge
+                    url = song?.thumbnailUrl?.thumbnail(thumbnailSizePx),
+                    contentScale = ContentScale.Fit,
+                    bitmap = if (song?.isOffline == true) song.getBitmap(context)
+                        ?: drawableToBitmap(context) else null,
                 )
             }
         }
