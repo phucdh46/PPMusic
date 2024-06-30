@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,9 +30,10 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import com.dhp.musicplayer.core.common.extensions.joinByBullet
 import com.dhp.musicplayer.core.common.extensions.thumbnail
-import com.dhp.musicplayer.core.designsystem.component.LoadingShimmerImageMaxSize
-import com.dhp.musicplayer.core.model.music.Song
+import com.dhp.musicplayer.core.designsystem.component.ImageSongItem
+import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.model.music.Song
 import com.dhp.musicplayer.core.ui.LocalDownloadUtil
 
 @Composable
@@ -68,6 +68,7 @@ fun SongItem(
 @OptIn(UnstableApi::class)
 @Composable
 fun SongItem(
+    modifier: Modifier = Modifier,
     id: String,
     thumbnailUrl: String?,
     title: String?,
@@ -76,7 +77,6 @@ fun SongItem(
     isOffline: Boolean,
     bitmap: Bitmap? = null,
     thumbnailSizeDp: Dp,
-    modifier: Modifier = Modifier,
     onThumbnailContent: (@Composable BoxScope.() -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
 ) {
@@ -94,11 +94,13 @@ fun SongItem(
                 if (bitmap != null) {
                     Image(
                         bitmap = bitmap.asImageBitmap(),
-                        contentDescription = null
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(thumbnailSizeDp)
                     )
                 } else {
-                    LoadingShimmerImageMaxSize(
-                        thumbnailUrl = thumbnailUrl,
+                    ImageSongItem(
+                        thumbnailUrl = thumbnailUrl.thumbnail(thumbnailSizeDp.px),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(thumbnailSizeDp)
