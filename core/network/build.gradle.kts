@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.dhp.android.library)
     alias(libs.plugins.dhp.android.hilt)
@@ -6,6 +8,19 @@ plugins {
 
 android {
     namespace = "com.dhp.musicplayer.core.network"
+    defaultConfig {
+        //load the values from .properties file
+        val keystoreFile = project.rootProject.file("local.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+
+        //return empty key in case something goes wrong
+        val apiKey = properties.getProperty("API_BASE_URL") ?: ""
+        buildConfigField("String", "API_BASE_URL", apiKey)
+    }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
