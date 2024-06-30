@@ -52,6 +52,7 @@ data class TabRenderers(
                         @SerialName("title") val title: Runs?,
                         @SerialName("subtitle") val subtitle: Runs?,
                         @SerialName("secondSubtitle") val secondSubtitle: Runs?,
+                        @SerialName("straplineTextOne") val straplineTextOne: Runs?,
                         @SerialName("thumbnail") val thumbnail: ThumbnailRenderer?,
                     )
                 }

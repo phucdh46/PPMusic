@@ -53,7 +53,7 @@ fun getTitleMusic(item: Music): String {
 fun getSubTitleMusic(item: Music): String {
     return when (item) {
         is Song -> joinByBullet(item.artistsText, item.durationText)
-        is Album -> item.year.orEmpty()
+        is Album -> joinByBullet(item.authorsText, item.year)
         is Playlist -> item.channelName.orEmpty()
         is Artist -> item.subscribersCountText.orEmpty()
     }

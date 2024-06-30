@@ -9,7 +9,8 @@ import com.dhp.musicplayer.core.network.innertube.model.Thumbnail
 
 fun Innertube.SongItem.Companion.from(
     renderer: MusicResponsiveListItemRenderer,
-    thumbnailUrl: String? = null
+    thumbnailUrl: String? = null,
+    authorRuns: List<Runs.Run>? = null,
 ): Innertube.SongItem? {
     val thumbnail = renderer
         .thumbnail
@@ -22,6 +23,20 @@ fun Innertube.SongItem.Companion.from(
         height = null,
         width = null
     ) else thumbnail
+
+    val author = renderer
+        .flexColumns
+        .getOrNull(1)
+        ?.musicResponsiveListItemFlexColumnRenderer
+        ?.text
+        ?.runs
+        ?.map<Runs.Run, Innertube.Info<NavigationEndpoint.Endpoint.Browse>>(Innertube::Info)
+        ?.takeIf(List<Any>::isNotEmpty)
+
+    val authorText = author
+        ?: authorRuns?.map<Runs.Run, Innertube.Info<NavigationEndpoint.Endpoint.Browse>>(Innertube::Info)
+            ?.takeIf(List<Any>::isNotEmpty)
+
     return Innertube.SongItem(
         info = renderer
             .flexColumns
@@ -33,14 +48,7 @@ fun Innertube.SongItem.Companion.from(
             ?.let{runs ->
                 Innertube.Info(runs, true)
             },
-        authors = renderer
-            .flexColumns
-            .getOrNull(1)
-            ?.musicResponsiveListItemFlexColumnRenderer
-            ?.text
-            ?.runs
-            ?.map<Runs.Run, Innertube.Info<NavigationEndpoint.Endpoint.Browse>>(Innertube::Info)
-            ?.takeIf(List<Any>::isNotEmpty),
+        authors = authorText,
         durationText = renderer
             .fixedColumns
             ?.getOrNull(0)
