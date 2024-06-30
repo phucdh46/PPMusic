@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.thumbnail
+import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.Artwork
 import com.dhp.musicplayer.core.designsystem.component.TextTitle
 import com.dhp.musicplayer.core.designsystem.component.TopAppBarDetailScreen
@@ -61,6 +62,7 @@ import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.designsystem.extensions.marquee
 import com.dhp.musicplayer.core.designsystem.extensions.shimmer
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.designsystem.theme.bold
 import com.dhp.musicplayer.core.model.music.Album
 import com.dhp.musicplayer.core.model.music.ArtistPage
 import com.dhp.musicplayer.core.services.extensions.asMediaItem
@@ -73,7 +75,6 @@ import com.dhp.musicplayer.core.ui.items.AlbumItem
 import com.dhp.musicplayer.core.ui.items.SongItem
 import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
 import com.dhp.musicplayer.core.ui.items.TextPlaceholder
-import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,9 +95,6 @@ fun ArtistDetailScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        TopAppBarDetailScreen(
-            onBackClick = onBackClick,
-        )
         val maxWidth = maxWidth
         when (uiState) {
             is UiState.Loading -> {
@@ -137,8 +135,11 @@ fun ArtistDetailScreen(
             is UiState.Error -> {
                 ErrorScreen(onRetry = {})
             }
-
         }
+        TopAppBarDetailScreen(
+            onBackClick = onBackClick,
+            backgroundColor = Color.Transparent
+        )
     }
 }
 
@@ -367,7 +368,7 @@ fun ArtistDetailScreen(
             title = {
                 Text(
                     text = artistPage.name.orEmpty(),
-                    style = typography.titleLarge,
+                    style = typography.titleMedium.bold(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
@@ -400,7 +401,7 @@ private fun ArtistArtworkSection(
     alpha: Float,
     color: Color,
 ) {
-    val titleStyle = typography.headlineSmall
+    val titleStyle = typography.headlineSmall.bold()
     val summaryStyle = typography.bodyMedium
     val playerConnection = LocalPlayerConnection.current
 

@@ -21,6 +21,7 @@ import com.dhp.musicplayer.core.common.extensions.toEnum
 import com.dhp.musicplayer.core.common.utils.Logg
 import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.TopAppBarDetailScreen
+import com.dhp.musicplayer.core.designsystem.theme.bold
 import com.dhp.musicplayer.core.model.settings.LibrarySongsDetailType
 import com.dhp.musicplayer.feature.library.songs.device_songs.DeviceSongsScreen
 import com.dhp.musicplayer.feature.library.songs.downloaded.DownloadSongsScreen
@@ -69,7 +70,7 @@ fun LibrarySongsDetailScreen(
             title = {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium.bold(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
