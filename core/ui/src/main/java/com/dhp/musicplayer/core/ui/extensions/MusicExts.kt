@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Size
+import com.dhp.musicplayer.core.common.extensions.joinByBullet
 import com.dhp.musicplayer.core.model.music.Album
 import com.dhp.musicplayer.core.model.music.Artist
 import com.dhp.musicplayer.core.model.music.Music
@@ -49,10 +50,9 @@ fun getTitleMusic(item: Music): String {
     }
 }
 
-
 fun getSubTitleMusic(item: Music): String {
     return when (item) {
-        is Song -> item.artistsText.orEmpty()
+        is Song -> joinByBullet(item.artistsText, item.durationText)
         is Album -> item.year.orEmpty()
         is Playlist -> item.channelName.orEmpty()
         is Artist -> item.subscribersCountText.orEmpty()

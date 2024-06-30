@@ -53,3 +53,8 @@ fun calculatorPercentCache(usedCache: Long, totalCache: Long): Long {
     return if (usedCache == 0L || totalCache == 0L) 0
     else max(1, usedCache * 100 / totalCache)
 }
+
+fun joinByBullet(vararg str: String?) =
+    str.filterNot {
+        it.isNullOrEmpty()
+    }.joinToString(separator = " • ")
