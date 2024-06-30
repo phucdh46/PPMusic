@@ -287,9 +287,11 @@ class InnertubeApiService(val context: android.content.Context) {
             ?.musicShelfRenderer
         val title = musicResponsiveHeaderRenderer?.title?.runs?.firstOrNull()?.text
         val subTitle = musicResponsiveHeaderRenderer?.secondSubtitle?.text
+        val authorRuns = musicResponsiveHeaderRenderer?.straplineTextOne?.runs
+
         val thumbnail =
             musicResponsiveHeaderRenderer?.thumbnail?.musicThumbnailRenderer?.thumbnail?.thumbnails?.firstOrNull()?.url
-        val songs = musicShelfRenderer.toSongsPage(thumbnail)
+        val songs = musicShelfRenderer.toSongsPage(thumbnail, authorRuns)
         Innertube.PlaylistOrAlbumPage(
             title = title,
             year = subTitle,
@@ -332,13 +334,13 @@ class InnertubeApiService(val context: android.content.Context) {
         )
     }
 
-    private fun MusicShelfRenderer?.toSongsPage(thumbnail: String? = null) =
+    private fun MusicShelfRenderer?.toSongsPage(thumbnail: String? = null, authorRuns: List<Runs.Run>? = null) =
         Innertube.ItemsPage(
             items = this
                 ?.contents
                 ?.mapNotNull(MusicShelfRenderer.Content::musicResponsiveListItemRenderer)
                 ?.mapNotNull{
-                    Innertube.SongItem.from(it, thumbnail)
+                    Innertube.SongItem.from(it, thumbnail, authorRuns)
                 },
             continuation = this
                 ?.continuations
