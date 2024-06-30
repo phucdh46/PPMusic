@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -21,10 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -45,12 +43,12 @@ import com.dhp.musicplayer.core.services.extensions.asMediaItem
 import com.dhp.musicplayer.core.ui.LocalMenuState
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
+import com.dhp.musicplayer.core.ui.common.ErrorScreen
 import com.dhp.musicplayer.core.ui.common.HandlePagingStates
 import com.dhp.musicplayer.core.ui.extensions.getSubTitleMusic
 import com.dhp.musicplayer.core.ui.extensions.getThumbnail
 import com.dhp.musicplayer.core.ui.extensions.getTitleMusic
 import com.dhp.musicplayer.core.ui.items.SongItem
-import com.dhp.musicplayer.core.ui.items.SongItemPlaceholder
 import com.dhp.musicplayer.feature.menu.MediaItemMenu
 import com.dhp.musicplayer.feature.search.search_by_text.SearchToolbar
 import kotlinx.coroutines.launch
@@ -67,7 +65,7 @@ fun SearchResultScreen(
 ) {
     val lazyListState = rememberLazyListState()
 
-    val lazyPagingItems = viewModel.pagingData.collectAsLazyPagingItems()
+    val paramMapPagingData by viewModel.paramMapPagingData.collectAsState(null)
     val searchQuery by viewModel.query.collectAsState()
 
     val playerConnection = LocalPlayerConnection.current
@@ -75,6 +73,7 @@ fun SearchResultScreen(
     val coroutineScope = rememberCoroutineScope()
     val musicApiService = InnertubeApiService.getInstance(LocalContext.current)
     val menuState = LocalMenuState.current
+    val lazyPagingItems = paramMapPagingData?.get(searchFilter)?.collectAsLazyPagingItems()
 
     BackHandler {
         handleBackWithResult(result = searchQuery.orEmpty(), navController = navController)
@@ -124,43 +123,57 @@ fun SearchResultScreen(
             },
             modifier = Modifier
         )
-        var isCorrectFilter by remember { mutableStateOf(true) }
-        isCorrectFilter = try {
-            when (searchFilter) {
-                musicApiService.filterSong -> (lazyPagingItems[0] as? Song) != null
-                musicApiService.filterAlbum -> (lazyPagingItems[0] as? Album) != null
-                musicApiService.filterArtist -> (lazyPagingItems[0] as? Artist) != null
-                musicApiService.filterCommunityPlaylist -> (lazyPagingItems[0] as? Playlist) != null
-                else -> (lazyPagingItems[0] as? Song) != null
-            }
-        } catch (e: Exception) {
-            true
-        }
-        if (!isCorrectFilter) {
-            viewModel.resetSearchFilter()
-            repeat(7) {
-                SongItemPlaceholder()
-            }
-        } else {
-            LazyColumn(state = lazyListState) {
-                items(count = lazyPagingItems.itemCount) { index ->
-                    val item = lazyPagingItems[index]
-                    item?.let {
-                        SongItem(
-                            id = item.key,
-                            thumbnailUrl = getThumbnail(item),
-                            title = getTitleMusic(item),
-                            subtitle = getSubTitleMusic(item),
-                            duration = getSubTitleMusic(item),
-                            isOffline = false,
-                            bitmap = null,
-                            thumbnailSizeDp = Dimensions.thumbnails.song,
-                            trailingContent = {
-                                when (item) {
-                                    is Song -> {
-                                        Box {
-                                            IconButton(
-                                                onClick = {
+
+        BoxWithConstraints {
+            if (lazyPagingItems == null) {
+                ErrorScreen(onRetry = {
+                    viewModel.fetchPagingData()
+                })
+            } else {
+                LazyColumn(state = lazyListState) {
+                    items(count = lazyPagingItems.itemCount) { index ->
+                        val item = lazyPagingItems[index]
+                        item?.let {
+                            SongItem(
+                                id = item.key,
+                                thumbnailUrl = getThumbnail(item),
+                                title = getTitleMusic(item),
+                                subtitle = getSubTitleMusic(item),
+                                duration = getSubTitleMusic(item),
+                                isOffline = false,
+                                bitmap = null,
+                                thumbnailSizeDp = Dimensions.thumbnails.song,
+                                trailingContent = {
+                                    when (item) {
+                                        is Song -> {
+                                            Box {
+                                                IconButton(
+                                                    onClick = {
+                                                        menuState.show {
+                                                            MediaItemMenu(
+                                                                onDismiss = menuState::dismiss,
+                                                                mediaItem = item.asMediaItem(),
+                                                                onShowMessageAddSuccess = onShowMessage
+                                                            )
+                                                        }
+                                                    }
+                                                ) {
+                                                    Icon(
+                                                        imageVector = IconApp.MoreVert,
+                                                        contentDescription = null
+                                                    )
+                                                }
+                                            }
+                                        }
+
+                                        else -> {}
+                                    }
+                                },
+                                modifier = Modifier
+                                    .combinedClickable(
+                                        onLongClick = {
+                                            when (item) {
+                                                is Song -> {
                                                     menuState.show {
                                                         MediaItemMenu(
                                                             onDismiss = menuState::dismiss,
@@ -169,67 +182,43 @@ fun SearchResultScreen(
                                                         )
                                                     }
                                                 }
-                                            ) {
-                                                Icon(
-                                                    imageVector = IconApp.MoreVert,
-                                                    contentDescription = null
-                                                )
-                                            }
-                                        }
-                                    }
 
-                                    else -> {}
-                                }
-                            },
-                            modifier = Modifier
-                                .combinedClickable(
-                                    onLongClick = {
-                                        when (item) {
-                                            is Song -> {
-                                                menuState.show {
-                                                    MediaItemMenu(
-                                                        onDismiss = menuState::dismiss,
-                                                        mediaItem = item.asMediaItem(),
-                                                        onShowMessageAddSuccess = onShowMessage
-                                                    )
+                                                else -> {}
+                                            }
+                                        },
+                                        onClick = {
+                                            when (item) {
+                                                is Song -> {
+                                                    playerConnection?.stopRadio()
+                                                    playerConnection?.forcePlay(item)
+                                                    playerConnection?.addRadio(item.radioEndpoint)
+                                                }
+
+                                                is Album -> {
+                                                    navigateToAlbumDetail(item.key)
+                                                }
+
+                                                is Playlist -> {
+                                                    navigateToPlaylistDetail(item.key)
+
+                                                }
+
+                                                is Artist -> {
+                                                    navigateToArtistDetail(item.key)
                                                 }
                                             }
-
-                                            else -> {}
                                         }
-                                    },
-                                    onClick = {
-                                        when (item) {
-                                            is Song -> {
-                                                playerConnection?.stopRadio()
-                                                playerConnection?.forcePlay(item)
-                                                playerConnection?.addRadio(item.radioEndpoint)
-                                            }
-
-                                            is Album -> {
-                                                navigateToAlbumDetail(item.key)
-                                            }
-
-                                            is Playlist -> {
-                                                navigateToPlaylistDetail(item.key)
-
-                                            }
-
-                                            is Artist -> {
-                                                navigateToArtistDetail(item.key)
-                                            }
-                                        }
-                                    }
-                                )
-                                .animateItemPlacement(),
+                                    )
+                                    .animateItemPlacement(),
+                            )
+                        }
+                    }
+                    item {
+                        HandlePagingStates(
+                            lazyPagingItems = lazyPagingItems,
+                            boxWithConstraintsScope = this@BoxWithConstraints
                         )
                     }
-                }
-                item {
-                    HandlePagingStates(
-                        lazyPagingItems = lazyPagingItems,
-                        onErrorInitPage = viewModel::onErrorInitPage,
-                    )
                 }
             }
         }

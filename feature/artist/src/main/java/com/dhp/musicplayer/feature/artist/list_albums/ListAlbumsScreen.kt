@@ -2,7 +2,7 @@ package com.dhp.musicplayer.feature.artist.list_albums
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -26,7 +26,7 @@ fun ListAlbumsScreen(
 ) {
     val lazyListState = rememberLazyGridState()
     val lazyPagingItems = viewModel.pagingData.collectAsLazyPagingItems()
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .windowInsetsPadding(LocalWindowInsets.current)
             .fillMaxSize()
@@ -51,7 +51,10 @@ fun ListAlbumsScreen(
                             .animateItemPlacement()
                     )
                 }
-                HandlePagingAlbumsStates(lazyPagingItems = lazyPagingItems)
+                HandlePagingAlbumsStates(
+                    lazyPagingItems = lazyPagingItems,
+                    boxWithConstraintsScope = this@BoxWithConstraints
+                )
             }
         }
     }

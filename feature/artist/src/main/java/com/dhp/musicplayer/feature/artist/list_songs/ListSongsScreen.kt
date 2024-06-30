@@ -4,6 +4,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -91,7 +92,7 @@ fun ListSongsScreen(
 ) {
     val lazyListState = rememberLazyListState()
     val menuState = LocalMenuState.current
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .windowInsetsPadding(LocalWindowInsets.current)
             .fillMaxSize()
@@ -148,7 +149,10 @@ fun ListSongsScreen(
             }
 
             item {
-                HandlePagingStates(lazyPagingItems = lazyPagingItems)
+                HandlePagingStates(
+                    lazyPagingItems = lazyPagingItems,
+                    boxWithConstraintsScope = this@BoxWithConstraints
+                )
             }
         }
     }
