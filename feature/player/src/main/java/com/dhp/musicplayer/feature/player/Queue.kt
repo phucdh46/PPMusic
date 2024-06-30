@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,18 +42,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.dhp.musicplayer.core.common.extensions.move
+import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.animation.LoadingFiveLinesCenter
 import com.dhp.musicplayer.core.designsystem.component.Artwork
+import com.dhp.musicplayer.core.designsystem.component.ImageSongItem
+import com.dhp.musicplayer.core.designsystem.constant.Dimensions
+import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.designsystem.extensions.marquee
 import com.dhp.musicplayer.core.designsystem.reorderable.ReorderableItem
 import com.dhp.musicplayer.core.designsystem.reorderable.ReorderableLazyListState
@@ -112,7 +120,7 @@ fun Queue(
                 playerConnection.playOrPause()
             })
 
-        QueueListSection(modifier = Modifier.fillMaxWidth(),
+        QueueListSection(modifier = Modifier.fillMaxSize(),
             queue = songsWithBitmaps,
             currentMediaIndex = currentMediaIndex,
             state = reorderableLazyColumnState,
@@ -324,6 +332,7 @@ fun IndexedSongHolder(
     onClickHolder: (Int) -> Unit,
     modifier: Modifier = Modifier,
     modifierReorder: Modifier = Modifier,
+    thumbnailSizeDp: Dp = Dimensions.thumbnails.song,
 ) {
     ConstraintLayout(modifier.clickable {
         onClickHolder.invoke(index)
@@ -339,7 +348,7 @@ fun IndexedSongHolder(
 
         Card(
             modifier = Modifier
-                .size(48.dp)
+                .size(thumbnailSizeDp)
                 .constrainAs(artwork) {
                     top.linkTo(parent.top, 12.dp)
                     bottom.linkTo(parent.bottom, 12.dp)
@@ -347,11 +356,25 @@ fun IndexedSongHolder(
                 },
             shape = RoundedCornerShape(8.dp),
         ) {
-            Artwork(
-                modifier = Modifier.fillMaxSize(),
-                url = song.thumbnailUrl,
-                bitmap = bitmap
-            )
+            if (bitmap != null) {
+                Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier.size(thumbnailSizeDp)
+                )
+            } else {
+                ImageSongItem(
+                    thumbnailUrl = song.thumbnailUrl.thumbnail(thumbnailSizeDp.px),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(thumbnailSizeDp)
+                )
+            }
+//            Artwork(
+//                modifier = Modifier.size(thumbnailSizeDp),
+//                url = song.thumbnailUrl.thumbnail(thumbnailSizeDp.px),
+//                bitmap = bitmap
+//            )
         }
 
         Text(

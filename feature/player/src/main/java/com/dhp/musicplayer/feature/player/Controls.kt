@@ -38,6 +38,7 @@ import androidx.media3.common.Player
 import com.dhp.musicplayer.core.common.extensions.formatAsDuration
 import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.SeekBar
+import com.dhp.musicplayer.core.designsystem.extensions.marquee
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.services.extensions.forceSeekToNext
 import com.dhp.musicplayer.core.services.extensions.forceSeekToPrevious
@@ -80,7 +81,8 @@ fun Controls(
             text = title ?: "",
             style = typography.titleMedium,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.marquee()
         )
 
         Text(

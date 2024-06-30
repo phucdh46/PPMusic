@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
+import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
@@ -94,4 +95,20 @@ fun LoadingShimmerImageMaxSize(
             }
         }
     }
+}
+
+@Composable
+fun ImageSongItem(
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Fit,
+    thumbnailUrl: String? = null,
+    contentDescription: String? = null,
+) {
+    AsyncImage(
+        model = thumbnailUrl,
+        contentDescription = contentDescription,
+        contentScale = contentScale,
+        modifier = modifier,
+        error = painterResource(id = R.drawable.logo_grayscale),
+    )
 }
