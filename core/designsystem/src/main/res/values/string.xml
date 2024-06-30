@@ -4,7 +4,7 @@
 
     <!--Navigation-->
     <string name="home_screen_title">For you</string>
-    <string name="search_screen_title">Search</string>
+    <string name="explore_screen_title">Explore</string>
     <string name="library_screen_title">Library</string>
 
     <!-- In-App update -->

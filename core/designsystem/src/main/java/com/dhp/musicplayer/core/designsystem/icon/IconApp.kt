@@ -14,6 +14,7 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DownloadForOffline
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Explore
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.GridView
@@ -62,6 +63,7 @@ object IconApp {
     val FavoriteBorder = Icons.Rounded.FavoriteBorder
     val PhoneAndroid = Icons.Rounded.PhoneAndroid
     val CleaningServices = Icons.Rounded.CleaningServices
+    val Explore = Icons.Rounded.Explore
 
     val NextPlan = Icons.AutoMirrored.Rounded.NextPlan
     val PlaylistAdd = Icons.AutoMirrored.Rounded.PlaylistAdd

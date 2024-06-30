@@ -41,8 +41,8 @@ import com.dhp.musicplayer.core.ui.common.ErrorScreen
 import com.dhp.musicplayer.core.ui.items.TextPlaceholder
 
 @Composable
-fun SearchScreen(
-    viewModel: SearchViewModel = hiltViewModel(),
+fun ExploreScreen(
+    viewModel: ExploreViewModel = hiltViewModel(),
     navigateToMoodAndGenresDetail: (browseId: String?, params: String?) -> Unit,
 ) {
     val uiStateSearchScreen by viewModel.uiStateSearchScreen.collectAsState()
@@ -53,7 +53,7 @@ fun SearchScreen(
     ) {
         when (uiStateSearchScreen) {
             is UiState.Success -> {
-                SearchScreen(
+                ExploreScreen(
                     moodAndGenres = (uiStateSearchScreen as UiState.Success<List<MoodAndGenres>>).data,
                     onItemClick = { browseId, params ->
                         navigateToMoodAndGenresDetail(browseId, params)
@@ -102,7 +102,7 @@ fun SearchScreen(
 }
 
 @Composable
-fun SearchScreen(
+fun ExploreScreen(
     modifier: Modifier = Modifier,
     moodAndGenres: List<MoodAndGenres>,
     onItemClick: (browseId: String?, params: String?) -> Unit,

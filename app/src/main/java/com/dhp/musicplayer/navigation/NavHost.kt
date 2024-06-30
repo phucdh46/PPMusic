@@ -18,7 +18,7 @@ import com.dhp.musicplayer.feature.playlist.local.navigation.localPlaylistDetail
 import com.dhp.musicplayer.feature.playlist.local.navigation.navigateToLocalPlaylistDetail
 import com.dhp.musicplayer.feature.playlist.online.navigation.navigateToOnlinePlaylistDetail
 import com.dhp.musicplayer.feature.playlist.online.navigation.onlinePlaylistDetailScreen
-import com.dhp.musicplayer.feature.search.main.navigation.searchScreen
+import com.dhp.musicplayer.feature.search.main.navigation.exploreScreen
 import com.dhp.musicplayer.feature.search.mood_genres_detail.navigation.moodAndGenresDetailScreen
 import com.dhp.musicplayer.feature.search.mood_genres_detail.navigation.navigateToMoodAndGenresDetail
 import com.dhp.musicplayer.feature.search.search_by_text.navigation.searchScreenByText
@@ -100,7 +100,7 @@ fun NavHost(
             onShowMessage = appState::showSnackBar,
         )
 
-        searchScreen(
+        exploreScreen(
             navigateToMoodAndGenresDetail = { browseId, params ->
                 navController.navigateToMoodAndGenresDetail(
                     browseId = browseId,

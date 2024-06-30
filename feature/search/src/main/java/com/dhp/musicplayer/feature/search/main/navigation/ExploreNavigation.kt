@@ -4,19 +4,17 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import com.dhp.musicplayer.core.designsystem.animation.composableWithoutAnimation
-import com.dhp.musicplayer.feature.search.main.SearchScreen
+import com.dhp.musicplayer.feature.search.main.ExploreScreen
 
+const val EXPLORE_ROUTE = "explore_route"
 
-const val SEARCH_ROUTE = "search_route"
+fun NavController.navigateToExplore(navOptions: NavOptions) = navigate(EXPLORE_ROUTE, navOptions)
 
-fun NavController.navigateToSearch(navOptions: NavOptions) = navigate(SEARCH_ROUTE, navOptions)
-
-fun NavGraphBuilder.searchScreen(
+fun NavGraphBuilder.exploreScreen(
     navigateToMoodAndGenresDetail: (browseId: String?, params: String?) -> Unit,
-
     ) {
-    composableWithoutAnimation(route = SEARCH_ROUTE) {
-        SearchScreen(
+    composableWithoutAnimation(route = EXPLORE_ROUTE) {
+        ExploreScreen(
             navigateToMoodAndGenresDetail = navigateToMoodAndGenresDetail
         )
     }
