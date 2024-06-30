@@ -177,7 +177,7 @@ private fun RowScope.MiniPlayerContent(
                     bitmap = (song.getBitmap(LocalContext.current)
                         ?: drawableToBitmap(LocalContext.current)).asImageBitmap(),
                     contentDescription = null,
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.size(size)
                 )
             } else {
                 LoadingShimmerImageMaxSize(
