@@ -16,11 +16,11 @@ enum class TopLevelDestination(
     iconLabelTextId = R.string.home_screen_title,
     titleTextId = R.string.app_name,
     ),
-    SEARCH(
-    selectedIcon = IconApp.Search,
-    unselectedIcon = IconApp.Search,
-    iconLabelTextId = R.string.search_screen_title,
-    titleTextId = R.string.search_screen_title,
+    EXPLORE(
+    selectedIcon = IconApp.Explore,
+    unselectedIcon = IconApp.Explore,
+    iconLabelTextId = R.string.explore_screen_title,
+    titleTextId = R.string.explore_screen_title,
     ),
     LIBRARY(
     selectedIcon = IconApp.LibraryMusic,
