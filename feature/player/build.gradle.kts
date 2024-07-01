@@ -13,4 +13,5 @@ dependencies {
     implementation(project(":feature:menu"))
     implementation(project(":core:network"))
     implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.reorderable)
 }

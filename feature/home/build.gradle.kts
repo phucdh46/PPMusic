@@ -12,4 +12,5 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:domain"))
     implementation(project(":feature:menu"))
+    implementation(libs.accompanist.swiperefresh)
 }

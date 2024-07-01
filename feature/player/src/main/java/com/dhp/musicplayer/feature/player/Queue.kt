@@ -2,8 +2,6 @@ package com.dhp.musicplayer.feature.player
 
 import android.graphics.Bitmap
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,7 +22,6 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragHandle
@@ -41,7 +38,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -49,10 +45,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.media3.common.MediaItem
 import com.dhp.musicplayer.core.common.extensions.move
 import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.designsystem.R
@@ -62,9 +58,6 @@ import com.dhp.musicplayer.core.designsystem.component.ImageSongItem
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
 import com.dhp.musicplayer.core.designsystem.constant.px
 import com.dhp.musicplayer.core.designsystem.extensions.marquee
-import com.dhp.musicplayer.core.designsystem.reorderable.ReorderableItem
-import com.dhp.musicplayer.core.designsystem.reorderable.ReorderableLazyListState
-import com.dhp.musicplayer.core.designsystem.reorderable.rememberReorderableLazyListState
 import com.dhp.musicplayer.core.designsystem.theme.bold
 import com.dhp.musicplayer.core.designsystem.theme.center
 import com.dhp.musicplayer.core.model.music.Song
@@ -73,6 +66,9 @@ import com.dhp.musicplayer.core.ui.LocalPlayerConnection
 import com.dhp.musicplayer.core.ui.extensions.getBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.detectReorder
+import org.burnoutcrew.reorderable.reorderable
 
 @Composable
 fun Queue(
@@ -85,16 +81,15 @@ fun Queue(
     val scope = rememberCoroutineScope()
     val currentMediaIndex by playerConnection.currentMediaItemIndex.collectAsState()
     val currentMediaItem by playerConnection.currentMediaItem.collectAsState()
-    val lazyListState = rememberLazyListState()
-    val reorderItemState = rememberReorderItemState { fromIndex, toIndex ->
-        playerConnection.player.moveMediaItem(
-            fromIndex, toIndex
-        )
-    }
-    val reorderableLazyColumnState = rememberReorderableLazyListState(lazyListState) { from, to ->
-        songsWithBitmaps.move(from.index, to.index)
-        reorderItemState.onDragMoved(from.index, to.index)
-    }
+    val reorderLazyListState = org.burnoutcrew.reorderable.rememberReorderableLazyListState(
+        onMove = { from, to -> songsWithBitmaps.move(from.index, to.index) },
+        onDragEnd = { fromIndex, toIndex ->
+            playerConnection.player.moveMediaItem(
+                fromIndex,
+                toIndex
+            )
+        },
+    )
 
     Column(modifier.fillMaxSize()) {
         QueueHeaderSection(
@@ -113,7 +108,7 @@ fun Queue(
             isPlaying = isPlaying,
             onClickHolder = {
                 scope.launch {
-                    lazyListState.animateScrollToItem(currentMediaIndex)
+                    reorderLazyListState.listState.animateScrollToItem(currentMediaIndex)
                 }
             },
             onPlayOrPauseClick = {
@@ -122,9 +117,9 @@ fun Queue(
 
         QueueListSection(modifier = Modifier.fillMaxSize(),
             queue = songsWithBitmaps,
-            currentMediaIndex = currentMediaIndex,
-            state = reorderableLazyColumnState,
-            lazyListState = lazyListState,
+            currentMediaItem = currentMediaItem,
+            reorderLazyListState = reorderLazyListState,
+            lazyListState = reorderLazyListState.listState,
             onItemClick = { index ->
                 scope.launch(Dispatchers.Main) {
                     if (index == currentMediaIndex) {
@@ -134,13 +129,8 @@ fun Queue(
                         playerConnection.player.playWhenReady = true
                     }
                 }
-            },
-            onDragStarted = {
-                reorderItemState.onDragStarted()
-            },
-            onDragStopped = {
-                reorderItemState.onDragStopped()
-            })
+            }
+        )
     }
 }
 
@@ -263,22 +253,21 @@ internal fun QueueCurrentItemSection(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun QueueListSection(
-    state: ReorderableLazyListState,
+    reorderLazyListState: org.burnoutcrew.reorderable.ReorderableLazyListState,
     lazyListState: LazyListState,
     queue: SnapshotStateList<Pair<Song, Bitmap?>>,
-    currentMediaIndex: Int,
+    currentMediaItem: MediaItem?,
     onItemClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    onDragStarted: () -> Unit,
-    onDragStopped: () -> Unit,
 ) {
 
     Box(modifier.background(MaterialTheme.colorScheme.background)) {
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(Modifier.reorderable(reorderLazyListState)),
             state = lazyListState,
             contentPadding = PaddingValues(
                 top = 16.dp,
@@ -289,12 +278,9 @@ internal fun QueueListSection(
                 items = queue,
                 key = { _, item -> item.first.id },
             ) { index, item ->
-                ReorderableItem(state, key = item.first.id) { isDragging ->
-                    val elevation by animateDpAsState(
-                        if (isDragging) 4.dp else 0.dp, label = "elevation"
-                    )
+                ReorderableItem(state = reorderLazyListState, key = item.first.id) {
                     val background = animateColorAsState(
-                        targetValue = if (index == currentMediaIndex) MaterialTheme.colorScheme.primary.copy(
+                        targetValue = if (item.first.id == currentMediaItem?.mediaId) MaterialTheme.colorScheme.primary.copy(
                             alpha = 0.2f
                         ) else MaterialTheme.colorScheme.surface,
                         label = "background",
@@ -302,17 +288,8 @@ internal fun QueueListSection(
                     IndexedSongHolder(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .zIndex(if (isDragging) 1f else 0f)
-                            .background(background.value)
-                            .shadow(elevation),
-                        modifierReorder = Modifier.draggableHandle(
-                            onDragStarted = {
-                                onDragStarted()
-                            },
-                            onDragStopped = {
-                                onDragStopped()
-                            },
-                        ),
+                            .background(background.value),
+                        modifierReorder = Modifier.detectReorder(reorderLazyListState),
                         song = item.first,
                         bitmap = item.second,
                         index = index,

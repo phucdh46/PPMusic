@@ -1,5 +1,6 @@
 package com.dhp.musicplayer.core.ui.common
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +35,7 @@ import com.dhp.musicplayer.core.ui.extensions.drawableToBitmap
 import com.dhp.musicplayer.core.ui.extensions.getBitmap
 import kotlin.math.absoluteValue
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HorizontalPagerThumbnail(
     songs: List<Song>,
