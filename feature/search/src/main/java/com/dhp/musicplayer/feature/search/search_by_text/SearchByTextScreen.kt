@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
@@ -218,6 +220,12 @@ fun SearchToolbar(
             readOnly = readOnly,
             onSearchBarClick = onSearchBarClick,
             trailingIconClick = trailingIconClick,
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.search_place_holder),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
         )
     }
 }
@@ -230,6 +238,7 @@ private fun SearchTextField(
     onSearchTriggered: (String) -> Unit,
     onSearchBarClick: () -> Unit = {},
     trailingIconClick: (() -> Unit)? = null,
+    placeholder: @Composable (() -> Unit)? = null,
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -297,6 +306,19 @@ private fun SearchTextField(
                         },
                     ),
                     maxLines = 1,
+                    decorationBox = { innerTextField ->
+                        Box(
+                            modifier = Modifier.fillMaxHeight(),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            if (placeholder != null && searchQuery.isEmpty()) {
+                                Box(Modifier.alpha(0.6f)) {
+                                    placeholder()
+                                }
+                            }
+                            innerTextField()
+                        }
+                    }
                 )
                 if (searchQuery.isNotEmpty()) {
                     IconButton(

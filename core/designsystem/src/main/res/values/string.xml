@@ -126,6 +126,7 @@
     <string name="filter_playlists">Playlists</string>
     <string name="filter_community_playlists">Community playlists</string>
     <string name="filter_featured_playlists">Featured playlists</string>
+    <string name="search_place_holder">Search songs, albums, artists, playlists</string>
 
     <!--Setting-->
     <string name="settings_title">Settings</string>

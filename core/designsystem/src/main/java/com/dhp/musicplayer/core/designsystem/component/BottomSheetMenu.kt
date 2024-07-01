@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.dhp.musicplayer.core.designsystem.constant.px
 
 @Stable
 class MenuState(
@@ -56,12 +57,13 @@ fun BottomSheetMenu(
 
     if (state.isVisible) {
         ModalBottomSheet(
-            modifier = modifier.padding(top = WindowInsets.systemBars
-                .asPaddingValues()
-                .calculateTopPadding()),
+            modifier = modifier,
             sheetState = stateBottomSheet,
             dragHandle = { },
             containerColor = background,
+            windowInsets = WindowInsets(0, WindowInsets.systemBars
+                .asPaddingValues()
+                .calculateTopPadding().px, 0, 0),
             shape = RoundedCornerShape(
                 topStart = 0.dp,
                 topEnd = 0.dp,
