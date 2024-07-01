@@ -33,8 +33,8 @@ android {
         applicationId = "com.dhp.musicplayer"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1000632
-        versionName = "1.0.632"
+        versionCode = 1000651
+        versionName = "1.0.651"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
