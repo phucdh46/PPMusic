@@ -45,9 +45,9 @@ jobs:
 
     - name: Configure Local Properties
       run: |
-        echo "API_BASE_URL=$API_BASE_URL" >> local.properties
+        echo "API_BASE_URL=$BASE_URL" >> local.properties
       env:
-        API_BASE_URL: ${{ secrets.API_BASE_URL }}
+        BASE_URL: ${{ secrets.API_BASE_URL }}
 
     - name: Create Firebase Service Credentials file
       run: |

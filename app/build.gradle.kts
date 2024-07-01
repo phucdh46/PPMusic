@@ -33,8 +33,8 @@ android {
         applicationId = "com.dhp.musicplayer"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1000632
-        versionName = "1.0.632"
+        versionCode = 100065
+        versionName = "1.0.65"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -79,6 +79,9 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+    lint {
+        disable.add("Instantiatable")
     }
 }
 
