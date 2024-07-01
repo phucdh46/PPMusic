@@ -43,6 +43,12 @@ jobs:
           KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
 
+    - name: Configure Local Properties
+      run: |
+        echo "API_BASE_URL=$API_BASE_URL" >> local.properties
+      env:
+        API_BASE_URL: ${{ secrets.API_BASE_URL }}
+
     - name: Create Google Play Config file
       run : |
           echo "$PLAY_CONFIG_JSON" > play_config.json.b64
