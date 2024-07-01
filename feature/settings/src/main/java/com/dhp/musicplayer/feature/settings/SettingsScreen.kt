@@ -58,8 +58,7 @@ fun SettingsScreen(
 
     val (dynamicTheme, onDynamicThemeChange) = rememberPreference(
         DynamicThemeKey,
-        defaultValue = false
-
+        defaultValue = true
     )
 
     val (appTheme, onAppThemeChange) = rememberEnumPreference(

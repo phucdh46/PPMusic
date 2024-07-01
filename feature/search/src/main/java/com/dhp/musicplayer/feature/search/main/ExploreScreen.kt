@@ -33,11 +33,11 @@ import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.TextTitle
 import com.dhp.musicplayer.core.designsystem.constant.MoodAndGenresButtonHeight
 import com.dhp.musicplayer.core.designsystem.extensions.drawOneSideBorder
-import com.dhp.musicplayer.core.designsystem.extensions.shimmer
 import com.dhp.musicplayer.core.model.music.MoodAndGenres
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.EmptyList
 import com.dhp.musicplayer.core.ui.common.ErrorScreen
+import com.dhp.musicplayer.core.ui.items.MoodAndGenresItemPlaceholder
 import com.dhp.musicplayer.core.ui.items.TextPlaceholder
 
 @Composable
@@ -68,26 +68,18 @@ fun ExploreScreen(
             }
 
             is UiState.Loading -> {
-                Column(modifier = Modifier.fillMaxSize().padding(vertical = 16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 16.dp, horizontal = 8.dp)
+                ) {
                     TextPlaceholder()
                     repeat(5) {
-                        Row {
-                            Box(
-                                modifier = Modifier
-                                    .height(MoodAndGenresButtonHeight)
-                                    .weight(1f)
-                                    .padding(8.dp)
-                                    .shimmer()
-                            )
-
-                            Box(
-                                modifier = Modifier
-                                    .height(MoodAndGenresButtonHeight)
-                                    .padding(8.dp)
-                                    .weight(1f)
-                                    .shimmer()
-                            )
-                        }
+                        MoodAndGenresItemPlaceholder()
+                    }
+                    TextPlaceholder()
+                    repeat(5) {
+                        MoodAndGenresItemPlaceholder()
                     }
                 }
             }

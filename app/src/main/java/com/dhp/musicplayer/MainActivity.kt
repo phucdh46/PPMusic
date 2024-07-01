@@ -152,7 +152,7 @@ class MainActivity : ComponentActivity() {
                 })
             }
             val isSystemInDarkTheme = isSystemInDarkTheme()
-            val enableDynamicTheme by rememberPreference(DynamicThemeKey, defaultValue = false)
+            val enableDynamicTheme by rememberPreference(DynamicThemeKey, defaultValue = true)
             val color = androidx.compose.ui.graphics.Color.Unspecified
 
             var themeColor by rememberSaveable(stateSaver = ColorSaver) {

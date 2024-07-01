@@ -7,7 +7,6 @@ import com.dhp.musicplayer.core.domain.repository.NetworkMusicRepository
 import com.dhp.musicplayer.core.model.music.MoodAndGenres
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -30,7 +29,6 @@ class ExploreViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val result = networkMusicRepository.moodAndGenres()
             if (result != null) {
-                delay(1000)
                 _uiStateSearchScreen.value = UiState.Success(result)
             } else {
                 _uiStateSearchScreen.value = UiState.Error

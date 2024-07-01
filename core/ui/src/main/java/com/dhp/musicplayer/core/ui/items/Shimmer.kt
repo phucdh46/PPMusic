@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.constant.AlbumThumbnailSizeDp
 import com.dhp.musicplayer.core.designsystem.constant.Dimensions
+import com.dhp.musicplayer.core.designsystem.constant.MoodAndGenresButtonHeight
 import com.dhp.musicplayer.core.designsystem.extensions.shimmer
 import kotlin.random.Random
 
@@ -141,5 +143,32 @@ fun AlbumItemPlaceholder(
 
             TextPlaceholder()
         }
+    }
+}
+
+@Composable
+fun MoodAndGenresItemPlaceholder(
+    modifier: Modifier = Modifier,
+) {
+    Row {
+        Box(
+            modifier = modifier
+                .padding(4.dp)
+                .height(MoodAndGenresButtonHeight)
+                .weight(1f)
+                .padding(4.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .shimmer()
+        )
+
+        Box(
+            modifier = modifier
+                .padding(4.dp)
+                .height(MoodAndGenresButtonHeight)
+                .weight(1f)
+                .padding(4.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .shimmer()
+        )
     }
 }
