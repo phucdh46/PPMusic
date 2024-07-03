@@ -40,22 +40,26 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.datastore.PlaylistViewTypeKey
 import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.constant.GridThumbnailHeight
 import com.dhp.musicplayer.core.designsystem.dialog.ConfirmDialog
 import com.dhp.musicplayer.core.designsystem.dialog.TextInputDialog
 import com.dhp.musicplayer.core.designsystem.icon.IconApp
+import com.dhp.musicplayer.core.model.music.Playlist
+import com.dhp.musicplayer.core.model.music.PlaylistWithSongs
 import com.dhp.musicplayer.core.model.settings.LibraryViewType
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.EmptyList
+import com.dhp.musicplayer.core.ui.common.ErrorScreen
 import com.dhp.musicplayer.core.ui.common.HideOnScrollFAB
+import com.dhp.musicplayer.core.ui.common.LoadingScreen
 import com.dhp.musicplayer.core.ui.common.rememberEnumPreference
 import com.dhp.musicplayer.core.ui.items.PlaylistGridItem
 import com.dhp.musicplayer.core.ui.items.PlaylistListItem
 import com.dhp.musicplayer.feature.library.LibraryViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LibraryPlaylistsScreen(
     modifier: Modifier,
@@ -63,16 +67,10 @@ fun LibraryPlaylistsScreen(
     showMessage: (String) -> Unit,
     navigateToLocalPlaylistDetail: (Long) -> Unit,
 ) {
-    val playlistWithSongs by viewModel.playlistWithSongs.collectAsState(emptyList())
-
-    var viewType by rememberEnumPreference(PlaylistViewTypeKey, LibraryViewType.LIST)
-
+    val playlistWithSongs by viewModel.playlistWithSongs.collectAsState()
     var showAddPlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
-
-    val lazyListState = rememberLazyListState()
-    val lazyGridState = rememberLazyGridState()
 
     if (showAddPlaylistDialog) {
         TextInputDialog(
@@ -83,6 +81,69 @@ fun LibraryPlaylistsScreen(
             title = stringResource(R.string.create_playlist_title)
         )
     }
+    when (playlistWithSongs) {
+        is UiState.Loading -> {
+            LoadingScreen()
+        }
+
+        is UiState.Empty -> {
+            EmptyList(text = stringResource(id = R.string.empty_playlists), floatContent = {
+                FloatingActionButton(
+                    modifier = Modifier
+                        .windowInsetsPadding(LocalWindowInsets.current.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
+                        .padding(16.dp)
+                        .align(Alignment.BottomEnd),
+                    onClick = { showAddPlaylistDialog = true }
+                ) {
+                    Icon(
+                        imageVector = IconApp.Add,
+                        contentDescription = null
+                    )
+                }
+            })
+        }
+
+        is UiState.Success -> {
+            LibraryPlaylistsScreen(
+                modifier = modifier,
+                playlistWithSongs = (playlistWithSongs as UiState.Success<List<PlaylistWithSongs>>).data,
+                navigateToLocalPlaylistDetail = navigateToLocalPlaylistDetail,
+                showAddPlaylistDialog = { showAddPlaylistDialog = true },
+                updatePlaylist = { playlistName, playlist ->
+                    viewModel.updatePlaylist(playlistName, playlist) { message ->
+                        showMessage(message)
+                    }
+                },
+                deletePlaylist = { playlist ->
+                    viewModel.deletePlaylist(playlist) { message ->
+                        showMessage(message)
+                    }
+                }
+            )
+        }
+
+        is UiState.Error -> {
+            ErrorScreen()
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun LibraryPlaylistsScreen(
+    modifier: Modifier,
+    playlistWithSongs: List<PlaylistWithSongs>,
+    navigateToLocalPlaylistDetail: (Long) -> Unit,
+    showAddPlaylistDialog: () -> Unit,
+    updatePlaylist: (String, Playlist) -> Unit,
+    deletePlaylist: (Playlist) -> Unit,
+) {
+    var viewType by rememberEnumPreference(PlaylistViewTypeKey, LibraryViewType.LIST)
+
+    val lazyListState = rememberLazyListState()
+    val lazyGridState = rememberLazyGridState()
+
+
     var currentSelectPlaylist by rememberSaveable {
         mutableStateOf(if (playlistWithSongs.isEmpty()) null else playlistWithSongs[0].playlist)
     }
@@ -95,9 +156,7 @@ fun LibraryPlaylistsScreen(
             onDismiss = { isRenaming = false },
             onConfirm = { playlistName ->
                 currentSelectPlaylist?.let {
-                    viewModel.updatePlaylist(playlistName, it) { message ->
-                        showMessage(message)
-                    }
+                    updatePlaylist(playlistName, it)
                 }
             },
             title = stringResource(R.string.title_rename_dialog),
@@ -114,9 +173,7 @@ fun LibraryPlaylistsScreen(
             onDismiss = { isDeleting = false },
             onConfirm = {
                 currentSelectPlaylist?.let {
-                    viewModel.deletePlaylist(it) { message ->
-                        showMessage(message)
-                    }
+                    deletePlaylist(it)
                 }
             },
             title = stringResource(id = R.string.title_delete_dialog),
@@ -175,133 +232,116 @@ fun LibraryPlaylistsScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (playlistWithSongs.isEmpty()) {
-            EmptyList(text = stringResource(id = R.string.empty_playlists), floatContent = {
-                FloatingActionButton(
-                    modifier = Modifier
-                        .windowInsetsPadding(LocalWindowInsets.current.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
-                        .padding(16.dp)
-                        .align(Alignment.BottomEnd),
-                    onClick = { showAddPlaylistDialog = true }
-                ) {
-                    Icon(
-                        imageVector = IconApp.Add,
-                        contentDescription = null
-                    )
-                }
-            })
-        } else {
-            Box(
-                modifier = Modifier
-                    .windowInsetsPadding(LocalWindowInsets.current)
-                    .fillMaxSize()
-            ) {
-                when (viewType) {
-                    LibraryViewType.LIST -> {
-                        LazyColumn(
-                            state = lazyListState,
+    Box(
+        modifier = modifier
+            .windowInsetsPadding(LocalWindowInsets.current)
+            .fillMaxSize()
+    ) {
+        when (viewType) {
+            LibraryViewType.LIST -> {
+                LazyColumn(
+                    state = lazyListState,
 //                    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
-                        ) {
-                            item(
-                                key = "header",
-                                contentType = "CONTENT_TYPE_HEADER"
-                            ) {
-                                headerContent()
-                            }
-
-                            items(
-                                playlistWithSongs,
-                                key = { it.playlist.id },
-//                        contentType = { CONTENT_TYPE_PLAYLIST }
-                            ) { playlistPreview ->
-                                var expanded by remember { mutableStateOf(false) }
-                                PlaylistListItem(
-                                    playlistWithSongs = playlistPreview,
-                                    trailingContent = {
-                                        Box {
-                                            IconButton(
-                                                onClick = { expanded = true }
-                                            ) {
-                                                Icon(
-                                                    imageVector = IconApp.MoreVert,
-                                                    contentDescription = null
-                                                )
-                                            }
-                                            DropdownMenu(
-                                                expanded = expanded,
-                                                onDismissRequest = { expanded = false }) {
-                                                DropdownMenuItem(
-                                                    text = { Text(text = stringResource(id = R.string.edit_menu_dialog)) },
-                                                    onClick = {
-                                                        currentSelectPlaylist =
-                                                            playlistPreview.playlist
-                                                        isRenaming = true
-                                                        expanded = false
-                                                    }
-                                                )
-                                                DropdownMenuItem(
-                                                    text = { Text(text = stringResource(id = R.string.delete_menu_dialog)) },
-                                                    onClick = {
-                                                        currentSelectPlaylist =
-                                                            playlistPreview.playlist
-                                                        isDeleting = true
-                                                        expanded = false
-                                                    }
-                                                )
-                                            }
-                                        }
-
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            navigateToLocalPlaylistDetail(playlistPreview.playlist.id)
-                                        }
-                                        .animateItemPlacement()
-                                )
-                            }
-                        }
-
-                        HideOnScrollFAB(
-                            lazyListState = lazyListState,
-                            imageVector = IconApp.Add,
-                            onClick = {
-                                showAddPlaylistDialog = true
-                            }
-                        )
+                ) {
+                    item(
+                        key = "header",
+                        contentType = "CONTENT_TYPE_HEADER"
+                    ) {
+                        headerContent()
                     }
 
-                    LibraryViewType.GRID -> {
-                        LazyVerticalGrid(
-                            state = lazyGridState,
-                            columns = GridCells.Adaptive(minSize = GridThumbnailHeight + 24.dp),
+                    items(
+                        playlistWithSongs,
+                        key = { it.playlist.id },
+//                        contentType = { CONTENT_TYPE_PLAYLIST }
+                    ) { playlistPreview ->
+                        var expanded by remember { mutableStateOf(false) }
+                        PlaylistListItem(
+                            playlistWithSongs = playlistPreview,
+                            trailingContent = {
+                                Box {
+                                    IconButton(
+                                        onClick = { expanded = true }
+                                    ) {
+                                        Icon(
+                                            imageVector = IconApp.MoreVert,
+                                            contentDescription = null
+                                        )
+                                    }
+                                    DropdownMenu(
+                                        expanded = expanded,
+                                        onDismissRequest = { expanded = false }) {
+                                        DropdownMenuItem(
+                                            text = { Text(text = stringResource(id = R.string.edit_menu_dialog)) },
+                                            onClick = {
+                                                currentSelectPlaylist =
+                                                    playlistPreview.playlist
+                                                isRenaming = true
+                                                expanded = false
+                                            }
+                                        )
+                                        DropdownMenuItem(
+                                            text = { Text(text = stringResource(id = R.string.delete_menu_dialog)) },
+                                            onClick = {
+                                                currentSelectPlaylist =
+                                                    playlistPreview.playlist
+                                                isDeleting = true
+                                                expanded = false
+                                            }
+                                        )
+                                    }
+                                }
+
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    navigateToLocalPlaylistDetail(playlistPreview.playlist.id)
+                                }
+                                .animateItemPlacement()
+                        )
+                    }
+                }
+
+                HideOnScrollFAB(
+                    lazyListState = lazyListState,
+                    imageVector = IconApp.Add,
+                    onClick = {
+                        showAddPlaylistDialog()
+                    }
+                )
+            }
+
+            LibraryViewType.GRID -> {
+                LazyVerticalGrid(
+                    state = lazyGridState,
+                    columns = GridCells.Adaptive(minSize = GridThumbnailHeight + 24.dp),
 //                        columns = GridCells.Fixed(3),
 //                    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
-                        ) {
-                            item(
-                                key = "header",
-                                span = { GridItemSpan(maxLineSpan) },
-                                contentType = "CONTENT_TYPE_HEADER"
-                            ) {
-                                headerContent()
-                            }
+                ) {
+                    item(
+                        key = "header",
+                        span = { GridItemSpan(maxLineSpan) },
+                        contentType = "CONTENT_TYPE_HEADER"
+                    ) {
+                        headerContent()
+                    }
 
-                            items(
-                                playlistWithSongs,
-                                key = { it.playlist },
+                    items(
+                        playlistWithSongs,
+                        key = { it.playlist },
 //                        contentType = { CONTENT_TYPE_PLAYLIST }
-                            ) { playlistPreview ->
-                                PlaylistGridItem(
-                                    playlistWithSongs = playlistPreview,
-                                    fillMaxWidth = true,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .combinedClickable(
-                                            onClick = {
-                                                navigateToLocalPlaylistDetail(playlistPreview.playlist.id)
-                                            },
-                                            onLongClick = {
+                    ) { playlistPreview ->
+                        PlaylistGridItem(
+                            playlistWithSongs = playlistPreview,
+                            fillMaxWidth = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .combinedClickable(
+                                    onClick = {
+                                        navigateToLocalPlaylistDetail(playlistPreview.playlist.id)
+                                    },
+                                    onLongClick = {
 //                                        menuState.show {
 //                                            PlaylistMenu(
 //                                                playlist = playlist,
@@ -309,22 +349,20 @@ fun LibraryPlaylistsScreen(
 //                                                onDismiss = menuState::dismiss
 //                                            )
 //                                        }
-                                            }
-                                        )
-                                        .animateItemPlacement()
+                                    }
                                 )
-                            }
-                        }
-
-                        HideOnScrollFAB(
-                            lazyGridState = lazyGridState,
-                            imageVector = IconApp.Add,
-                            onClick = {
-                                showAddPlaylistDialog = true
-                            }
+                                .animateItemPlacement()
                         )
                     }
                 }
+
+                HideOnScrollFAB(
+                    lazyGridState = lazyGridState,
+                    imageVector = IconApp.Add,
+                    onClick = {
+                        showAddPlaylistDialog()
+                    }
+                )
             }
         }
     }

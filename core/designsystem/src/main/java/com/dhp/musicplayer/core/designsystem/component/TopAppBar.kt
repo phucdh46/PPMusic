@@ -126,11 +126,11 @@ fun TopAppBarDetailScreen(
 //                    .asPaddingValues()
 //                    .calculateTopPadding()
 //            )
-            .padding(horizontal = 8.dp)
             .height(TopBarHeight +  WindowInsets.systemBars
                 .asPaddingValues()
                 .calculateTopPadding())
             .background(backgroundColor)
+            .padding(horizontal = 8.dp)
             .fillMaxSize()
                             .padding(
                 top = WindowInsets.systemBars
