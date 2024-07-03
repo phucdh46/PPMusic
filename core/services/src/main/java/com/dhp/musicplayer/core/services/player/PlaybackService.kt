@@ -495,15 +495,15 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
         Logg.d("ServiceQueue: onTaskRemoved")
-        val player = mediaLibrarySession?.player
-        if (player?.playWhenReady == false
-            || player?.mediaItemCount == 0
-            || player?.playbackState == Player.STATE_ENDED
-        ) {
+//        val player = mediaLibrarySession?.player
+//        if (player?.playWhenReady == false
+//            || player?.mediaItemCount == 0
+//            || player?.playbackState == Player.STATE_ENDED
+//        ) {
             // Stop the service if not playing, continue playing in the background
             // otherwise.
             stopSelf()
-        }
+//        }
     }
 
     override fun onDestroy() {
