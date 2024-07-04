@@ -55,6 +55,9 @@ import com.dhp.musicplayer.core.ui.common.rememberPreference
 import com.dhp.musicplayer.ui.App
 import com.dhp.musicplayer.ui.rememberAppState
 import com.dhp.musicplayer.utils.InAppUpdateManager
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -90,13 +93,15 @@ class MainActivity : ComponentActivity() {
     }
 
     private lateinit var inAppUpdateManager: InAppUpdateManager
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         inAppUpdateManager = InAppUpdateManager(this@MainActivity)
         enableEdgeToEdge()
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-
+        // Obtain the FirebaseAnalytics instance.
+        firebaseAnalytics = Firebase.analytics
         val viewModel: MainActivityViewModel by viewModels()
         var uiState: UiState<UserData> by mutableStateOf(UiState.Loading)
         // Update the uiState
