@@ -37,8 +37,11 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
+import com.dhp.musicplayer.core.common.constants.SettingConstants.MAX_DOWNLOAD_LIMIT
 import com.dhp.musicplayer.core.common.extensions.formatAsDuration
 import com.dhp.musicplayer.core.common.extensions.thumbnail
+import com.dhp.musicplayer.core.common.extensions.toast
+import com.dhp.musicplayer.core.datastore.MaxDownloadLimitKey
 import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.DebouncedIconButton
 import com.dhp.musicplayer.core.designsystem.component.Menu
@@ -52,6 +55,7 @@ import com.dhp.musicplayer.core.services.download.ExoDownloadService
 import com.dhp.musicplayer.core.services.extensions.toSong
 import com.dhp.musicplayer.core.ui.LocalDownloadUtil
 import com.dhp.musicplayer.core.ui.LocalPlayerConnection
+import com.dhp.musicplayer.core.ui.common.rememberPreference
 import com.dhp.musicplayer.core.ui.extensions.getBitmap
 import com.dhp.musicplayer.core.ui.items.SongItem
 import kotlinx.coroutines.flow.flowOf
@@ -75,6 +79,11 @@ fun MediaItemMenu(
     val song = mediaItem.toSong()
     val isFavourite by mediaItemMenuViewModel.isFavoriteSong(mediaItem.mediaId)
         .collectAsState(initial = false)
+
+    val (maxDownloadLimit, onMaxDownloadLimitChange) = rememberPreference(
+        MaxDownloadLimitKey,
+        defaultValue = MAX_DOWNLOAD_LIMIT
+    )
     MediaItemMenu(
         modifier = modifier,
         mediaItem = mediaItem,
@@ -84,17 +93,22 @@ fun MediaItemMenu(
         onRemoveSongFromPlaylist = onRemoveSongFromPlaylist,
         state = download?.state,
         onDownload = {
-            mediaItemMenuViewModel.insertSong(mediaItem.toSong())
-            val downloadRequest = DownloadRequest.Builder(song.id, song.id.toUri())
-                .setCustomCacheKey(song.id)
-                .setData(song.title.toByteArray())
-                .build()
-            DownloadService.sendAddDownload(
-                context,
-                ExoDownloadService::class.java,
-                downloadRequest,
-                false
-            )
+            if (maxDownloadLimit <= 0) {
+                context.toast(R.string.message_limit_download)
+            } else {
+                mediaItemMenuViewModel.insertSong(mediaItem.toSong())
+                val downloadRequest = DownloadRequest.Builder(song.id, song.id.toUri())
+                    .setCustomCacheKey(song.id)
+                    .setData(song.title.toByteArray())
+                    .build()
+                DownloadService.sendAddDownload(
+                    context,
+                    ExoDownloadService::class.java,
+                    downloadRequest,
+                    false
+                )
+                onMaxDownloadLimitChange(maxDownloadLimit - 1)
+            }
         },
         onRemoveDownload = {
             DownloadService.sendRemoveDownload(
@@ -103,6 +117,7 @@ fun MediaItemMenu(
                 song.id,
                 false
             )
+            onMaxDownloadLimitChange(maxDownloadLimit + 1)
         },
         onShowSleepTimer = onShowSleepTimer,
         isFavourite = isFavourite,

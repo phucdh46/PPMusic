@@ -73,6 +73,7 @@
     <string name="create_playlist_to_playlist"> to playlist</string>
     <string name="add_to_playlist_success">Added "%s" to "%s"</string>
     <string name="add_to_playlist_exists">The song "%s" already exists in the playlist "%s"</string>
+    <string name="message_limit_download">You have reached the music download limit. To download more music, please go to Settings > Download</string>
 
     <!-- menu media item-->
     <string name="sleep_timer_message_stop">Do you want to stop the sleep timer?</string>
@@ -142,6 +143,9 @@
     <string name="setting_player_persistent_description">Save and restore playing songs</string>
     <string name="setting_player_resume_title">Resume playback</string>
     <string name="setting_player_resume_description">Plugging in headphones or connecting a Bluetooth device will resume playback</string>
+    <string name="setting_download_title">Download</string>
+    <string name="setting_download_limit_title">Max download limit %s</string>
+    <string name="setting_download_limit_description">Watch advertisements to increase your limit</string>
     <string name="setting_audio_title">Audio</string>
     <string name="setting_audio_skip_silence_title">Skip silence</string>
     <string name="setting_audio_skip_silence_description">Skip silent parts during playback</string>

@@ -13,5 +13,6 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:database"))
     implementation(libs.paging.runtime.ktx)
-
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.config)
 }

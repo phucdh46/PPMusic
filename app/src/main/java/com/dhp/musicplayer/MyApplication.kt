@@ -8,10 +8,16 @@ import coil.disk.DiskCache
 import com.dhp.musicplayer.core.datastore.MaxImageCacheSizeKey
 import com.dhp.musicplayer.core.datastore.dataStore
 import com.dhp.musicplayer.core.datastore.get
+import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class MyApplication : Application(), ImageLoaderFactory {
+    override fun onCreate() {
+        super.onCreate()
+        MobileAds.initialize(this) {}
+    }
+
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
             .crossfade(true)

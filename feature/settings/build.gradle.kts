@@ -11,5 +11,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
     implementation(project(":core:datastore"))
+    implementation(project(":core:data"))
     implementation(libs.coil.kt)
+    implementation(libs.play.services.ads.lite)
 }

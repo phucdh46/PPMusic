@@ -40,6 +40,14 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        //load the values from .properties file
+        val keystoreFile = project.rootProject.file("local.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+
+        //return empty key in case something goes wrong
+        val adsAppId = properties.getProperty("GMS_ADS_APP_ID") ?: ""
+        resValue("string", "GMS_ADS_APP_ID", adsAppId)
     }
 
     buildTypes {
@@ -132,6 +140,7 @@ dependencies {
 //    implementation(libs.media3.okhttp)
 //    implementation(libs.media3.session)
 
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
     implementation(libs.navigation.fragment)
@@ -145,6 +154,7 @@ dependencies {
 //    implementation(libs.paging.runtime.ktx)
 
 //    implementation(libs.palette)
+    implementation(libs.play.services.ads.lite)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

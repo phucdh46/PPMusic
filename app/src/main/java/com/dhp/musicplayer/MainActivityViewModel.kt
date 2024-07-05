@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.toEnum
 import com.dhp.musicplayer.core.common.model.isSuccess
+import com.dhp.musicplayer.core.data.firebase.FirebaseService
 import com.dhp.musicplayer.core.datastore.ApiConfigKey
 import com.dhp.musicplayer.core.datastore.DarkThemeConfigKey
 import com.dhp.musicplayer.core.datastore.dataStore
@@ -31,6 +32,7 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     private val application: Application,
     private val getApiKeyUseCase: GetApiKeyUseCase,
+    private val firebaseService: FirebaseService
 ) : ViewModel() {
 
     private val _getApiKeyError: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -38,6 +40,9 @@ class MainActivityViewModel @Inject constructor(
 
     init {
         getApiKey()
+        viewModelScope.launch {
+            firebaseService.fetchConfiguration()
+        }
     }
 
     fun getApiKey() {
