@@ -7,7 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
+import com.dhp.musicplayer.core.datastore.IsEnablePremiumModeKey
 import com.dhp.musicplayer.core.designsystem.R
+import com.dhp.musicplayer.core.ui.common.rememberPreference
 import com.dhp.musicplayer.feature.settings.items.SettingTextItem
 import com.dhp.musicplayer.feature.settings.items.SettingTopTitleItem
 
@@ -18,7 +20,13 @@ internal fun SettingDownloadSection(
     onWatchAdClick: () -> Unit,
     maxDownloadLimit: Int
 ) {
+    val (isEnablePremiumMode, _) = rememberPreference(
+        IsEnablePremiumModeKey,
+        defaultValue = false
+    )
 
+    val totalDownload =
+        if (isEnablePremiumMode) stringResource(R.string.setting_download_unlimited) else maxDownloadLimit.toString()
     Column(modifier) {
         SettingTopTitleItem(
             modifier = Modifier.fillMaxWidth(),
@@ -28,9 +36,10 @@ internal fun SettingDownloadSection(
         SettingTextItem(
             modifier = Modifier.fillMaxWidth(),
             title = stringResource(
-                id = R.string.setting_download_limit_title,
-                maxDownloadLimit.toString()
+                id = R.string.setting_download_limit_title
+//                ,maxDownloadLimit.toString()
             ),
+            subTitle = totalDownload,
             description = stringResource(id = R.string.setting_download_limit_description),
             onClick = onWatchAdClick,
         )

@@ -41,6 +41,7 @@ import com.dhp.musicplayer.core.common.constants.SettingConstants.MAX_DOWNLOAD_L
 import com.dhp.musicplayer.core.common.extensions.formatAsDuration
 import com.dhp.musicplayer.core.common.extensions.thumbnail
 import com.dhp.musicplayer.core.common.extensions.toast
+import com.dhp.musicplayer.core.datastore.IsEnablePremiumModeKey
 import com.dhp.musicplayer.core.datastore.MaxDownloadLimitKey
 import com.dhp.musicplayer.core.designsystem.R
 import com.dhp.musicplayer.core.designsystem.component.DebouncedIconButton
@@ -84,6 +85,10 @@ fun MediaItemMenu(
         MaxDownloadLimitKey,
         defaultValue = MAX_DOWNLOAD_LIMIT
     )
+    val (isEnablePremiumMode, _) = rememberPreference(
+        IsEnablePremiumModeKey,
+        defaultValue = false
+    )
     MediaItemMenu(
         modifier = modifier,
         mediaItem = mediaItem,
@@ -93,7 +98,7 @@ fun MediaItemMenu(
         onRemoveSongFromPlaylist = onRemoveSongFromPlaylist,
         state = download?.state,
         onDownload = {
-            if (maxDownloadLimit <= 0) {
+            if (maxDownloadLimit <= 0 && !isEnablePremiumMode) {
                 context.toast(R.string.message_limit_download)
             } else {
                 mediaItemMenuViewModel.insertSong(mediaItem.toSong())
@@ -107,7 +112,7 @@ fun MediaItemMenu(
                     downloadRequest,
                     false
                 )
-                onMaxDownloadLimitChange(maxDownloadLimit - 1)
+                if (!isEnablePremiumMode) onMaxDownloadLimitChange(maxDownloadLimit - 1)
             }
         },
         onRemoveDownload = {
@@ -117,7 +122,7 @@ fun MediaItemMenu(
                 song.id,
                 false
             )
-            onMaxDownloadLimitChange(maxDownloadLimit + 1)
+            if (!isEnablePremiumMode) onMaxDownloadLimitChange(maxDownloadLimit - 1)
         },
         onShowSleepTimer = onShowSleepTimer,
         isFavourite = isFavourite,
@@ -379,7 +384,7 @@ fun MediaItemMenu(
                                     onClick = onRemoveDownload,
                                     icon = {
                                         CircularProgressIndicator(
-                                            modifier = Modifier.size(24.dp),
+                                            modifier = Modifier.size(20.dp),
                                             strokeWidth = 2.dp
                                         )
                                     }

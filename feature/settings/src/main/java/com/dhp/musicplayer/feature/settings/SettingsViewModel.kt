@@ -1,9 +1,12 @@
 package com.dhp.musicplayer.feature.settings
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.billingclient.api.ProductDetails
+import com.dhp.musicplayer.core.billing.repository.SubscriptionDataRepository
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.findActivity
 import com.dhp.musicplayer.core.common.extensions.toEnum
@@ -19,6 +22,7 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,13 +37,17 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val application: Application,
-    private val firebaseService: FirebaseService
+    private val firebaseService: FirebaseService,
+    private val subscriptionDataRepository: SubscriptionDataRepository
 ) : ViewModel() {
     private var mRewardedAd: MutableStateFlow<RewardedAd?> = MutableStateFlow(null)
     val rewardedAd: StateFlow<RewardedAd?> = mRewardedAd.asStateFlow()
 
     private var _isLoadingAd = MutableStateFlow(false)
     var isLoadingAd: StateFlow<Boolean> = _isLoadingAd.asStateFlow()
+
+    private var _productDetails: MutableStateFlow<ProductDetails?> = MutableStateFlow(null)
+    var productDetails: StateFlow<ProductDetails?> = _productDetails.asStateFlow()
 
     val settingsUiState = application.dataStore.data.distinctUntilChanged()
         .map { dataStore -> dataStore[DarkThemeConfigKey].toEnum(DarkThemeConfig.FOLLOW_SYSTEM) }
@@ -56,6 +64,10 @@ class SettingsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
             initialValue = UiState.Loading,
         )
+
+    init {
+        getProductDetail()
+    }
 
     fun updateDarkThemeConfig(darkThemeConfig: DarkThemeConfig) {
         viewModelScope.launch {
@@ -122,6 +134,18 @@ class SettingsViewModel @Inject constructor(
     private fun removeRewarded() {
         mRewardedAd.value?.fullScreenContentCallback = null
         mRewardedAd.value = null
+    }
+
+    fun buyInAppProducts(activity: Activity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            subscriptionDataRepository.buyPremiumApp(activity)
+        }
+    }
+
+    private fun getProductDetail() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _productDetails.value = subscriptionDataRepository.getProductDetail()
+        }
     }
 
     override fun onCleared() {

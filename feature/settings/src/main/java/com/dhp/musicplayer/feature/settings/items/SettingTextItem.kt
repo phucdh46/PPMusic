@@ -4,6 +4,8 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -15,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dhp.musicplayer.core.designsystem.theme.bold
 
 @Composable
 internal fun SettingTextItem(
@@ -36,6 +39,7 @@ internal fun SettingTextItem(
 @Composable
 internal fun SettingTextItem(
     title: String,
+    subTitle: String? = null,
     description: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -69,12 +73,28 @@ internal fun SettingTextItem(
             alignment = Alignment.CenterVertically,
         ),
     ) {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            color = titleColor,
-        )
+        if (subTitle == null) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                color = titleColor,
+            )
+        } else {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = titleColor,
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = subTitle,
+                    style = MaterialTheme.typography.bodyLarge.bold(),
+                    color = titleColor,
+                )
+            }
+        }
 
         if (description != null) {
             Text(

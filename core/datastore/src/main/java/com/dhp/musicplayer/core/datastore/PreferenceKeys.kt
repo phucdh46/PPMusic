@@ -20,3 +20,5 @@ val SkipSilenceKey = booleanPreferencesKey("SkipSilence")
 val MaxImageCacheSizeKey = intPreferencesKey("maxImageCacheSize")
 val MaxSongCacheSizeKey = intPreferencesKey("maxSongCacheSize")
 val MaxDownloadLimitKey = intPreferencesKey("maxDownloadLimit")
+
+val IsEnablePremiumModeKey = booleanPreferencesKey("isEnablePremiumMode")

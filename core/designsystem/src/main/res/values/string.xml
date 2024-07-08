@@ -144,7 +144,8 @@
     <string name="setting_player_resume_title">Resume playback</string>
     <string name="setting_player_resume_description">Plugging in headphones or connecting a Bluetooth device will resume playback</string>
     <string name="setting_download_title">Download</string>
-    <string name="setting_download_limit_title">Max download limit %s</string>
+    <string name="setting_download_limit_title">Max download limit</string>
+    <string name="setting_download_unlimited">Unlimited</string>
     <string name="setting_download_limit_description">Watch advertisements to increase your limit</string>
     <string name="setting_audio_title">Audio</string>
     <string name="setting_audio_skip_silence_title">Skip silence</string>
@@ -159,10 +160,23 @@
     <string name="setting_text_confirm_clean_cache_dialog">Do you want to clean the cache?</string>
     <string name="setting_top_others">Others</string>
     <string name="setting_top_others_version">App version</string>
+    <string name="setting_top_others_premium_mode_title">Premium mode</string>
+    <string name="setting_top_others_premium_mode_description">Level up your music experience with PPMusic Premium</string>
     <string name="setting_cache_size_used_text">%s used</string>
     <string name="setting_cache_unlimited_option">Unlimited</string>
     <string name="settings_confirm_dialog_button_text">OK</string>
     <string name="settings_cancel_button_text">Cancel</string>
+
+    <!--billing-->
+    <string name="billing_premium_description">Level up your music experience with PPMusic Premium - all for a budget-friendly price.</string>
+    <string name="billing_premium_buy_button">Buy for %1$s</string>
+    <string name="billing_premium_purchase_button">Purchased for %1$s</string>
+    <string name="billing_premium_item_hide_ads">No ads</string>
+    <string name="billing_premium_item_hide_ads_description">Enjoy uninterrupted, smooth music listening with no in-app ads.</string>
+    <string name="billing_premium_item_download">Unlimited Downloads</string>
+    <string name="billing_premium_item_download_description">Experience unlimited downloads and say goodbye to restrictions.</string>
+    <string name="billing_premium_item_feature">Explore the newest features</string>
+    <string name="billing_premium_item_feature_description">Be the first to experience new features the moment they launch.</string>
 
     <!--services-->
     <string name="service_download_channel_name">Download</string>

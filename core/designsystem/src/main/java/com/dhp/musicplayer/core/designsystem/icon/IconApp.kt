@@ -17,7 +17,9 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Explore
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.rounded.FiberNew
 import androidx.compose.material.icons.rounded.GridView
+import androidx.compose.material.icons.rounded.HideSource
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
@@ -36,6 +38,7 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Shuffle
 import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material.icons.rounded.SkipPrevious
+import androidx.compose.material.icons.rounded.SupportAgent
 
 
 object IconApp {
@@ -64,6 +67,9 @@ object IconApp {
     val PhoneAndroid = Icons.Rounded.PhoneAndroid
     val CleaningServices = Icons.Rounded.CleaningServices
     val Explore = Icons.Rounded.Explore
+    val HideSource = Icons.Rounded.HideSource
+    val FiberNew = Icons.Rounded.FiberNew
+    val SupportAgent = Icons.Rounded.SupportAgent
 
     val NextPlan = Icons.AutoMirrored.Rounded.NextPlan
     val PlaylistAdd = Icons.AutoMirrored.Rounded.PlaylistAdd

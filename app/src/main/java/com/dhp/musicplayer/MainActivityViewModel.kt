@@ -4,12 +4,14 @@ import android.app.Application
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dhp.musicplayer.core.billing.repository.SubscriptionDataRepository
 import com.dhp.musicplayer.core.common.enums.UiState
 import com.dhp.musicplayer.core.common.extensions.toEnum
 import com.dhp.musicplayer.core.common.model.isSuccess
 import com.dhp.musicplayer.core.data.firebase.FirebaseService
 import com.dhp.musicplayer.core.datastore.ApiConfigKey
 import com.dhp.musicplayer.core.datastore.DarkThemeConfigKey
+import com.dhp.musicplayer.core.datastore.IsEnablePremiumModeKey
 import com.dhp.musicplayer.core.datastore.dataStore
 import com.dhp.musicplayer.core.datastore.get
 import com.dhp.musicplayer.core.domain.user_case.GetApiKeyUseCase
@@ -32,16 +34,39 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     private val application: Application,
     private val getApiKeyUseCase: GetApiKeyUseCase,
-    private val firebaseService: FirebaseService
+    private val firebaseService: FirebaseService,
+    private val subscriptionDataRepository: SubscriptionDataRepository
 ) : ViewModel() {
 
     private val _getApiKeyError: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val getApiKeyError: StateFlow<Boolean> = _getApiKeyError
 
+    val uiState: StateFlow<UiState<UserData>> =
+        application.dataStore.data.distinctUntilChanged()
+            .map { dataStore -> dataStore[DarkThemeConfigKey].toEnum(DarkThemeConfig.FOLLOW_SYSTEM) }
+            .distinctUntilChanged().map { darkThemeConfig ->
+                UiState.Success(UserData(darkThemeConfig = darkThemeConfig))
+            }
+            .stateIn(
+                scope = viewModelScope,
+                initialValue = UiState.Loading,
+                started = SharingStarted.WhileSubscribed(5_000),
+            )
+
     init {
         getApiKey()
         viewModelScope.launch {
             firebaseService.fetchConfiguration()
+        }
+        verifiedPremiumMode()
+    }
+
+    private fun verifiedPremiumMode() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val verified = subscriptionDataRepository.verified()
+            application.dataStore.edit {
+                it[IsEnablePremiumModeKey] = verified
+            }
         }
     }
 
@@ -69,15 +94,7 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    val uiState: StateFlow<UiState<UserData>> =
-        application.dataStore.data.distinctUntilChanged()
-            .map { dataStore -> dataStore[DarkThemeConfigKey].toEnum(DarkThemeConfig.FOLLOW_SYSTEM) }
-            .distinctUntilChanged().map { darkThemeConfig ->
-                UiState.Success(UserData(darkThemeConfig = darkThemeConfig))
-            }
-            .stateIn(
-                scope = viewModelScope,
-                initialValue = UiState.Loading,
-                started = SharingStarted.WhileSubscribed(5_000),
-            )
+    override fun onCleared() {
+        subscriptionDataRepository.terminateBillingConnection()
+    }
 }

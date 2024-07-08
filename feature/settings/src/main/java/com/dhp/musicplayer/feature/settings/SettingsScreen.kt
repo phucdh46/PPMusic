@@ -19,8 +19,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.core.common.constants.SettingConstants.MAX_DOWNLOAD_LIMIT
 import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.common.extensions.findActivity
 import com.dhp.musicplayer.core.datastore.DarkThemeConfigKey
 import com.dhp.musicplayer.core.datastore.DynamicThemeKey
+import com.dhp.musicplayer.core.datastore.IsEnablePremiumModeKey
 import com.dhp.musicplayer.core.datastore.MaxDownloadLimitKey
 import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
@@ -63,7 +65,10 @@ fun SettingsScreen(
                     onWatchAdClick = {
                         viewModel.loadRewarded(context)
                     },
-                    maxDownloadLimit = maxDownloadLimit
+                    maxDownloadLimit = maxDownloadLimit,
+                    onClickBuyInAppProducts = {
+                        context.findActivity()?.let { viewModel.buyInAppProducts(it) }
+                    }
                 )
             }
 
@@ -82,6 +87,7 @@ fun SettingsScreen(
 @Composable
 fun SettingsScreen(
     userEditableSettings: UserEditableSettings,
+    onClickBuyInAppProducts: () -> Unit,
     onWatchAdClick: () -> Unit,
     maxDownloadLimit: Int
 ) {
@@ -112,6 +118,11 @@ fun SettingsScreen(
         )
     }
 
+    val (isEnablePremiumMode, _) = rememberPreference(
+        IsEnablePremiumModeKey,
+        defaultValue = false
+    )
+
     LazyColumn(
         state = rememberLazyListState(),
         modifier = Modifier
@@ -131,11 +142,13 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            SettingDownloadSection(
-                modifier = Modifier.fillMaxWidth(),
-                onWatchAdClick = onWatchAdClick,
-                maxDownloadLimit = maxDownloadLimit
-            )
+            if (!isEnablePremiumMode) {
+                SettingDownloadSection(
+                    modifier = Modifier.fillMaxWidth(),
+                    onWatchAdClick = onWatchAdClick,
+                    maxDownloadLimit = maxDownloadLimit
+                )
+            }
 
             SettingAudioSection(
                 modifier = Modifier.fillMaxWidth(),
@@ -148,6 +161,7 @@ fun SettingsScreen(
             SettingOthersSection(
                 modifier = Modifier.fillMaxWidth(),
                 versionName = versionName.orEmpty(),
+                onClickBuyInAppProducts = onClickBuyInAppProducts
             )
         }
     }

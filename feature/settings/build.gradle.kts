@@ -12,6 +12,8 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:datastore"))
     implementation(project(":core:data"))
+    implementation(project(":core:billing"))
     implementation(libs.coil.kt)
     implementation(libs.play.services.ads.lite)
+    implementation(libs.billing.ktx)
 }

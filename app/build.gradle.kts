@@ -103,6 +103,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:network"))
     implementation(project(":core:datastore"))
+    implementation(project(":core:billing"))
     implementation(project(":feature:settings"))
     implementation(project(":feature:home"))
     implementation(project(":feature:artist"))
