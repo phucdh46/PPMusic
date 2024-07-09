@@ -162,6 +162,8 @@
     <string name="setting_top_others_version">App version</string>
     <string name="setting_top_others_premium_mode_title">Premium mode</string>
     <string name="setting_top_others_premium_mode_description">Level up your music experience with PPMusic Premium</string>
+    <string name="setting_top_others_review_title">Review app</string>
+    <string name="setting_top_others_review_description">Please leave us a review to help us improve the app.</string>
     <string name="setting_cache_size_used_text">%s used</string>
     <string name="setting_cache_unlimited_option">Unlimited</string>
     <string name="settings_confirm_dialog_button_text">OK</string>

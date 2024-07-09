@@ -53,6 +53,7 @@ androidxComposeCompiler =  "1.5.8"
 kotlinxCoroutines = "1.7.3"
 androidxComposeConstraintLayout = "1.1.0-alpha12"
 billingKtx = "7.0.0"
+reviewKtx = "2.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -133,6 +134,7 @@ kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-
 
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "androidxComposeConstraintLayout" }
 billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billingKtx" }
+review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "reviewKtx" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

@@ -16,4 +16,5 @@ dependencies {
     implementation(libs.coil.kt)
     implementation(libs.play.services.ads.lite)
     implementation(libs.billing.ktx)
+    implementation(libs.review.ktx)
 }
