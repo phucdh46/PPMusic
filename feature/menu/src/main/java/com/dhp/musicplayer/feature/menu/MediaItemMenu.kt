@@ -17,6 +17,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -130,7 +131,9 @@ fun MediaItemMenu(
             playerConnection?.toggleLike(mediaItem.toSong())
 //            mediaItemMenuViewModel.favourite(mediaItem)
         },
-        onShowMessageAddSuccess = onShowMessageAddSuccess
+        onShowMessageAddSuccess = onShowMessageAddSuccess,
+        isEnablePremiumMode = isEnablePremiumMode,
+        maxDownloadLimit = maxDownloadLimit
     )
 }
 
@@ -150,8 +153,9 @@ fun MediaItemMenu(
     onShowSleepTimer: (() -> Unit)? = null,
     isFavourite: Boolean,
     onFavouriteClick: () -> Unit = {},
-    onShowMessageAddSuccess: (String) -> Unit
-
+    onShowMessageAddSuccess: (String) -> Unit,
+    isEnablePremiumMode: Boolean,
+    maxDownloadLimit: Int,
 ) {
     val density = LocalDensity.current
     val playerConnection = LocalPlayerConnection.current
@@ -395,7 +399,15 @@ fun MediaItemMenu(
                                 MenuEntry(
                                     imageVector = IconApp.DownloadForOffline,
                                     text = stringResource(R.string.menu_download),
-                                    onClick = onDownload
+                                    onClick = onDownload,
+                                    trailingContent = {
+                                        if (!isEnablePremiumMode) {
+                                            Text(
+                                                text = "$maxDownloadLimit left",
+                                                style = typography.bodyMedium
+                                            )
+                                        }
+                                    }
                                 )
                             }
                         }
