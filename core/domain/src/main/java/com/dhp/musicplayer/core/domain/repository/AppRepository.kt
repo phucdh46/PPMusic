@@ -6,4 +6,5 @@ import dagger.Component
 
 interface AppRepository {
     suspend fun getKey() : ApiResponse<ApiKey>?
+    suspend fun sendFeedback(feedback: String, name: String, email: String): Boolean
 }

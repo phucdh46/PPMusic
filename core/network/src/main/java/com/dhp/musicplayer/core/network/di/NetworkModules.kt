@@ -27,10 +27,15 @@ annotation class AppHttpClient
 @Retention(AnnotationRetention.BINARY)
 annotation class KuGouHttpClient
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class FeedbackHttpClient
+
 @Module
 @InstallIn(SingletonComponent::class)
 class NetworkModules {
     private val baseUrl = BuildConfig.API_BASE_URL
+    private val baseUrlFeedback = "docs.google.com/forms/d/e"
 
     @Singleton
     @Provides
@@ -83,6 +88,29 @@ class NetworkModules {
 
         defaultRequest {
             url("https://krcs.kugou.com")
+        }
+    }
+
+    @Singleton
+    @Provides
+    @FeedbackHttpClient
+    fun providesFeedbackHttpClient() = HttpClient(OkHttp) {
+        BrowserUserAgent()
+        expectSuccess = true
+
+        install(ContentNegotiation) {
+            @OptIn(ExperimentalSerializationApi::class)
+            json(Json {
+                ignoreUnknownKeys = true
+                explicitNulls = false
+                encodeDefaults = true
+            })
+        }
+
+        defaultRequest {
+            url(scheme = "https", host = baseUrlFeedback) {
+                contentType(ContentType.Application.Json)
+            }
         }
     }
 }

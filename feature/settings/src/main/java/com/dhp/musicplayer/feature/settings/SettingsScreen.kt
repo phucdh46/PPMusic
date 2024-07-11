@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -30,6 +31,7 @@ import com.dhp.musicplayer.core.ui.common.LoadingScreen
 import com.dhp.musicplayer.core.ui.common.rememberEnumPreference
 import com.dhp.musicplayer.core.ui.common.rememberPreference
 import com.dhp.musicplayer.feature.settings.dialog.AppThemeSettingDialog
+import com.dhp.musicplayer.feature.settings.feedback.FeedbackScreen
 import com.dhp.musicplayer.feature.settings.section.SettingAudioSection
 import com.dhp.musicplayer.feature.settings.section.SettingCacheSection
 import com.dhp.musicplayer.feature.settings.section.SettingDownloadSection
@@ -40,6 +42,7 @@ import com.dhp.musicplayer.feature.settings.section.SettingThemeSection
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
+    onNavigationToFeedback: () -> Unit
 ) {
     val settingsUiState by viewModel.settingsUiState.collectAsState()
     val context = LocalContext.current
@@ -68,7 +71,8 @@ fun SettingsScreen(
                     maxDownloadLimit = maxDownloadLimit,
                     onClickBuyInAppProducts = {
                         context.findActivity()?.let { viewModel.buyInAppProducts(it) }
-                    }
+                    },
+                    onNavigationToFeedback = onNavigationToFeedback
                 )
             }
 
@@ -89,7 +93,8 @@ fun SettingsScreen(
     userEditableSettings: UserEditableSettings,
     onClickBuyInAppProducts: () -> Unit,
     onWatchAdClick: () -> Unit,
-    maxDownloadLimit: Int
+    maxDownloadLimit: Int,
+    onNavigationToFeedback: () -> Unit
 ) {
     val context = LocalContext.current
     val versionName = try {
@@ -161,7 +166,8 @@ fun SettingsScreen(
             SettingOthersSection(
                 modifier = Modifier.fillMaxWidth(),
                 versionName = versionName.orEmpty(),
-                onClickBuyInAppProducts = onClickBuyInAppProducts
+                onClickBuyInAppProducts = onClickBuyInAppProducts,
+                onNavigationToFeedback = onNavigationToFeedback,
             )
         }
     }

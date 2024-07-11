@@ -18,4 +18,13 @@ class AppRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun sendFeedback(feedback: String, name: String, email: String): Boolean {
+        val result = apiService.sendFeedback(
+            feedback = feedback,
+            name = name,
+            email = email
+        )
+        return result.isSuccess
+    }
 }

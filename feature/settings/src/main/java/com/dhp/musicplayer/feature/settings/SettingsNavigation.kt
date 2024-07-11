@@ -12,11 +12,11 @@ fun NavController.navigateToSettings(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.settingsScreen(
-
+    onNavigationToFeedback: () -> Unit
 ) {
     composableWithoutAnimation(
         route = SETTINGS_ROUTE
     ) {
-        SettingsScreen()
+        SettingsScreen(onNavigationToFeedback = onNavigationToFeedback)
     }
 }

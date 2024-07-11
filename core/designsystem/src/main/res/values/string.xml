@@ -163,11 +163,20 @@
     <string name="setting_top_others_premium_mode_title">Premium mode</string>
     <string name="setting_top_others_premium_mode_description">Level up your music experience with PPMusic Premium</string>
     <string name="setting_top_others_review_title">Review app</string>
-    <string name="setting_top_others_review_description">Please leave us a review to help us improve the app.</string>
+    <string name="setting_top_others_review_description">Please leave us a review to help us improve the app</string>
+    <string name="setting_top_others_feedback_title">Feedback</string>
+    <string name="setting_top_others_feedback_description">Help us make PPMusic even better! Send us your feedback</string>
     <string name="setting_cache_size_used_text">%s used</string>
     <string name="setting_cache_unlimited_option">Unlimited</string>
     <string name="settings_confirm_dialog_button_text">OK</string>
     <string name="settings_cancel_button_text">Cancel</string>
+
+    <string name="settings_feedback_input">Feedback</string>
+    <string name="settings_feedback_input_hint">Enter your feedback</string>
+    <string name="settings_feedback_name">Name</string>
+    <string name="settings_feedback_name_hint">Enter your name</string>
+    <string name="settings_feedback_email">Email</string>
+    <string name="settings_feedback_email_hint">Enter your email</string>
 
     <!--billing-->
     <string name="billing_premium_description">Level up your music experience with PPMusic Premium - all for a budget-friendly price.</string>

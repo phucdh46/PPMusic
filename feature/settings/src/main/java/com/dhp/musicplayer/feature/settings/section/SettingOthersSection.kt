@@ -24,13 +24,15 @@ internal fun SettingOthersSection(
     modifier: Modifier = Modifier,
     versionName: String,
     onClickBuyInAppProducts: () -> Unit,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel(),
+    onNavigationToFeedback: () -> Unit
 ) {
     val productDetails by viewModel.productDetails.collectAsState()
     val menuState = LocalMenuState.current
     val context = LocalContext.current
     val manager = ReviewManagerFactory.create(context)
     val request = manager.requestReviewFlow()
+
     Column(modifier) {
         SettingTopTitleItem(
             modifier = Modifier.fillMaxWidth(),
@@ -74,6 +76,15 @@ internal fun SettingOthersSection(
 //                        @ReviewErrorCode val reviewErrorCode = (task.getException() as ReviewException).errorCode
                     }
                 }
+            },
+        )
+
+        SettingTextItem(
+            modifier = Modifier.fillMaxWidth(),
+            title = stringResource(R.string.setting_top_others_feedback_title),
+            description = stringResource(R.string.setting_top_others_feedback_description),
+            onClick = {
+                onNavigationToFeedback()
             },
         )
 
