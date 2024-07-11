@@ -5,6 +5,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -40,7 +41,7 @@ fun TopAppBar(
     modifier: Modifier = Modifier,
     visible: Boolean,
     title: String,
-    showBackButton: Boolean = true,
+    showBackButton: Boolean = false,
     showSearchButton: Boolean = false,
     showSettingButton: Boolean = true,
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
@@ -49,9 +50,7 @@ fun TopAppBar(
     onSettingClick: () -> Unit = {},
 ) {
     AnimatedVisibility(
-        visible = visible,
-        enter = EnterTransition.None,
-        exit = ExitTransition.None
+        visible = visible, enter = EnterTransition.None, exit = ExitTransition.None
     ) {
         Row(
             modifier = modifier
@@ -60,31 +59,30 @@ fun TopAppBar(
                         .asPaddingValues()
                         .calculateTopPadding()
                 )
-                .padding(horizontal = 8.dp)
+                .padding(end = 8.dp)
                 .height(TopBarHeight)
                 .background(MaterialTheme.colorScheme.background)
                 .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically
 
         ) {
-            AnimatedVisibility(visible = showBackButton) {
-                IconButton(onClick = { onBackClick() }) {
-                    Icon(imageVector = IconApp.ArrowBackIosNew, contentDescription = null)
-                }
-            }
-            AnimatedVisibility(visible = !showBackButton) {
-                Image(
+            IconButton(onClick = { }) {
+                if (showBackButton) Icon(imageVector = IconApp.ArrowBackIosNew,
+                    contentDescription = null,
+                    modifier = Modifier.clickable { onBackClick() })
+                else Image(
                     painter = painterResource(id = R.drawable.ic_launcher),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
                 )
             }
+
             Text(
                 text = title.uppercase(),
                 style = MaterialTheme.typography.titleMedium.bold(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(end = 8.dp)
             )
             Spacer(modifier = Modifier.weight(1f))
             AnimatedVisibility(visible = showSearchButton) {
@@ -110,8 +108,7 @@ fun TopAppBarDetailScreen(
             style = MaterialTheme.typography.titleLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
+            modifier = Modifier.padding(horizontal = 8.dp)
         )
     },
     backgroundColor: Color = MaterialTheme.colorScheme.background,
@@ -126,18 +123,19 @@ fun TopAppBarDetailScreen(
 //                    .asPaddingValues()
 //                    .calculateTopPadding()
 //            )
-            .height(TopBarHeight +  WindowInsets.systemBars
-                .asPaddingValues()
-                .calculateTopPadding())
+            .height(
+                TopBarHeight + WindowInsets.systemBars
+                    .asPaddingValues()
+                    .calculateTopPadding()
+            )
             .background(backgroundColor)
-            .padding(horizontal = 8.dp)
+            .padding(end = 8.dp)
             .fillMaxSize()
-                            .padding(
+            .padding(
                 top = WindowInsets.systemBars
                     .asPaddingValues()
                     .calculateTopPadding()
-            ),
-        verticalAlignment = Alignment.CenterVertically
+            ), verticalAlignment = Alignment.CenterVertically
     ) {
 
         IconButton(onClick = { onBackClick() }) {

@@ -1,13 +1,13 @@
 package com.dhp.musicplayer.core.designsystem.icon
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.List
 import androidx.compose.material.icons.automirrored.rounded.NextPlan
 import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.material.icons.automirrored.rounded.PlaylistPlay
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.material.icons.rounded.CleaningServices
 import androidx.compose.material.icons.rounded.Close
@@ -49,7 +49,7 @@ object IconApp {
     val Settings = Icons.Rounded.Settings
     val Delete = Icons.Rounded.Delete
     val PlayArrow = Icons.Rounded.PlayArrow
-    val ArrowBackIosNew = Icons.Rounded.ArrowBackIosNew
+    val ArrowBackIosNew = Icons.AutoMirrored.Rounded.KeyboardArrowLeft
     val History = Icons.Rounded.History
     val SkipNext = Icons.Rounded.SkipNext
     val Queue = Icons.Rounded.Queue

@@ -224,6 +224,7 @@ fun SearchToolbar(
                 Text(
                     text = stringResource(id = R.string.search_place_holder),
                     style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1
                 )
             }
         )

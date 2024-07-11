@@ -60,11 +60,6 @@ fun BillingPremiumDialog(
 
         HeaderSection(
             modifier = Modifier
-                .padding(
-                    top = WindowInsets.systemBars
-                        .asPaddingValues()
-                        .calculateTopPadding()
-                )
                 .fillMaxWidth(),
             onClickDismiss = onClickDismiss,
         )
@@ -76,7 +71,7 @@ fun BillingPremiumDialog(
 
             TitleItem(
                 modifier = Modifier
-                    .padding(top = 24.dp)
+                    .padding(top = 16.dp)
                     .fillMaxWidth(),
                 isEnablePremiumMode = isEnablePremiumMode,
             )
