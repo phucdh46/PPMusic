@@ -10,7 +10,7 @@ plugins {
     alias(libs.plugins.googleServices)
     alias(libs.plugins.crashlytics)
     alias(libs.plugins.kotlin.parcelize)
-
+    alias(libs.plugins.firebase.perf)
 }
 
 android {
@@ -156,6 +156,7 @@ dependencies {
 
 //    implementation(libs.palette)
     implementation(libs.play.services.ads.lite)
+    implementation(libs.firebase.perf)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

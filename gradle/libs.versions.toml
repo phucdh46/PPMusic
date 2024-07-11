@@ -44,6 +44,7 @@ pagingCommonAndroid = "3.3.0"
 appcompat = "1.7.0"
 material = "1.12.0"
 jetbrainsKotlinJvm = "1.9.22"
+firebasePerf = "1.4.2"
 
 androidGradlePlugin = "8.3.0"
 androidTools = "31.3.0"
@@ -108,6 +109,7 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+firebase-perf = { module = "com.google.firebase:firebase-perf" }
 play-services-ads-lite = { module = "com.google.android.gms:play-services-ads-lite", version.ref = "playServicesAds" }
 
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
@@ -155,6 +157,7 @@ crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlyti
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize",  version.ref = "kotlinPlugin"  }
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+firebase-perf = { id = "com.google.firebase.firebase-perf", version.ref = "firebasePerf" }
 
 
 # Plugins defined by this project
