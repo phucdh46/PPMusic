@@ -22,3 +22,4 @@ val MaxSongCacheSizeKey = intPreferencesKey("maxSongCacheSize")
 val MaxDownloadLimitKey = intPreferencesKey("maxDownloadLimit")
 
 val IsEnablePremiumModeKey = booleanPreferencesKey("isEnablePremiumMode")
+val IsSubscribeTopicMusicKey = booleanPreferencesKey("isSubscribeTopicMusic")

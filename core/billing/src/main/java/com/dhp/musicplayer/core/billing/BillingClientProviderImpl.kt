@@ -133,6 +133,7 @@ class BillingClientProviderImpl @Inject constructor(
             try {
                 billingClient.startConnection(object : BillingClientStateListener {
                     override fun onBillingServiceDisconnected() {
+                        tries++
                     }
 
                     override fun onBillingSetupFinished(billingResult: BillingResult) {
@@ -140,6 +141,7 @@ class BillingClientProviderImpl @Inject constructor(
                             isConnectionEstablished = true
                             Logg.d("Billing connection retry succeeded.")
                         } else {
+                            tries++
                             Logg.d(
                                 "Billing connection retry failed: ${billingResult.debugMessage}"
                             )
@@ -169,6 +171,7 @@ class BillingClientProviderImpl @Inject constructor(
                     .build()
             ) { billingResult, purchaseList ->
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                    Logg.d("queryPurchases: success ${purchaseList}")
                     continuation.resume(Result.success(purchaseList))
                 } else {
                     continuation.resume(Result.failure(Exception("Querying Purchases Failed: ${billingResult.debugMessage}")))

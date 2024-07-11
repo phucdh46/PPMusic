@@ -27,7 +27,7 @@ data class Endpoint (
 @Parcelize
 data class RadioEndpoint (
     val videoId: String?,
-    val playlistId: String?,
-    val params: String?,
-    val playlistSetVideoId: String?,
+    val playlistId: String? = null,
+    val params: String? = null,
+    val playlistSetVideoId: String? = null,
 ): Parcelable

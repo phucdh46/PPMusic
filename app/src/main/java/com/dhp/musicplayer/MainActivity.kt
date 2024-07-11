@@ -2,15 +2,18 @@ package com.dhp.musicplayer
 
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
@@ -55,6 +58,7 @@ import com.dhp.musicplayer.core.ui.common.rememberPreference
 import com.dhp.musicplayer.ui.App
 import com.dhp.musicplayer.ui.rememberAppState
 import com.dhp.musicplayer.utils.InAppUpdateManager
+import com.dhp.musicplayer.utils.PermissionsManager
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -94,6 +98,11 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var inAppUpdateManager: InAppUpdateManager
     private lateinit var firebaseAnalytics: FirebaseAnalytics
+    private val viewModel: MainActivityViewModel by viewModels()
+
+    private val requestPostNotificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         inAppUpdateManager = InAppUpdateManager(this@MainActivity)
@@ -102,7 +111,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // Obtain the FirebaseAnalytics instance.
         firebaseAnalytics = Firebase.analytics
-        val viewModel: MainActivityViewModel by viewModels()
+        handleNewIntent(intent)
+        checkPostNotificationPermission()
         var uiState: UiState<UserData> by mutableStateOf(UiState.Loading)
         // Update the uiState
         lifecycleScope.launch {
@@ -122,6 +132,21 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val darkTheme = shouldUseDarkTheme(uiState)
+            val songFromNotification by viewModel.songFromNotification.collectAsState()
+
+            LaunchedEffect(songFromNotification) {
+                if (songFromNotification != null && playerConnection != null) {
+                    playerConnection?.stopRadio()
+                    playerConnection?.forcePlay(songFromNotification!!)
+                    playerConnection?.addRadio(songFromNotification!!.radioEndpoint)
+                }
+            }
+
+            LaunchedEffect(playerConnection) {
+                withContext(Dispatchers.IO) {
+                    viewModel.handlePlayerConnection(playerConnection != null)
+                }
+            }
 
             DisposableEffect(darkTheme) {
                 enableEdgeToEdge(
@@ -222,6 +247,26 @@ class MainActivity : ComponentActivity() {
         unbindService(serviceConnection)
         super.onStop()
     }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleNewIntent(intent)
+    }
+
+    private fun handleNewIntent(intent: Intent) {
+        viewModel.handleNewIntent(intent)
+    }
+
+    private fun checkPostNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !PermissionsManager.isPostNotificationPermissionGranted(
+                this@MainActivity
+            )
+        ) {
+            PermissionsManager.requestPostNotificationPermission(
+                requestPostNotificationPermissionLauncher
+            )
+        }
+    }
 }
 
 @Composable
@@ -234,6 +279,7 @@ private fun shouldUseDarkTheme(
         DarkThemeConfig.LIGHT -> false
         DarkThemeConfig.DARK -> true
     }
+
     else -> isSystemInDarkTheme()
 }
 
