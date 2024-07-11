@@ -8,7 +8,6 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -57,7 +56,6 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.core.common.enums.UiState
@@ -98,16 +96,12 @@ fun LocalPlaylistDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val maxWidth = maxWidth
-        TopAppBarDetailScreen(
-            onBackClick = onBackClick,
-        )
         when (uiState) {
             is UiState.Loading -> {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .windowInsetsPadding(LocalWindowInsets.current)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Box(
                         modifier = Modifier
@@ -153,6 +147,10 @@ fun LocalPlaylistDetailScreen(
                 ErrorScreen(modifier = Modifier.windowInsetsPadding(LocalWindowInsets.current))
             }
         }
+        TopAppBarDetailScreen(
+            onBackClick = onBackClick,
+            backgroundColor = Color.Transparent
+        )
     }
 }
 
@@ -238,7 +236,12 @@ fun LocalPlaylistDetailScreen(
                                 MediaItemMenu(
                                     onDismiss = menuState::dismiss,
                                     mediaItem = song.asMediaItem(),
-                                    onRemoveSongFromPlaylist = { onRemoveFromPlaylist(index, song) },
+                                    onRemoveSongFromPlaylist = {
+                                        onRemoveFromPlaylist(
+                                            index,
+                                            song
+                                        )
+                                    },
                                     onShowMessageAddSuccess = onShowMessage
                                 )
                             }
@@ -311,7 +314,8 @@ fun SongListDetailScreen(
 
             itemsIndexed(
                 items = songsWithBitmaps,
-                key = { _, item -> item.first.id }) { index, songsWithBitmap ->
+//                key = { _, item -> item.first.id }
+            ) { index, songsWithBitmap ->
                 SongItem(
                     song = songsWithBitmap.first,
                     bitmap = songsWithBitmap.second,

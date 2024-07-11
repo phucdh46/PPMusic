@@ -17,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dhp.musicplayer.core.common.enums.UiState
@@ -45,17 +46,12 @@ fun OnlinePlaylistScreen(
     val uiState by viewModel.uiState.collectAsState()
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val maxWidth = maxWidth
-        TopAppBarDetailScreen(
-            onBackClick = onBackClick,
-        )
         when (uiState) {
             UiState.Loading -> {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .windowInsetsPadding(LocalWindowInsets.current)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Box(
                         modifier = Modifier
@@ -89,6 +85,10 @@ fun OnlinePlaylistScreen(
                 ErrorScreen(modifier = Modifier.windowInsetsPadding(LocalWindowInsets.current))
             }
         }
+        TopAppBarDetailScreen(
+            onBackClick = onBackClick,
+            backgroundColor = Color.Transparent
+        )
     }
 }
 

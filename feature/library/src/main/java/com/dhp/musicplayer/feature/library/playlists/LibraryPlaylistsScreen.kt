@@ -20,8 +20,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -50,6 +47,7 @@ import com.dhp.musicplayer.core.designsystem.icon.IconApp
 import com.dhp.musicplayer.core.model.music.Playlist
 import com.dhp.musicplayer.core.model.music.PlaylistWithSongs
 import com.dhp.musicplayer.core.model.settings.LibraryViewType
+import com.dhp.musicplayer.core.ui.LocalMenuState
 import com.dhp.musicplayer.core.ui.LocalWindowInsets
 import com.dhp.musicplayer.core.ui.common.EmptyList
 import com.dhp.musicplayer.core.ui.common.ErrorScreen
@@ -59,6 +57,7 @@ import com.dhp.musicplayer.core.ui.common.rememberEnumPreference
 import com.dhp.musicplayer.core.ui.items.PlaylistGridItem
 import com.dhp.musicplayer.core.ui.items.PlaylistListItem
 import com.dhp.musicplayer.feature.library.LibraryViewModel
+import com.dhp.musicplayer.feature.menu.PlaylistMenu
 
 @Composable
 fun LibraryPlaylistsScreen(
@@ -142,7 +141,7 @@ fun LibraryPlaylistsScreen(
 
     val lazyListState = rememberLazyListState()
     val lazyGridState = rememberLazyGridState()
-
+    val menuState = LocalMenuState.current
 
     var currentSelectPlaylist by rememberSaveable {
         mutableStateOf(if (playlistWithSongs.isEmpty()) null else playlistWithSongs[0].playlist)
@@ -255,43 +254,35 @@ fun LibraryPlaylistsScreen(
                         key = { it.playlist.id },
 //                        contentType = { CONTENT_TYPE_PLAYLIST }
                     ) { playlistPreview ->
-                        var expanded by remember { mutableStateOf(false) }
                         PlaylistListItem(
                             playlistWithSongs = playlistPreview,
                             trailingContent = {
                                 Box {
                                     IconButton(
-                                        onClick = { expanded = true }
+                                        onClick = {
+                                            menuState.show {
+                                                PlaylistMenu(
+                                                    onDismiss = menuState::dismiss,
+                                                    onEditPlaylist = {
+                                                        currentSelectPlaylist =
+                                                            playlistPreview.playlist
+                                                        isRenaming = true
+                                                    },
+                                                    onDeletePlaylist = {
+                                                        currentSelectPlaylist =
+                                                            playlistPreview.playlist
+                                                        isDeleting = true
+                                                    }
+                                                )
+                                            }
+                                        }
                                     ) {
                                         Icon(
                                             imageVector = IconApp.MoreVert,
                                             contentDescription = null
                                         )
                                     }
-                                    DropdownMenu(
-                                        expanded = expanded,
-                                        onDismissRequest = { expanded = false }) {
-                                        DropdownMenuItem(
-                                            text = { Text(text = stringResource(id = R.string.edit_menu_dialog)) },
-                                            onClick = {
-                                                currentSelectPlaylist =
-                                                    playlistPreview.playlist
-                                                isRenaming = true
-                                                expanded = false
-                                            }
-                                        )
-                                        DropdownMenuItem(
-                                            text = { Text(text = stringResource(id = R.string.delete_menu_dialog)) },
-                                            onClick = {
-                                                currentSelectPlaylist =
-                                                    playlistPreview.playlist
-                                                isDeleting = true
-                                                expanded = false
-                                            }
-                                        )
-                                    }
                                 }
-
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -342,13 +333,21 @@ fun LibraryPlaylistsScreen(
                                         navigateToLocalPlaylistDetail(playlistPreview.playlist.id)
                                     },
                                     onLongClick = {
-//                                        menuState.show {
-//                                            PlaylistMenu(
-//                                                playlist = playlist,
-//                                                coroutineScope = coroutineScope,
-//                                                onDismiss = menuState::dismiss
-//                                            )
-//                                        }
+                                        menuState.show {
+                                            PlaylistMenu(
+                                                onDismiss = menuState::dismiss,
+                                                onEditPlaylist = {
+                                                    currentSelectPlaylist =
+                                                        playlistPreview.playlist
+                                                    isRenaming = true
+                                                },
+                                                onDeletePlaylist = {
+                                                    currentSelectPlaylist =
+                                                        playlistPreview.playlist
+                                                    isDeleting = true
+                                                }
+                                            )
+                                        }
                                     }
                                 )
                                 .animateItemPlacement()

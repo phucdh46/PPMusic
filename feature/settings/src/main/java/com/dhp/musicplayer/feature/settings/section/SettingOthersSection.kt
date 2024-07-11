@@ -31,7 +31,6 @@ internal fun SettingOthersSection(
     val menuState = LocalMenuState.current
     val context = LocalContext.current
     val manager = ReviewManagerFactory.create(context)
-    val request = manager.requestReviewFlow()
 
     Column(modifier) {
         SettingTopTitleItem(
@@ -59,6 +58,7 @@ internal fun SettingOthersSection(
             title = stringResource(R.string.setting_top_others_review_title),
             description = stringResource(R.string.setting_top_others_review_description),
             onClick = {
+                val request = manager.requestReviewFlow()
                 request.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         // We got the ReviewInfo object
@@ -69,7 +69,7 @@ internal fun SettingOthersSection(
                             // The flow has finished. The API does not indicate whether the user
                             // reviewed or not, or even whether the review dialog was shown. Thus, no
                             // matter the result, we continue our app flow.
-                            context.toast("Thank you for review")
+                            context.toast("You have reached your review. Thank you!")
                         }
                     } else {
                         // There was some problem, log or handle the error code.
