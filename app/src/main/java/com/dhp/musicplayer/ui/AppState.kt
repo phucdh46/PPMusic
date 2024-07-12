@@ -9,16 +9,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.dhp.musicplayer.feature.home.navigation.FOR_YOU_ROUTE
+import com.dhp.musicplayer.feature.home.navigation.navigateToForYou
+import com.dhp.musicplayer.feature.library.navigation.LIBRARY_ROUTE
+import com.dhp.musicplayer.feature.library.navigation.navigateToLibrary
+import com.dhp.musicplayer.feature.search.main.navigation.EXPLORE_ROUTE
+import com.dhp.musicplayer.feature.search.main.navigation.navigateToExplore
 import com.dhp.musicplayer.navigation.TopLevelDestination
 import com.dhp.musicplayer.navigation.TopLevelDestination.FOR_YOU
 import com.dhp.musicplayer.navigation.TopLevelDestination.LIBRARY
-import com.dhp.musicplayer.navigation.TopLevelDestination.SEARCH
-import com.dhp.musicplayer.ui.screens.home.navigation.FOR_YOU_ROUTE
-import com.dhp.musicplayer.ui.screens.home.navigation.navigateToForYou
-import com.dhp.musicplayer.ui.screens.library.LIBRARY_ROUTE
-import com.dhp.musicplayer.ui.screens.library.navigateToLibrary
-import com.dhp.musicplayer.ui.screens.search.navigation.SEARCH_ROUTE
-import com.dhp.musicplayer.ui.screens.search.navigation.navigateToSearch
+import com.dhp.musicplayer.navigation.TopLevelDestination.EXPLORE
 
 
 @Composable
@@ -48,7 +48,7 @@ class AppState(
     val currentTopLevelDestination: TopLevelDestination?
         @Composable get() = when (currentDestination?.route) {
             FOR_YOU_ROUTE -> FOR_YOU
-            SEARCH_ROUTE -> SEARCH
+            EXPLORE_ROUTE -> EXPLORE
             LIBRARY_ROUTE -> LIBRARY
             else -> null
         }
@@ -73,7 +73,7 @@ class AppState(
 
         when (topLevelDestination) {
             FOR_YOU -> navController.navigateToForYou(topLevelNavOptions)
-            SEARCH -> navController.navigateToSearch(topLevelNavOptions)
+            EXPLORE -> navController.navigateToExplore(topLevelNavOptions)
             LIBRARY -> navController.navigateToLibrary(topLevelNavOptions)
         }
     }

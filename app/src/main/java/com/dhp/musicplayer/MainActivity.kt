@@ -2,27 +2,37 @@ package com.dhp.musicplayer
 
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -30,22 +40,28 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.util.UnstableApi
 import coil.imageLoader
 import coil.request.ImageRequest
-import com.dhp.musicplayer.constant.DynamicThemeKey
-import com.dhp.musicplayer.download.DownloadUtil
-import com.dhp.musicplayer.enums.DarkThemeConfig
-import com.dhp.musicplayer.enums.UiState
-import com.dhp.musicplayer.extensions.intent
-import com.dhp.musicplayer.extensions.toSong
-import com.dhp.musicplayer.model.UserData
-import com.dhp.musicplayer.player.ExoPlayerService
-import com.dhp.musicplayer.player.PlayerConnection
+import com.dhp.musicplayer.core.common.enums.UiState
+import com.dhp.musicplayer.core.common.extensions.intent
+import com.dhp.musicplayer.core.datastore.DynamicThemeKey
+import com.dhp.musicplayer.core.designsystem.R
+import com.dhp.musicplayer.core.designsystem.dialog.DefaultDialog
+import com.dhp.musicplayer.core.designsystem.extractThemeColor
+import com.dhp.musicplayer.core.designsystem.theme.ColorSaver
+import com.dhp.musicplayer.core.designsystem.theme.ComposeTheme
+import com.dhp.musicplayer.core.model.settings.DarkThemeConfig
+import com.dhp.musicplayer.core.model.settings.UserData
+import com.dhp.musicplayer.core.services.download.DownloadUtil
+import com.dhp.musicplayer.core.services.extensions.toSong
+import com.dhp.musicplayer.core.services.player.PlaybackService
+import com.dhp.musicplayer.core.services.player.PlayerConnection
+import com.dhp.musicplayer.core.ui.common.rememberPreference
 import com.dhp.musicplayer.ui.App
 import com.dhp.musicplayer.ui.rememberAppState
-import com.dhp.musicplayer.ui.theme.ColorSaver
-import com.dhp.musicplayer.ui.theme.ComposeTheme
 import com.dhp.musicplayer.utils.InAppUpdateManager
-import com.dhp.musicplayer.utils.extractThemeColor
-import com.dhp.musicplayer.utils.rememberPreference
+import com.dhp.musicplayer.utils.PermissionsManager
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -62,37 +78,41 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var downloadUtil: DownloadUtil
 
-    var binder: ExoPlayerService.Binder? = null
-
     var playerConnection by mutableStateOf<PlayerConnection?>(null)
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            if (service is ExoPlayerService.Binder) {
-                this@MainActivity.binder = service
+            if (service is PlaybackService.MusicBinder) {
                 playerConnection = PlayerConnection(this@MainActivity, service, lifecycleScope)
             }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            binder = null
             playerConnection?.dispose()
         }
     }
 
     private fun doBindService() {
-        bindService(intent<ExoPlayerService>(), serviceConnection, Context.BIND_AUTO_CREATE)
+        bindService(intent<PlaybackService>(), serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
     private lateinit var inAppUpdateManager: InAppUpdateManager
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
+    private val viewModel: MainActivityViewModel by viewModels()
+
+    private val requestPostNotificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         inAppUpdateManager = InAppUpdateManager(this@MainActivity)
         enableEdgeToEdge()
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-
-        val viewModel: MainActivityViewModel by viewModels()
+        // Obtain the FirebaseAnalytics instance.
+        firebaseAnalytics = Firebase.analytics
+        handleNewIntent(intent)
+        checkPostNotificationPermission()
         var uiState: UiState<UserData> by mutableStateOf(UiState.Loading)
         // Update the uiState
         lifecycleScope.launch {
@@ -112,6 +132,21 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val darkTheme = shouldUseDarkTheme(uiState)
+            val songFromNotification by viewModel.songFromNotification.collectAsState()
+
+            LaunchedEffect(songFromNotification) {
+                if (songFromNotification != null && playerConnection != null) {
+                    playerConnection?.stopRadio()
+                    playerConnection?.forcePlay(songFromNotification!!)
+                    playerConnection?.addRadio(songFromNotification!!.radioEndpoint)
+                }
+            }
+
+            LaunchedEffect(playerConnection) {
+                withContext(Dispatchers.IO) {
+                    viewModel.handlePlayerConnection(playerConnection != null)
+                }
+            }
 
             DisposableEffect(darkTheme) {
                 enableEdgeToEdge(
@@ -135,8 +170,8 @@ class MainActivity : ComponentActivity() {
                     scope.launch {
                         val result = appState.snackBarHostState
                             .showSnackbar(
-                                message = this@MainActivity.getString(R.string.update_was_downloaded_snack_bar),
-                                actionLabel = this@MainActivity.getString(R.string.restart_string),
+                                message = this@MainActivity.getString(R.string.in_app_update_message_downloaded),
+                                actionLabel = this@MainActivity.getString(R.string.in_app_update_restart_button_text),
                                 // Defaults to SnackbarDuration.Short
                                 duration = SnackbarDuration.Indefinite
                             )
@@ -147,7 +182,7 @@ class MainActivity : ComponentActivity() {
                 })
             }
             val isSystemInDarkTheme = isSystemInDarkTheme()
-            val enableDynamicTheme by rememberPreference(DynamicThemeKey, defaultValue = false)
+            val enableDynamicTheme by rememberPreference(DynamicThemeKey, defaultValue = true)
             val color = androidx.compose.ui.graphics.Color.Unspecified
 
             var themeColor by rememberSaveable(stateSaver = ColorSaver) {
@@ -174,12 +209,31 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+            val getApiKeyError by viewModel.getApiKeyError.collectAsState()
+
             ComposeTheme(
                 darkTheme = darkTheme,
                 themeColor = themeColor,
                 enableDynamicTheme = enableDynamicTheme,
             ) {
-                App(appState = appState, playerConnection, downloadUtil)
+                if (getApiKeyError) {
+                    DefaultDialog(
+                        onDismiss = { },
+                        onConfirm = { viewModel.getApiKey() },
+                        title = stringResource(id = R.string.app_name),
+                        confirmText = stringResource(id = R.string.get_api_key_error_button_retry),
+                        disableDismiss = true,
+                        content = {
+                            Text(
+                                text = stringResource(id = R.string.get_api_key_error_message),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
+                    )
+                } else {
+                    App(appState = appState, playerConnection, downloadUtil)
+                }
             }
         }
     }
@@ -193,6 +247,26 @@ class MainActivity : ComponentActivity() {
         unbindService(serviceConnection)
         super.onStop()
     }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleNewIntent(intent)
+    }
+
+    private fun handleNewIntent(intent: Intent) {
+        viewModel.handleNewIntent(intent)
+    }
+
+    private fun checkPostNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !PermissionsManager.isPostNotificationPermissionGranted(
+                this@MainActivity
+            )
+        ) {
+            PermissionsManager.requestPostNotificationPermission(
+                requestPostNotificationPermissionLauncher
+            )
+        }
+    }
 }
 
 @Composable
@@ -205,6 +279,7 @@ private fun shouldUseDarkTheme(
         DarkThemeConfig.LIGHT -> false
         DarkThemeConfig.DARK -> true
     }
+
     else -> isSystemInDarkTheme()
 }
 

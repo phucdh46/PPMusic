@@ -21,7 +21,7 @@
     </style>
 
     <style name="Theme.Splash" parent="NightAdjusted.Theme.Splash">
-        <item name="windowSplashScreenAnimatedIcon">@drawable/logo_removebg</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo_remove_bg</item>
         <item name="postSplashScreenTheme">@style/Theme.App</item>
     </style>
 

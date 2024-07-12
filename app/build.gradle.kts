@@ -10,7 +10,7 @@ plugins {
     alias(libs.plugins.googleServices)
     alias(libs.plugins.crashlytics)
     alias(libs.plugins.kotlin.parcelize)
-
+    alias(libs.plugins.firebase.perf)
 }
 
 android {
@@ -33,13 +33,21 @@ android {
         applicationId = "com.dhp.musicplayer"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1000632
-        versionName = "1.0.632"
+        versionCode = 1000695
+        versionName = "1.0.695"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+        //load the values from .properties file
+        val keystoreFile = project.rootProject.file("local.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+
+        //return empty key in case something goes wrong
+        val adsAppId = properties.getProperty("GMS_ADS_APP_ID") ?: ""
+        resValue("string", "GMS_ADS_APP_ID", adsAppId)
     }
 
     buildTypes {
@@ -80,64 +88,76 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    lint {
+        disable.add("Instantiatable")
+    }
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    implementation(project(":core:common"))
+    implementation(project(":core:model"))
+    implementation(project(":core:designsystem"))
+    implementation(project(":core:services"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:data"))
+    implementation(project(":core:network"))
+    implementation(project(":core:datastore"))
+    implementation(project(":core:billing"))
+    implementation(project(":feature:settings"))
+    implementation(project(":feature:home"))
+    implementation(project(":feature:artist"))
+    implementation(project(":feature:playlist"))
+    implementation(project(":feature:search"))
+    implementation(project(":feature:library"))
+    implementation(project(":feature:player"))
+//    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
+//    implementation(libs.androidx.lifecycle.runtime.ktx)
+//    implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3.android)
-    implementation(libs.androidx.material.icons.extended)
+//    implementation(libs.androidx.compose.material3.android)
+//    implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.coil.compose)
-    implementation(libs.runtime.livedata)
-
-    api(libs.androidx.dataStore.core)
+//    implementation(libs.androidx.lifecycle.runtimeCompose)
+//    implementation(libs.coil.compose)
+//    implementation(libs.runtime.livedata)
 
     implementation(libs.hilt.android)
-    implementation(libs.androidx.hilt.navigation.compose)
+//    implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
 
-    implementation(libs.accompanist.permissions)
-    implementation(libs.accompanist.pager)
-    implementation(libs.accompanist.swiperefresh)
+//    implementation(libs.accompanist.permissions)
+//    implementation(libs.accompanist.pager)
+//    implementation(libs.accompanist.swiperefresh)
 
     implementation(libs.coil.kt)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.media3.exoplayer)
-    implementation(libs.media3.okhttp)
-    implementation(libs.media3.session)
+//    implementation(libs.media3.exoplayer)
+//    implementation(libs.media3.okhttp)
+//    implementation(libs.media3.session)
 
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.cio)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.client.encoding)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.brotli)
-
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
     implementation(libs.navigation.fragment)
-
-    ksp(libs.room.compiler)
-    implementation(libs.room.ktx)
 
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.app.update)
     implementation(libs.app.update.ktx)
-    implementation(libs.reorderable)
-    implementation(libs.paging.compose)
-    implementation(libs.paging.runtime.ktx)
+//    implementation(libs.reorderable)
 
-    implementation(libs.palette)
+//    implementation(libs.paging.compose)
+//    implementation(libs.paging.runtime.ktx)
+
+//    implementation(libs.palette)
+    implementation(libs.play.services.ads.lite)
+    implementation(libs.firebase.perf)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
