@@ -157,7 +157,7 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
 
         mediaLibrarySession = MediaLibrarySession.Builder(this, player, mediaLibrarySessionCallback)
             .setSessionActivity(
-                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
             )
             .setBitmapLoader(CacheBitmapLoader(DataSourceBitmapLoader(this)))
             .build()
@@ -167,7 +167,7 @@ class PlaybackService : MediaLibraryService(), Player.Listener, PlaybackStatsLis
         player.skipSilenceEnabled = dataStore.get(SkipSilenceKey, false)
         player.addListener(this)
         player.addAnalyticsListener(PlaybackStatsListener(false, this))
-        player.repeatMode = dataStore.get(RepeatModeKey, Player.REPEAT_MODE_OFF)
+        player.repeatMode = dataStore.get(RepeatModeKey, REPEAT_MODE_OFF)
 
         val sessionToken = SessionToken(this, ComponentName(this, PlaybackService::class.java))
         val controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
