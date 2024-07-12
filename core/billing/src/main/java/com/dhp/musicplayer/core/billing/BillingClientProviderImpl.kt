@@ -15,6 +15,7 @@ import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.android.billingclient.api.acknowledgePurchase
 import com.android.billingclient.api.queryProductDetails
+import com.dhp.musicplayer.core.common.extensions.safeResume
 import com.dhp.musicplayer.core.common.utils.Logg
 import com.dhp.musicplayer.core.datastore.IsEnablePremiumModeKey
 import com.dhp.musicplayer.core.datastore.dataStore
@@ -27,7 +28,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class BillingClientProviderImpl @Inject constructor(
@@ -91,17 +91,17 @@ class BillingClientProviderImpl @Inject constructor(
                         Logg.d("onBillingSetupFinished")
                         // The BillingClient is ready. You can query purchases here.
                         isReady = true
-                        continuation.resume(Result.success(Unit))
+                        continuation.safeResume(Result.success(Unit)) {}
                     } else {
                         Logg.d("onBillingSetupFailed")
                         val retry = retryBillingServiceConnection()
                         isReady = retry
                         if (retry) {
                             Logg.d("onBillingSetupFailed success")
-                            continuation.resume(Result.success(Unit))
+                            continuation.safeResume(Result.success(Unit)) {}
                         } else {
                             Logg.d("onBillingSetupFailed failure")
-                            continuation.resume(Result.failure(Exception("Billing Setup Failed: ${billingResult.debugMessage}")))
+                            continuation.safeResume(Result.failure(Exception("Billing Setup Failed: ${billingResult.debugMessage}"))) {}
                         }
                     }
                 }
@@ -114,7 +114,7 @@ class BillingClientProviderImpl @Inject constructor(
                     isReady = retry
                     if (retry) {
                         Logg.d("onBillingServiceDisconnected success")
-                        continuation.resume(Result.success(Unit))
+                        continuation.safeResume(Result.success(Unit)) {}
                     } else {
                         Logg.d("onBillingServiceDisconnected Exception")
                         continuation.resumeWithException(Exception("Billing Service Disconnected"))
@@ -172,9 +172,9 @@ class BillingClientProviderImpl @Inject constructor(
             ) { billingResult, purchaseList ->
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     Logg.d("queryPurchases: success ${purchaseList}")
-                    continuation.resume(Result.success(purchaseList))
+                    continuation.safeResume(Result.success(purchaseList)) {}
                 } else {
-                    continuation.resume(Result.failure(Exception("Querying Purchases Failed: ${billingResult.debugMessage}")))
+                    continuation.safeResume(Result.failure(Exception("Querying Purchases Failed: ${billingResult.debugMessage}"))) {}
                     Logg.d("queryPurchases: ${billingResult.debugMessage}")
                 }
             }
@@ -210,14 +210,14 @@ class BillingClientProviderImpl @Inject constructor(
             when (productDetailsResult.billingResult.responseCode) {
                 BillingClient.BillingResponseCode.OK -> {
                     if (productDetailsResult.productDetailsList.isNullOrEmpty()) {
-                        continuation.resume(Result.failure(Exception("Querying ProductDetails: ${productDetailsResult.billingResult.debugMessage}")))
+                        continuation.safeResume(Result.failure(Exception("Querying ProductDetails: ${productDetailsResult.billingResult.debugMessage}"))) {}
                     } else {
-                        continuation.resume(Result.success(productDetailsResult.productDetailsList!!))
+                        continuation.safeResume(Result.success(productDetailsResult.productDetailsList!!)) {}
                     }
                 }
 
                 else -> {
-                    continuation.resume(Result.failure(Exception("Querying ProductDetails: ${productDetailsResult.billingResult.debugMessage}")))
+                    continuation.safeResume(Result.failure(Exception("Querying ProductDetails: ${productDetailsResult.billingResult.debugMessage}"))) {}
                 }
             }
         }
